@@ -1,0 +1,211 @@
+{
+ "v": 1,
+ "collections": [
+  {
+   "id": "cebc6f13c552c",
+   "name": "Voorbeeld collectie 1",
+   "desc": "Hier komt je beschrijving.",
+   "ll": "",
+   "lb": "",
+   "cover": "assets/cover-voorbeeld-collectie-1.jpg",
+   "m": [
+    "m7f21a9f1335b",
+    "m1bafedcc68bc",
+    "m574ca78c6911",
+    "m64746d324231",
+    "m39fb7068ce4a",
+    "m78efbc127dde"
+   ]
+  },
+  {
+   "id": "c21794d61aca1",
+   "name": "Voorbeeld collectie 2",
+   "desc": "Hier komt je beschrijving.",
+   "ll": "",
+   "lb": "",
+   "cover": "assets/cover-voorbeeld-collectie-2.jpg",
+   "m": [
+    "m7f21a9f1335b",
+    "m1bafedcc68bc",
+    "m574ca78c6911",
+    "m64746d324231",
+    "m39fb7068ce4a",
+    "m78efbc127dde"
+   ]
+  }
+ ],
+ "media": [
+  {
+   "id": "m7f21a9f1335b",
+   "t": "Voorbeeld 1",
+   "k": "image",
+   "r": 0.751,
+   "src": "assets/voorbeeld-1.jpg",
+   "d": "Hier komt je beschrijving.",
+   "at": "19-10-2026",
+   "tags": [
+    "voorbeeld"
+   ]
+  },
+  {
+   "id": "m1bafedcc68bc",
+   "t": "Voorbeeld 2",
+   "k": "image",
+   "r": 0.75,
+   "src": "assets/voorbeeld-2.jpg",
+   "d": "Hier komt je beschrijving.",
+   "at": "19-10-2026",
+   "tags": [
+    "voorbeeld"
+   ]
+  },
+  {
+   "id": "m574ca78c6911",
+   "t": "Voorbeeld 3",
+   "k": "image",
+   "r": 1,
+   "src": "assets/voorbeeld-3.jpg",
+   "d": "Hier komt je beschrijving.",
+   "at": "19-10-2026",
+   "tags": [
+    "voorbeeld"
+   ]
+  },
+  {
+   "id": "m64746d324231",
+   "t": "Voorbeeld 4",
+   "k": "image",
+   "r": 0.751,
+   "src": "assets/voorbeeld-4.jpg",
+   "d": "Hier komt je beschrijving.",
+   "at": "19-10-2026",
+   "tags": [
+    "voorbeeld"
+   ]
+  },
+  {
+   "id": "m39fb7068ce4a",
+   "t": "Voorbeeld 5",
+   "k": "image",
+   "r": 1.3225,
+   "src": "assets/voorbeeld-5.jpg",
+   "d": "Hier komt je beschrijving.",
+   "at": "19-10-2026",
+   "tags": [
+    "voorbeeld"
+   ]
+  },
+  {
+   "id": "m78efbc127dde",
+   "t": "Voorbeeld 6",
+   "k": "image",
+   "r": 1.235,
+   "src": "assets/voorbeeld-6.jpg",
+   "d": "Hier komt je beschrijving.",
+   "at": "19-10-2026",
+   "tags": [
+    "voorbeeld"
+   ]
+  }
+ ],
+ "notes": [
+  {
+   "t": "Voorbeeld 1",
+   "x": "Hier komt je beschrijving.",
+   "tags": [
+    "voorbeeld",
+    "tag"
+   ],
+   "d": "19 okt",
+   "g": []
+  },
+  {
+   "t": "Voorbeeld 2",
+   "x": "Hier komt je beschrijving.",
+   "tags": [
+    "voorbeeld"
+   ],
+   "d": "19 okt",
+   "g": []
+  },
+  {
+   "t": "Voorbeeld 3",
+   "x": "Hier komt je beschrijving.",
+   "tags": [
+    "voorbeeld"
+   ],
+   "d": "19 okt",
+   "g": []
+  }
+ ],
+ "quotes": [
+  {
+   "t": "Voorbeeld 1: hier komt je quote.",
+   "au": "Auteur",
+   "wk": "Bron",
+   "tags": [
+    "voorbeeld"
+   ],
+   "g": []
+  },
+  {
+   "t": "Voorbeeld 2: hier komt je quote.",
+   "au": "Auteur",
+   "wk": "Bron",
+   "tags": [
+    "voorbeeld"
+   ],
+   "g": []
+  },
+  {
+   "t": "Voorbeeld 3: hier komt je quote.",
+   "au": "Auteur",
+   "wk": "Bron",
+   "tags": [],
+   "g": []
+  }
+ ],
+ "reading": [
+  {
+   "t": "Voorbeeld 1",
+   "sub": "",
+   "tags": [
+    "voorbeeld",
+    "tag"
+   ],
+   "done": 0,
+   "g": []
+  },
+  {
+   "t": "Voorbeeld 2",
+   "sub": "Hier komt je beschrijving.",
+   "tags": [
+    "voorbeeld"
+   ],
+   "done": 0,
+   "g": []
+  },
+  {
+   "t": "Voorbeeld 3",
+   "sub": "Hier komt je beschrijving.",
+   "tags": [
+    "voorbeeld",
+    "tag"
+   ],
+   "done": 1,
+   "g": []
+  }
+ ],
+ "groups": {
+  "leeslijst": [],
+  "notities": [
+   {
+    "id": "g1",
+    "name": "Voorbeeldgroep",
+    "cover": "assets/group-voorbeeldgroep.jpg",
+    "base": 0
+   }
+  ],
+  "quotes": []
+ }
+}

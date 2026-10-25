@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="nl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#fff;--glass:rgba(60,70,60,.55);--dark:#1b1d1c;box-sizing:border-box}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);overflow:hidden;background:#9aa68f url("assets/bg-isometrisch.jpg") center/cover no-repeat;position:relative}
+body::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(40,50,40,.35),rgba(40,50,40,0) 22%,rgba(40,50,40,0) 70%,rgba(40,50,40,.4))}
+.page{position:relative;height:100%;padding:calc(env(safe-area-inset-top,0px) + 28px) 28px calc(env(safe-area-inset-bottom,0px) + 28px)}
+.logo{position:absolute;left:28px;top:calc(env(safe-area-inset-top,0px) + 34px);font-weight:700;font-size:34px;letter-spacing:-1px;display:flex;align-items:baseline;gap:14px;text-shadow:0 1px 8px rgba(0,0,0,.3)}
+.logo small{font-weight:400;font-size:13px;letter-spacing:.08em;opacity:.8}
+nav{white-space:nowrap;position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 28px);transform:translateX(-50%);display:flex;gap:28px;padding:18px 36px;border-radius:999px;background:var(--glass);backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.2)}
+nav a{white-space:nowrap;color:#fff;opacity:.8;text-decoration:none;font-size:15px;letter-spacing:.05em;padding-bottom:3px}
+nav a.on{opacity:1;font-weight:500;border-bottom:2px solid #fff}
+.account{position:absolute;right:28px;top:calc(env(safe-area-inset-top,0px) + 28px);width:56px;height:56px;border-radius:50%;background:var(--glass);backdrop-filter:blur(14px);color:#fff;border:0;font:500 17px inherit;font-family:inherit;letter-spacing:.02em;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.2);display:grid;place-items:center}
+.tools{position:absolute;right:20px;top:calc(env(safe-area-inset-top,0px) + 20px);width:60px;padding:22px 0;border-radius:30px;background:var(--dark);display:flex;flex-direction:column;align-items:center;gap:30px}
+.tools i{width:20px;height:20px;border:2px dashed #cfd3cf;border-radius:4px;opacity:.9}
+.tools i:first-child{opacity:.3}
+.hero{position:absolute;left:28px;bottom:25%;max-width:620px;padding:28px 30px;border-radius:22px;background:rgba(50,62,48,.42);backdrop-filter:blur(10px)}
+.tag{display:inline-block;background:rgba(70,80,70,.7);color:#9fe3c0;font-size:12px;font-weight:500;letter-spacing:.1em;padding:9px 16px;border-radius:6px;margin-bottom:18px}
+h1{font-weight:300;font-size:clamp(30px,3.6vw,50px);line-height:1.12;letter-spacing:-.01em;text-shadow:0 2px 14px rgba(0,0,0,.3)}
+h1 b{font-weight:700}
+.pill{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);padding:16px 26px;border-radius:999px;background:var(--glass);backdrop-filter:blur(14px);font-size:13px;letter-spacing:.1em}
+.pill b{margin-left:6px}
+.stat,.brand{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);font-size:13px;letter-spacing:.1em;text-shadow:0 1px 8px rgba(0,0,0,.35)}.stat{left:28px}.stat b{margin-left:6px}.brand{right:28px;opacity:.85}.mode{right:200px}
+.ask{position:absolute;right:28px;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);background:var(--dark);color:#fff;border:0;border-radius:26px;padding:16px 28px;font:500 17px/1.25 inherit;font-family:inherit;text-align:center;cursor:pointer}
+:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(max-width:900px){nav{gap:16px;max-width:calc(100% - 56px);overflow-x:auto;white-space:nowrap;padding:14px 20px;top:calc(env(safe-area-inset-top,0px) + 88px)}.logo{top:calc(env(safe-area-inset-top,0px) + 30px)}.mode{display:none}.hero{bottom:22%;right:28px}}
+
+.view{position:absolute;right:28px;width:calc(100% - 56px);top:calc(env(safe-area-inset-top,0px) + 112px);bottom:calc(env(safe-area-inset-bottom,0px) + 72px);display:flex;visibility:hidden;opacity:0;transform:translateX(calc(100% + 40px));transition:transform .55s cubic-bezier(.22,.9,.24,1),opacity .35s ease,visibility 0s linear .55s}
+.view.open{visibility:visible;opacity:1;transform:none;transition-delay:0s}
+.panel{flex:1;min-height:0;overflow-y:auto;border-radius:28px;background:rgba(50,62,48,.55);backdrop-filter:blur(18px);box-shadow:0 18px 44px rgba(0,0,0,.28);padding:24px 24px 28px}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.bar h2{flex:1;font-weight:700;font-size:21px;letter-spacing:-.01em}
+.bar h2 span{font-weight:400;font-size:14px;opacity:.7}
+.addbtn{background:var(--dark);color:#fff;border:0;border-radius:999px;padding:10px 16px;font:500 14px inherit;font-family:inherit;cursor:pointer;white-space:nowrap}
+.close{width:38px;height:38px;flex:none;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font:300 24px/1 inherit;font-family:inherit;cursor:pointer;display:grid;place-items:center}
+.search{display:flex;align-items:center;gap:10px;padding:0 16px;height:42px;max-width:520px;border-radius:999px;background:rgba(255,255,255,.14);margin-bottom:26px;color:#fff}
+.search input{flex:1;min-width:0;background:none;border:0;color:#fff;font:400 14px inherit;font-family:inherit;outline:0}
+.search input::placeholder{color:rgba(255,255,255,.7)}
+.search:focus-within{box-shadow:0 0 0 3px #fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,170px);gap:28px 22px}
+.card{color:#fff;text-decoration:none;display:block}
+.card[hidden]{display:none}
+.thumb{aspect-ratio:4/3;border-radius:16px;overflow:hidden;box-shadow:0 10px 20px rgba(0,0,0,.22)}
+.thumb.empty{background:rgba(255,255,255,.3)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.card:hover .thumb img{transform:scale(1.05)}
+.card h3{font-weight:500;font-size:14px;line-height:1.25;margin:10px 0 4px}
+.card p{font-size:11px;letter-spacing:.1em;opacity:.8}
+.none{opacity:.85;font-size:14px}
+@media(max-width:900px){.view{top:calc(env(safe-area-inset-top,0px) + 152px)}.grid{grid-template-columns:repeat(2,1fr);gap:24px 16px}}
+@media(prefers-reduced-motion:reduce){.view{transition:none}}
+.addbtn.alt{background:rgba(255,255,255,.18)}
+.grp{font-weight:500;font-size:15px;opacity:.85;margin-bottom:14px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;align-items:stretch}
+.item{display:grid;grid-template-columns:auto 1fr;grid-template-rows:1fr auto;gap:10px 12px;align-items:start;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.1)}
+.main{display:flex;flex-direction:column;align-self:stretch;min-width:0}
+.chk{width:22px;height:22px;padding:0;border-radius:50%;border:1.5px solid rgba(255,255,255,.75);background:none;cursor:pointer;margin-top:-1px;display:grid;place-items:center}
+.item.done .chk{background:var(--dark);border-color:var(--dark)}
+.item.done .chk::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+.ttl{font-weight:500;font-size:14px;line-height:1.3;outline:0}
+.ttl[contenteditable=true]{box-shadow:0 0 0 3px #fff;border-radius:4px}
+.item.done .ttl{text-decoration:line-through;opacity:.7}
+.sub{font-size:13px;opacity:.8;margin-top:2px}
+.lnk{display:inline-flex;align-items:center;gap:6px;color:#fff;font-size:13px;margin-top:auto;padding-top:8px;align-self:flex-start;text-decoration:underline}
+.tags{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding:7px 9px;border-radius:12px;background:rgba(255,255,255,.1)}
+.chip{display:inline-flex;align-items:center;gap:2px;background:rgba(255,255,255,.22);padding:3px 4px 3px 9px;border-radius:7px;font-size:12px}
+.chip button{background:none;border:0;color:#fff;cursor:pointer;padding:0 4px;font-size:16px;line-height:1;opacity:.8}
+.taginput{flex:1;min-width:80px;background:none;border:0;color:#fff;font:400 14px inherit;font-family:inherit;outline:0;padding:4px}
+.taginput::placeholder{color:rgba(255,255,255,.65)}
+.act{grid-column:2;display:flex;align-items:center;gap:4px}.act select{margin-right:auto}
+.act select{appearance:none;-webkit-appearance:none;border:0;border-radius:999px;color:#fff;font:400 14px inherit;font-family:inherit;padding:7px 30px 7px 12px;cursor:pointer;background:rgba(255,255,255,.16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center}
+.act option{color:#1b1d1c}
+.ib{background:none;border:0;color:#fff;opacity:.85;cursor:pointer;padding:6px;display:grid}
+@media(max-width:900px){.bar{flex-wrap:wrap}.list{grid-template-columns:1fr}}
+.qtools{display:flex;gap:12px;align-items:center;margin-bottom:26px}
+.qtools .search{flex:1;margin-bottom:0}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,240px));gap:14px}
+.qcard{position:relative;padding:16px 18px;border-radius:18px;background:rgba(255,255,255,.12)}
+.qcard[hidden]{display:none}
+.qt{font-size:13.5px;line-height:1.5}
+.src{font-size:12px;opacity:.75;margin-top:10px}
+.qdel{position:absolute;top:10px;right:10px;display:none}
+.editing .qdel{display:grid}
+.editing [contenteditable=true]{outline:0;box-shadow:0 0 0 2px rgba(255,255,255,.45);border-radius:4px}
+@media(max-width:900px){.qgrid{grid-template-columns:1fr}}
+.fgrid{display:flex;flex-wrap:wrap;gap:22px}
+.fold{display:block;width:170px;color:#fff;text-decoration:none}
+.fold[hidden],.ncard[hidden]{display:none}
+.fold h3{font-weight:500;font-size:14px;line-height:1.25;margin:10px 0 4px}
+.fold p{font-size:11px;letter-spacing:.1em;opacity:.8}
+.fold:hover .thumb img{transform:scale(1.05)}
+.grp.sp{margin-top:30px}
+.ngrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,240px));gap:14px;align-items:stretch}
+.ncard{position:relative;display:flex;flex-direction:column;padding:16px 18px;border-radius:18px;background:rgba(255,255,255,.12)}
+.nt{font-weight:500;font-size:14px;line-height:1.35}
+.nx{font-size:13px;line-height:1.5;opacity:.85;margin-top:6px}
+.ntags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:12px}
+.nchip{background:rgba(255,255,255,.22);padding:3px 9px;border-radius:7px;font-size:12px}
+.nd{font-size:12px;opacity:.7;margin-top:10px}
+.ncard .qdel{top:8px;right:8px}
+@media(max-width:900px){.ngrid{grid-template-columns:1fr}}
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;visibility:hidden;opacity:0;transition:opacity .3s ease,visibility 0s linear .3s}
+.modal.open{visibility:visible;opacity:1;transition-delay:0s}
+.scrim{position:absolute;inset:0;background:rgba(30,38,30,.45);backdrop-filter:blur(6px)}
+.dlg{position:relative;width:min(560px,100%);max-height:100%;overflow-y:auto;border-radius:28px;background:rgba(50,62,48,.78);backdrop-filter:blur(22px);box-shadow:0 24px 60px rgba(0,0,0,.35);transform:translateY(14px) scale(.98);transition:transform .4s cubic-bezier(.22,.9,.24,1)}
+.modal.open .dlg{transform:none}
+.dh{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid rgba(255,255,255,.16)}
+.dh h2{font-weight:700;font-size:19px}
+.mclose{width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font:300 24px/1 inherit;font-family:inherit;cursor:pointer;display:grid;place-items:center}
+.db{padding:22px 28px 6px}
+.fl{display:block;font-weight:500;font-size:14px;margin:0 0 8px}
+.fl span{opacity:.7}
+.fi{display:block;width:100%;border:0;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font:400 15px inherit;font-family:inherit;padding:14px 20px;margin-bottom:20px;outline:0}
+.fi::placeholder{color:rgba(255,255,255,.65)}
+.fi:focus-visible{box-shadow:0 0 0 3px #fff}
+.ta{border-radius:20px;min-height:96px;resize:vertical}
+.seg{display:flex;gap:8px;margin-bottom:12px}
+.sb{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:999px;padding:9px 16px;background:rgba(255,255,255,.14);color:#fff;font:500 14px inherit;font-family:inherit;cursor:pointer}
+.sb.on{background:var(--dark)}
+.fi[hidden],.pick[hidden]{display:none}
+.pick{border:1.5px dashed rgba(255,255,255,.5);background:none;text-align:center;cursor:pointer;opacity:.9}
+.df{display:flex;justify-content:flex-end;gap:10px;padding:8px 28px 26px}
+.df .addbtn{padding:13px 24px;font-size:15px}
+.addbtn:disabled{opacity:.45;cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){.modal,.dlg{transition:none}}
+.back{background:none;border:0;color:#fff;font:400 14px inherit;font-family:inherit;display:inline-flex;gap:8px;align-items:center;cursor:pointer;opacity:.9;padding:6px 0}
+.dbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0 20px}
+.dbar h2{font-weight:700;font-size:24px;letter-spacing:-.01em;outline:0}
+.dbar h2[contenteditable=true]{box-shadow:0 0 0 3px #fff;border-radius:6px}
+.dact{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dact .addbtn{display:inline-flex;align-items:center;gap:8px}
+.ib2{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer}
+.ib2.danger{color:#ffa79d}
+.ib2.confirm{width:auto;padding:0 16px;background:#b3372c;color:#fff;font:500 14px inherit;font-family:inherit}
+.mas{display:flex;gap:16px;align-items:flex-start}
+.mcol{flex:0 1 180px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.mi{margin:0}
+.mi[hidden]{display:none}
+.mi img{display:block;width:100%;object-fit:cover;border-radius:16px;box-shadow:0 10px 20px rgba(0,0,0,.22)}
+.mi figcaption{display:flex;gap:6px;align-items:baseline;margin-top:9px;font-size:12px;line-height:1.3}
+.mi figcaption b{font-size:15px;font-weight:700}
+.card{cursor:pointer}
+.seg.t{flex-wrap:wrap;margin-bottom:20px}
+.mtags{margin:0 0 20px;padding:10px 14px;border-radius:20px;background:rgba(255,255,255,.14);cursor:text}
+.mtags:focus-within{box-shadow:0 0 0 3px #fff}
+.tile{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;aspect-ratio:4/3;padding:14px;border-radius:16px;background:rgba(255,255,255,.16);color:#fff;text-decoration:none;box-shadow:0 10px 20px rgba(0,0,0,.22);overflow:hidden}
+.kd{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+.ku{font-size:13px;word-break:break-all}
+.mtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.hint{color:#ffb3aa;font-size:12px;margin:-14px 0 16px 4px}
+.fi.err{box-shadow:0 0 0 2px #ffa79d}
+.dsub{font-size:14px;opacity:.85;margin:-8px 0 18px;max-width:680px;line-height:1.45}
+.mi{cursor:pointer}
+.mi:focus-visible{outline:3px solid #fff;outline-offset:4px;border-radius:16px}
+.mp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);grid-template-rows:minmax(0,1fr);gap:32px;padding:20px;overflow:hidden}
+.mimg{position:relative;border-radius:22px;overflow:hidden;background:rgba(255,255,255,.12);min-height:240px}
+.mimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mimg .tile{position:absolute;inset:0;aspect-ratio:auto;border-radius:0;box-shadow:none;padding:24px}
+.minfo{display:flex;flex-direction:column;min-height:0;overflow-y:auto;padding:4px 8px 4px 0}
+.mtop{display:flex;align-items:center}
+.mtop .back{font-size:12px;letter-spacing:.12em}
+.mtitle{font-weight:700;font-size:clamp(24px,2.6vw,36px);line-height:1.15;margin:20px 0 14px;letter-spacing:-.01em}
+.mloc{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.mdescp{font-size:16px;line-height:1.55;margin:26px 0;flex:1 0 auto}
+.mdescp.empty{opacity:.6;font-size:14px}
+.mlab{font-size:12px;letter-spacing:.12em;opacity:.8;margin-bottom:10px}
+.mtg2{margin:0 0 18px}
+.mdate{font-size:13px;opacity:.75;margin-bottom:16px}
+.macts{display:flex;gap:10px;flex-wrap:wrap}
+.macts .addbtn{display:inline-flex;align-items:center;gap:8px}
+.addbtn.danger{color:#ffa79d}
+.addbtn.danger.confirm{background:#b3372c;color:#fff}
+.fl[hidden]{display:none}
+@media(max-width:900px){.mp{grid-template-columns:1fr;grid-template-rows:auto;overflow-y:auto}.mimg{height:320px}.minfo{overflow:visible}}
+.mp.land{grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr)}
+.mp.land .mimg{display:grid;place-items:center;padding:22px;min-height:0;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.mp.land .mimg img{position:static;inset:auto;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.3);object-fit:cover}
+.mp.land .mtitle{font-size:clamp(22px,2.3vw,32px)}
+@media(max-width:900px){.mp.land{grid-template-columns:1fr}.mp.land .mimg{height:260px;padding:14px}}
+.navsearch{background:none;border:0;color:#fff;opacity:.85;cursor:pointer;display:grid;place-items:center;margin-left:4px;padding:0 0 0 24px;border-left:1px solid rgba(255,255,255,.28)}
+.navsearch:hover{opacity:1}
+.gs{position:fixed;inset:0;z-index:40;display:flex;justify-content:center;align-items:flex-start;padding:18vh 20px 20px;visibility:hidden;opacity:0;transition:opacity .3s ease,visibility 0s linear .3s}
+.gs.open{visibility:visible;opacity:1;transition-delay:0s}
+.gscrim{position:absolute;inset:0;background:rgba(30,38,30,.4);backdrop-filter:blur(6px)}
+.gbox{position:relative;width:min(700px,100%);transform:translateY(-10px) scale(.985);transition:transform .4s cubic-bezier(.22,.9,.24,1)}
+.gs.open .gbox{transform:none}
+.gbar{display:flex;align-items:center;gap:14px;height:66px;padding:0 14px 0 26px;border-radius:999px;background:rgba(50,62,48,.78);backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,.3);color:#fff}
+.gbar svg{flex:none;opacity:.8}
+.gbar input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:400 19px inherit;font-family:inherit}
+.gbar input::placeholder{color:rgba(255,255,255,.65)}
+.gbar:focus-within{box-shadow:0 20px 50px rgba(0,0,0,.3),0 0 0 3px #fff}
+.gres{margin-top:12px;border-radius:26px;background:rgba(50,62,48,.78);backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,.3);max-height:min(54vh,540px);overflow-y:auto;padding:10px;color:#fff}
+.gres:empty{display:none}
+.gh{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.7;padding:10px 12px 6px}
+.gtags{display:flex;flex-wrap:wrap;gap:8px;padding:2px 12px 12px}
+.gtag{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:8px 14px;background:rgba(255,255,255,.16);color:#fff;font:500 13px inherit;font-family:inherit;cursor:pointer}
+.gtag span{opacity:.65;font-weight:400}
+.gtag:hover{background:rgba(255,255,255,.26)}
+.gr{display:block;width:100%;text-align:left;background:none;border:0;color:#fff;padding:11px 12px;border-radius:14px;cursor:pointer;font-family:inherit}
+.gr:hover,.gr:focus-visible{background:rgba(255,255,255,.14)}
+.gr b{display:block;font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr small{display:block;font-size:13px;opacity:.75;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.nchip.hit{background:#fff;color:#1b1d1c}
+.gnone{padding:16px 12px;opacity:.8;font-size:14px}
+.ntags[hidden]{display:none}
+.nchip .tx2{background:none;border:0;color:#fff;cursor:pointer;margin-left:4px;padding:0 2px;font-size:14px;line-height:1;opacity:.8}
+.tg-in{background:none;border:0;color:#fff;font:400 12px inherit;font-family:inherit;outline:0;min-width:90px;padding:3px 4px;flex:1}
+.tg-in::placeholder{color:rgba(255,255,255,.65)}
+.editing .ntags{background:rgba(255,255,255,.1);border-radius:12px;padding:6px 8px}
+.qcard .ntags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.qcard .ntags[hidden]{display:none}
+@keyframes flashk{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}25%,70%{box-shadow:0 0 0 3px #fff}}
+.flash{animation:flashk 1.8s ease}
+@media(prefers-reduced-motion:reduce){.gs,.gbox{transition:none}.flash{animation:none;outline:3px solid #fff}}
+.goff{display:none!important}
+.fgrid[hidden],.ghd[hidden]{display:none}
+.fgrid:not(:empty){margin-bottom:4px}
+.fgrid:empty+.grp.sp{margin-top:0}
+.fold .thumb.empty{display:grid;place-items:center;color:#fff}
+.ghd{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.ghn{font-weight:700;font-size:20px;flex:1;min-width:120px}
+.gm{display:inline-flex;align-items:center;border:0;border-radius:999px;color:#fff;font:400 13px inherit;font-family:inherit;padding:7px 30px 7px 12px;cursor:pointer;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 11px center}
+.gm:hover{background-color:rgba(255,255,255,.26)}
+.ncard .gm,.qcard .gm{display:none;margin-top:10px;align-self:flex-start}
+.editing .gm{display:inline-flex}
+.act .gm{margin-right:auto}
+.mcl{margin-bottom:18px}
+.mclr{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mclr .nchip{padding:5px 11px;font-size:12.5px}
+.gmenu{position:fixed;z-index:45;width:260px;max-height:280px;overflow-y:auto;border-radius:20px;background:rgba(50,62,48,.94);backdrop-filter:blur(18px);box-shadow:0 18px 44px rgba(0,0,0,.35);padding:8px;color:#fff}
+.gme{padding:12px;font-size:14px;opacity:.8}
+.gmr{display:flex;align-items:center;gap:12px;width:100%;padding:10px;border:0;background:none;color:#fff;border-radius:12px;font:400 14px inherit;font-family:inherit;cursor:pointer;text-align:left}
+.gmr:hover,.gmr:focus-visible{background:rgba(255,255,255,.14)}
+.gmr .bx{flex:none;width:18px;height:18px;border-radius:5px;border:1.5px solid rgba(255,255,255,.7);display:grid;place-items:center}
+.gmr.on .bx{background:#fff;border-color:#fff}
+.gmr.on .bx::after{content:"";width:5px;height:9px;border:solid #1b1d1c;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+.gmr .gl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gma{margin-top:4px;border-top:1px solid rgba(255,255,255,.16);border-radius:0 0 12px 12px;padding-top:12px;opacity:.9}
+.db.ex>:not(.seg):not(#mex):not(.tgt){display:none}
+.db:not(.ex) #mex{display:none}
+.pk{margin-bottom:18px}
+.pks{display:block;width:100%;border:0;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font:400 14px inherit;font-family:inherit;padding:10px 16px;margin-bottom:8px;outline:0}
+.pks::placeholder{color:rgba(255,255,255,.65)}
+.pks:focus-visible{box-shadow:0 0 0 3px #fff}
+.pkl{max-height:220px;overflow-y:auto;border-radius:18px;background:rgba(255,255,255,.08);padding:6px}
+.pkr{display:flex;align-items:center;gap:12px;width:100%;padding:8px;border:0;background:none;color:#fff;border-radius:12px;text-align:left;cursor:pointer;font-family:inherit}
+.pkr[hidden]{display:none}
+.pkr:hover,.pkr:focus-visible{background:rgba(255,255,255,.12)}
+.pkr .bx{flex:none;width:18px;height:18px;border-radius:5px;border:1.5px solid rgba(255,255,255,.7);display:grid;place-items:center}
+.pkr.on .bx{background:#fff;border-color:#fff}
+.pkr.on .bx::after{content:"";width:5px;height:9px;border:solid #1b1d1c;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+.pkt{flex:none;width:42px;height:42px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.pkt:empty{display:none}
+.pkt img{width:100%;height:100%;object-fit:cover}
+.pkx{min-width:0;flex:1}
+.pkx b{display:block;font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pkx small{display:block;font-size:12px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pkn{padding:12px;font-size:13px;opacity:.75}
+.pkc{font-size:12px;opacity:.75;margin:8px 4px 0;min-height:1em}
+.gprev{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.gprev img{width:72px;height:54px;object-fit:cover;border-radius:12px;box-shadow:0 8px 18px rgba(0,0,0,.25)}
+.gprev .addbtn{padding:9px 14px;font-size:13px}
+.gprev[hidden]{display:none}
+.item .ttl{font-weight:700;font-size:17px;line-height:1.3;letter-spacing:-.005em}
+.item .sub{font-size:13px;opacity:.68;margin-top:3px}
+.item .lnk{font-size:12px;opacity:.6;transition:opacity .2s}
+.item .lnk:hover{opacity:1}
+.item .tags{background:none;padding:0;border-radius:0;margin-top:10px;gap:6px}
+.item .chip{background:rgba(255,255,255,.1);color:rgba(255,255,255,.72);font-size:11.5px;padding:2px 3px 2px 9px;border-radius:999px}
+.item .chip button{opacity:.55;font-size:14px}
+.item .taginput{font-size:12px;min-width:70px;padding:3px 2px;color:rgba(255,255,255,.8)}
+.item .taginput::placeholder{color:rgba(255,255,255,.38)}
+.item .gm{font-size:12px;padding:5px 26px 5px 11px;background-color:rgba(255,255,255,.07);color:rgba(255,255,255,.7);background-position:right 9px center}
+.item .gm:hover{background-color:rgba(255,255,255,.16);color:#fff}
+.item .ib{opacity:.4;transition:opacity .2s}
+.item:hover .ib,.item .ib:focus-visible{opacity:.85}
+.item .chk{border-color:rgba(255,255,255,.55)}
+body.locked .page{visibility:hidden}
+.auth{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:84px 20px 28px;overflow-y:auto;transition:opacity .45s ease,visibility 0s linear 0s}
+.auth.out{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .45s ease,visibility 0s linear .45s}
+.alang{position:fixed;top:calc(env(safe-area-inset-top,0px) + 22px);right:28px;z-index:61;gap:2px;margin:0;padding:5px;border-radius:999px;background:var(--glass);backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.alang .sb{background:none;padding:8px 16px}
+.alang .sb.on{background:var(--dark)}
+.acard{width:min(440px,100%);padding:36px 36px 32px;border-radius:30px;background:rgba(50,62,48,.72);backdrop-filter:blur(22px);box-shadow:0 26px 70px rgba(0,0,0,.32);color:#fff}
+.abrand{font-weight:700;font-size:38px;letter-spacing:-1px;display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.abrand small{font-weight:400;font-size:12px;letter-spacing:.1em;opacity:.75}
+.acard h1{font-weight:700;font-size:27px;letter-spacing:-.01em}
+.asub{opacity:.78;font-size:14px;margin:6px 0 22px}
+.atabs{margin-bottom:22px}
+.amsg{color:#ffb3aa;font-size:13.5px;margin:-6px 0 14px 4px}
+.amsg[hidden],#fName[hidden]{display:none}
+.asubmit{width:100%;padding:15px 24px;font-size:16px}
+.asubmit:disabled{opacity:.6}
+.acc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;max-width:1040px}
+.ah{font-weight:700;font-size:18px;margin-bottom:16px}
+.ahint{font-size:13px;opacity:.75;margin:-8px 0 14px}
+.arow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.msg{font-size:13px}
+.msg.ok{color:#b9f1cd}
+.msg.err{color:#ffb3aa}
+.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.bgb{border:0;background:none;color:#fff;padding:0;cursor:pointer;text-align:left;font-family:inherit}
+.bgt{display:block;aspect-ratio:16/9;border-radius:16px;overflow:hidden;box-shadow:0 8px 18px rgba(0,0,0,.25);outline:3px solid transparent;outline-offset:3px;transition:outline-color .2s}
+.bgb[aria-pressed=true] .bgt{outline-color:#fff}
+.bgb:focus-visible .bgt{outline-color:rgba(255,255,255,.7)}
+.bgt img{width:100%;height:100%;object-fit:cover;display:block}
+.bgn{display:block;font-size:12.5px;margin-top:9px;opacity:.88}
+@media(max-width:900px){.acc{grid-template-columns:1fr;gap:30px}.acard{padding:28px 24px}}
+@media(prefers-reduced-motion:reduce){.auth,.auth.out{transition:none}}
+.pastebar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px 12px 18px;border-radius:20px;background:rgba(255,255,255,.1);margin-bottom:20px;font-size:13px}
+.pastebar .addbtn{padding:8px 14px;font-size:13px}
+.mpv{display:flex;align-items:center;gap:12px;margin-bottom:18px;font-size:13px;opacity:.9}
+.mpv[hidden]{display:none}
+.mpv img{width:64px;height:48px;object-fit:cover;border-radius:10px}
+.sel{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:46px;background:rgba(255,255,255,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 20px center}
+.sel option{color:#1b1d1c}
+.bmk{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:var(--dark);color:#fff;font:500 14px inherit;font-family:inherit;text-decoration:none;cursor:grab;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.bmk::before{content:"\22EE\22EE";letter-spacing:-3px;opacity:.6}
+.msrc{display:inline-flex;gap:8px;align-items:baseline;align-self:flex-start;margin-top:12px;font-size:13px;color:#fff;opacity:.8;text-decoration:underline}
+.msrc small{font-size:12px;opacity:.7}
+.msrc[hidden]{display:none}
+.dropz{position:fixed;inset:0;z-index:55;display:grid;place-items:center;background:rgba(30,38,30,.5);backdrop-filter:blur(6px);color:#fff;text-align:center;pointer-events:none}
+.dropz[hidden]{display:none}
+.dropz>div{padding:48px 68px;border:2px dashed rgba(255,255,255,.75);border-radius:30px;background:rgba(50,62,48,.55)}
+.dropz b{display:block;font-size:21px;margin-bottom:6px}
+.dropz span{opacity:.8;font-size:14px}
+.ib2[hidden],.macts .addbtn[hidden],.addbtn[hidden]{display:none}
+.dshare{font-size:13px;opacity:.8;margin:-6px 0 16px}
+.dshare[hidden]{display:none}
+.shbanner{padding:12px 16px;border-radius:16px;background:rgba(255,255,255,.12);font-size:14px;margin-bottom:18px}
+.shbanner[hidden]{display:none}
+.shr{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.1);margin-bottom:10px}
+.shr .shtx{flex:1;min-width:140px}
+.shr b{display:block;font-weight:500;font-size:15px}
+.shr small{display:block;font-size:12.5px;opacity:.72;margin-top:2px}
+.shav{flex:none;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:13px;font-weight:500}
+.shrole{font-size:12px;letter-spacing:.06em;opacity:.75}
+.shb{padding:7px 13px;font-size:12.5px;text-decoration:none;display:inline-flex;align-items:center}
+.shb.x{padding:7px 12px;font-size:16px;line-height:1}
+.shrow{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px}
+.shrow .fi{margin-bottom:0;flex:1}
+.shrow .addbtn{padding:14px 22px}
+.shint{font-size:14px;opacity:.85;margin-bottom:18px;line-height:1.5}
+.shnote{font-size:12px;opacity:.65;margin:8px 0 14px}
+#shMsg{min-height:1.2em;margin:0 0 14px 4px}
+#shStop.confirm,.addbtn.danger.confirm{background:#b3372c;color:#fff}
+.cby{display:block;font-size:12px;opacity:.75;margin-top:3px}
+.fold p{margin:0}
+#savestat{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);z-index:35;padding:8px 16px;border-radius:999px;background:var(--glass);backdrop-filter:blur(14px);color:#fff;font-size:12.5px;box-shadow:0 8px 24px rgba(0,0,0,.2);pointer-events:none}
+#savestat[hidden]{display:none}
+#savestat.err{background:#b3372c}
+.ehint{margin:6px 0 0}
+.ehint[hidden]{display:none}
+</style></head><body class="locked">
+<div class="page">
+<div class="logo">A.</div>
+<nav><a class="on" href="#home" data-view="home">Home</a><a href="#collecties" data-view="collecties">Collecties</a><a href="#leeslijst" data-view="leeslijst">Leeslijst</a><a href="#gedeeld" data-view="gedeeld">Gedeeld met mij</a><a href="#notities" data-view="notities">Notities</a><a href="#quotes" data-view="quotes">Quotes</a><button class="navsearch" id="navsearch" type="button" aria-label="Zoeken"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></nav>
+<button class="account" aria-label="Account">AB</button>
+<div class="stat" id="stat">ITEMS: <b>0</b></div>
+<div class="brand">ARCHIVE</div>
+</div>
+<main class="view" id="view-collecties" aria-label="Collecties">
+<section class="panel">
+<div class="bar"><h2>Alle collecties <span>(<span id="count">0</span>)</span></h2>
+<button class="addbtn" id="newColl" type="button">+ Nieuwe collectie</button><button class="close" id="close" type="button" aria-label="Sluiten">&times;</button></div>
+<label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Collecties zoeken..." autocomplete="off"></label>
+<div class="grid" id="grid">
+
+
+
+
+</div>
+<p class="none" id="none" hidden></p>
+</section></main>
+<main class="view" id="view-leeslijst" aria-label="Leeslijst"><section class="panel">
+<div class="bar"><h2>Leeslijst <span>(<span id="lcount">0</span>)</span></h2>
+<button class="addbtn" id="addItem" type="button">+ Toevoegen</button><button class="addbtn alt" type="button">+ Nieuwe groep</button><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
+<p class="grp">Zonder groep</p><div class="list" id="list"></div></section></main>
+<main class="view" id="view-quotes" aria-label="Quotes"><section class="panel">
+<div class="bar"><h2>Quotes</h2>
+<button class="addbtn" id="addQ" type="button">+ Quote toevoegen</button><button class="addbtn alt" type="button">+ Nieuwe groep</button><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="qtools"><label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="qs" type="search" placeholder="Quotes zoeken..." autocomplete="off"></label>
+<button class="addbtn alt" id="editQ" type="button">Bewerken</button></div>
+<p class="grp">Losse quotes</p><div class="qgrid" id="qgrid"></div><p class="none" id="qnone" hidden></p></section></main>
+<main class="view" id="view-notities" aria-label="Notities"><section class="panel">
+<div class="bar"><h2>Notities</h2>
+<button class="addbtn" id="addN" type="button">+ Notitie toevoegen</button><button class="addbtn alt" type="button">+ Nieuwe groep</button><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="qtools"><label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ns" type="search" placeholder="Notities zoeken..." autocomplete="off"></label>
+<button class="addbtn alt" id="editN" type="button">Bewerken</button></div>
+<div class="fgrid"></div>
+<p class="grp sp">Losse notities</p><div class="ngrid" id="ngrid"></div><p class="none" id="nnone" hidden></p></section></main>
+<div class="modal" id="modal" aria-hidden="true"><div class="scrim" id="scrim"></div>
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt">
+<div class="dh"><h2 id="mt">Nieuwe collectie</h2><button class="mclose" id="mclose" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="db">
+<label class="fl" for="cn">Naam <span>*</span></label><input class="fi" id="cn" placeholder="bv. Houten gevels" autocomplete="off">
+<label class="fl" for="cd">Beschrijving</label><textarea class="fi ta" id="cd" placeholder="Korte omschrijving..."></textarea>
+<p class="fl">Cover afbeelding</p>
+<div class="seg"><button class="sb on" id="sbUrl" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>URL</button><button class="sb" id="sbUp" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Uploaden</button></div>
+<input class="fi" id="cu" placeholder="https://..." autocomplete="off" inputmode="url">
+<label class="fi pick" id="pick" for="cf" hidden><span id="pickTxt">Kies een afbeelding</span></label><input type="file" id="cf" accept="image/*" hidden><p class="fl" style="margin-top:4px">Bestaande media toevoegen <span>(optioneel)</span></p><div id="cex"></div>
+</div>
+<div class="df"><button class="addbtn alt" id="mcancel" type="button">Annuleren</button><button class="addbtn" id="mcreate" type="button" disabled>Aanmaken</button></div>
+</div></div>
+<main class="view" id="view-detail" aria-label="Collectie"><section class="panel">
+<div class="bar"><button class="back" id="back" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Alle collecties</button><span style="flex:1"></span><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="dbar"><h2 id="dt"></h2><div class="dact"><button class="addbtn alt" id="share" type="button">Delen</button><button class="ib2" id="rename" type="button" aria-label="Naam bewerken"></button><button class="ib2 danger" id="delColl" type="button" aria-label="Collectie verwijderen"></button><button class="addbtn" id="addMedia" type="button">+ Media toevoegen</button></div></div>
+<label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ms" type="search" placeholder="Media zoeken..." autocomplete="off"></label>
+<div class="mas" id="mas"></div><p class="none" id="mnone" hidden></p><input type="file" id="mf" accept="image/*" multiple hidden>
+</section></main>
+<div class="modal" id="modal2" aria-hidden="true"><div class="scrim" id="scrim2"></div>
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt2">
+<div class="dh"><h2 id="mt2">Media toevoegen</h2><button class="mclose" id="mclose2" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="db">
+<div class="pastebar"><span>Plak een afbeelding of link met Ctrl/Cmd+V, of sleep ze hierheen.</span><button class="addbtn alt" id="mpaste" type="button">Plak van klembord</button></div>
+<div class="tgt"><label class="fl" for="mcol">Collectie</label><select class="fi sel" id="mcol"></select></div>
+<div class="mpv" id="mpv" hidden><img id="mpvImg" alt=""><span id="mpvTxt"></span></div>
+<div class="seg t" id="types"><button class="sb" data-k="pdf" type="button">PDF</button><button class="sb" data-k="image" type="button">Afbeelding</button><button class="sb on" data-k="link" type="button">Weblink</button><button class="sb" data-k="social" type="button">Social</button><button class="sb" data-k="existing" type="button">Bestaand</button></div>
+<label class="fl" id="srcLbl" for="mu">URL</label>
+<input class="fi" id="mu" placeholder="https://..." autocomplete="off" inputmode="url">
+<label class="fi pick" id="mpick" for="mfile" hidden><span id="mpickTxt">Kies een bestand</span></label><input type="file" id="mfile" hidden>
+<label class="fl" for="mtitle">Titel <span>*</span></label><input class="fi" id="mtitle" placeholder="Titel van het item" autocomplete="off">
+<label class="fl" for="mdesc">Beschrijving</label><textarea class="fi ta" id="mdesc"></textarea>
+<label class="fl" for="mtaginput">Tags</label>
+<div class="tags mtags" id="mtags"><input class="taginput" id="mtaginput" placeholder="Tag toevoegen..." autocomplete="off"></div>
+<div id="mex"></div></div>
+<div class="df"><button class="addbtn alt" id="mcancel2" type="button">Annuleren</button><button class="addbtn" id="madd" type="button" disabled>Toevoegen</button></div>
+</div></div>
+<div class="modal" id="modal3" aria-hidden="true"><div class="scrim" id="scrim3"></div>
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt3">
+<div class="dh"><h2 id="mt3">Collectie bewerken</h2><button class="mclose" id="mclose3" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="db">
+<label class="fl" for="en">Naam</label><input class="fi" id="en" autocomplete="off">
+<label class="fl" for="ed">Beschrijving</label><textarea class="fi ta" id="ed"></textarea>
+<p class="fl">Cover</p>
+<div class="seg"><button class="sb on" id="sbUrl3" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>URL</button><button class="sb" id="sbUp3" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Uploaden</button></div>
+<input class="fi" id="eu" placeholder="https://..." autocomplete="off" inputmode="url">
+<label class="fi pick" id="epick" for="ef" hidden><span id="epickTxt">Kies een afbeelding</span></label><input type="file" id="ef" accept="image/*" hidden>
+<label class="fl" for="el">Locatie (lat,lng)</label><input class="fi" id="el" placeholder="50.879,4.6997" autocomplete="off">
+<p class="hint" id="elHint" hidden>Gebruik het formaat 50.879,4.6997</p>
+<label class="fl" for="ell">Locatie-label</label><input class="fi" id="ell" placeholder="bv. Leuven" autocomplete="off">
+</div>
+<div class="df"><button class="addbtn alt" id="mcancel3" type="button">Annuleren</button><button class="addbtn" id="msave3" type="button">Opslaan</button></div>
+</div></div>
+<main class="view" id="view-media" aria-label="Media"><section class="panel mp">
+<div class="mimg" id="mimg"></div>
+<div class="minfo">
+<div class="mtop"><button class="back" id="mback" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span id="mbackTxt"></span></button><span style="flex:1"></span><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
+<h2 class="mtitle" id="mtitle2"></h2>
+<p class="mloc" id="mloc"></p>
+<a class="msrc" id="msrc" target="_blank" rel="noopener" hidden><span>Open bron</span><small></small></a>
+<p class="mdescp" id="mdescp"></p>
+<p class="mlab">TAGS</p>
+<div class="tags mtg2" id="mtg2"><input class="taginput" id="mtgi" placeholder="Tag toevoegen..." aria-label="Tag toevoegen" autocomplete="off"></div>
+<div class="mcl"><p class="mlab">COLLECTIES</p><div class="mclr" id="mclr"></div></div>
+<p class="mdate" id="mdate"></p>
+<div class="macts"><button class="addbtn alt" id="mEdit" type="button"></button><button class="addbtn alt danger" id="mDel" type="button"></button></div>
+</div></section></main>
+<div class="modal" id="modal4" aria-hidden="true"><div class="scrim" id="scrim4"></div>
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt4">
+<div class="dh"><h2 id="mt4">Media bewerken</h2><button class="mclose" id="mclose4" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="db">
+<label class="fl" for="xt">Titel <span>*</span></label><input class="fi" id="xt" autocomplete="off">
+<label class="fl" for="xu" id="xuL">URL</label><input class="fi" id="xu" placeholder="https://..." autocomplete="off" inputmode="url">
+<label class="fl" for="xd">Beschrijving</label><textarea class="fi ta" id="xd"></textarea>
+<label class="fl" for="xl">Locatie (lat,lng)</label><input class="fi" id="xl" placeholder="50.879,4.6997" autocomplete="off">
+<p class="hint" id="xlHint" hidden>Gebruik het formaat 50.879,4.6997</p>
+<label class="fl" for="xll">Locatie-label</label><input class="fi" id="xll" placeholder="bv. Leuven" autocomplete="off">
+</div>
+<div class="df"><button class="addbtn alt" id="mcancel4" type="button">Annuleren</button><button class="addbtn" id="msave4" type="button">Opslaan</button></div>
+</div></div>
+<div class="gs" id="gs" aria-hidden="true"><div class="gscrim" id="gscrim"></div>
+<div class="gbox" role="dialog" aria-modal="true" aria-label="Zoeken">
+<div class="gbar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="gq" type="search" placeholder="Zoek op naam of tag..." autocomplete="off" aria-label="Zoeken"><button class="mclose" id="gclose" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="gres" id="gres"></div></div></div>
+<div class="modal" id="modal5" aria-hidden="true"><div class="scrim" id="scrim5"></div>
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt5">
+<div class="dh"><h2 id="mt5">Nieuwe groep</h2><button class="mclose" id="mclose5" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="db"><label class="fl" for="gn">Naam <span>*</span></label><input class="fi" id="gn" placeholder="bv. Voorbeeldgroep" autocomplete="off">
+<p class="fl">Cover</p>
+<div class="gprev" id="gprev" hidden><img id="gprevImg" alt=""><button class="addbtn alt" id="gprevDel" type="button">Cover verwijderen</button></div>
+<div class="seg"><button class="sb on" id="sbUrl5" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>URL</button><button class="sb" id="sbUp5" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Uploaden</button></div>
+<input class="fi" id="gu" placeholder="https://..." autocomplete="off" inputmode="url">
+<label class="fi pick" id="gpick" for="gf" hidden><span id="gpickTxt">Kies een afbeelding</span></label><input type="file" id="gf" accept="image/*" hidden>
+<p class="fl" style="margin-top:2px">Bestaande items toevoegen <span>(optioneel)</span></p><div id="gex"></div></div>
+<div class="df"><button class="addbtn alt" id="mcancel5" type="button">Annuleren</button><button class="addbtn" id="msave5" type="button" disabled>Aanmaken</button></div>
+</div></div>
+<main class="view" id="view-account" aria-label="Account"><section class="panel">
+<div class="bar"><h2>Account</h2><span style="flex:1"></span><button class="addbtn alt" id="logout" type="button">Uitloggen</button><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="acc">
+<div class="accc">
+<h3 class="ah">Profiel</h3>
+<label class="fl" for="aN">Naam</label><input class="fi" id="aN" autocomplete="name">
+<label class="fl" for="aE">E-mailadres</label><input class="fi" id="aE" type="email" autocomplete="email">
+<div class="arow"><button class="addbtn" id="aSave" type="button">Opslaan</button><span class="msg" id="aMsg" role="status"></span></div>
+<h3 class="ah" style="margin-top:30px">Wachtwoord wijzigen</h3>
+<label class="fl" for="aP0">Huidig wachtwoord</label><input class="fi" id="aP0" type="password" autocomplete="current-password">
+<label class="fl" for="aP1">Nieuw wachtwoord</label><input class="fi" id="aP1" type="password" autocomplete="new-password">
+<label class="fl" for="aP2">Bevestig nieuw wachtwoord</label><input class="fi" id="aP2" type="password" autocomplete="new-password">
+<div class="arow"><button class="addbtn" id="aPw" type="button">Wachtwoord wijzigen</button><span class="msg" id="aPwMsg" role="status"></span></div>
+</div>
+<div class="accc">
+<h3 class="ah">Achtergrond</h3><p class="ahint">Kies de illustratie die de pagina vult.</p>
+<div class="bgs" id="bgs"></div>
+<h3 class="ah" style="margin-top:30px">Taal</h3>
+<div class="seg" id="langAcc"><button class="sb" data-l="nl" type="button">Nederlands</button><button class="sb" data-l="en" type="button">English</button></div>
+<h3 class="ah" style="margin-top:30px">Browserknop</h3>
+<p class="ahint">Sleep de knop naar je bladwijzerbalk. Klik erop op een pagina van Instagram, Pinterest of een andere site, ga terug naar Archive en plak met Ctrl/Cmd+V in "Media toevoegen".</p>
+<div class="arow"><a class="bmk" id="bmk" href="#" draggable="true">Bewaar in Archive</a><button class="addbtn alt" id="bmCopy" type="button">Kopieer bladwijzercode</button><span class="msg ok" id="bmMsg" role="status"></span></div>
+<h3 class="ah" style="margin-top:30px">Voorbeeldgegevens</h3>
+<p class="ahint">Laad voorbeeldcollecties, notities en quotes om de app uit te proberen. Dit kan alleen als je archief nog leeg is.</p>
+<div class="arow"><button class="addbtn alt" id="seedBtn" type="button">Voorbeeldgegevens toevoegen</button><span class="msg" id="seedMsg" role="status"></span></div>
+<h3 class="ah" style="margin-top:30px">Account verwijderen</h3>
+<p class="ahint">Verwijdert je account, je collecties en alle afbeeldingen definitief.</p>
+<label class="fl" for="aDelPw">Wachtwoord</label><input class="fi" id="aDelPw" type="password" autocomplete="current-password">
+<div class="arow"><button class="addbtn alt danger" id="aDel" type="button">Account verwijderen</button><span class="msg" id="aDelMsg" role="status"></span></div>
+</div></div></section></main>
+<div class="auth" id="auth" role="dialog" aria-modal="true" aria-labelledby="authT">
+<div class="seg alang" id="langAuth"><button class="sb" data-l="nl" type="button">Nederlands</button><button class="sb" data-l="en" type="button">English</button></div>
+<div class="acard">
+<div class="abrand">A.<small>ARCHIVE</small></div>
+<h1 id="authT">Welkom terug</h1><p class="asub" id="authS">Log in om verder te gaan.</p>
+<div class="seg atabs"><button class="sb on" id="tabLogin" type="button">Inloggen</button><button class="sb" id="tabReg" type="button">Registreren</button></div>
+<div id="fName" hidden><label class="fl" for="rName">Naam</label><input class="fi" id="rName" autocomplete="name"></div>
+<label class="fl" for="rEmail">E-mailadres</label><input class="fi" id="rEmail" type="email" autocomplete="email">
+<label class="fl" for="rPass">Wachtwoord</label><input class="fi" id="rPass" type="password" autocomplete="current-password">
+<p class="amsg" id="aerr" role="alert" hidden></p>
+<button class="addbtn asubmit" id="aGo" type="button">Inloggen</button>
+</div></div>
+<div class="modal" id="modal6" aria-hidden="true"><div class="scrim" id="scrim6"></div>
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt6">
+<div class="dh"><h2 id="mt6">Nieuwe notitie</h2><button class="mclose" id="mclose6" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="db">
+<label class="fl" for="nT">Titel <span>*</span></label><input class="fi" id="nT" placeholder="bv. Materiaalonderzoek baksteen" autocomplete="off">
+<label class="fl" for="nC">Inhoud</label><textarea class="fi ta" id="nC" placeholder="Schrijf je notitie..."></textarea>
+<label class="fl" for="nTag">Tags</label>
+<div class="tags mtags" id="nTags"><input class="taginput" id="nTag" placeholder="Tag toevoegen..." autocomplete="off"></div>
+</div>
+<div class="df"><button class="addbtn alt" id="mcancel6" type="button">Annuleren</button><button class="addbtn" id="madd6" type="button" disabled>Toevoegen</button></div>
+</div></div>
+<div class="modal" id="modal7" aria-hidden="true"><div class="scrim" id="scrim7"></div>
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt7">
+<div class="dh"><h2 id="mt7">Nieuwe quote</h2><button class="mclose" id="mclose7" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="db">
+<label class="fl" for="qT">Quote <span>*</span></label><textarea class="fi ta" id="qT" placeholder="Plak of typ de quote..."></textarea>
+<label class="fl" for="qA">Auteur</label><input class="fi" id="qA" placeholder="bv. Peter Zumthor" autocomplete="off">
+<label class="fl" for="qB">Bron</label><input class="fi" id="qB" placeholder="bv. Thinking Architecture" autocomplete="off">
+<label class="fl" for="qTag">Tags</label>
+<div class="tags mtags" id="qTags"><input class="taginput" id="qTag" placeholder="Tag toevoegen..." autocomplete="off"></div>
+</div>
+<div class="df"><button class="addbtn alt" id="mcancel7" type="button">Annuleren</button><button class="addbtn" id="madd7" type="button" disabled>Toevoegen</button></div>
+</div></div>
+<main class="view" id="view-gedeeld" aria-label="Gedeeld met mij"><section class="panel">
+<div class="bar"><h2>Gedeeld met mij</h2><span style="flex:1"></span><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
+<p class="shbanner" id="shBanner" role="status" hidden></p>
+<div id="shInv"></div>
+<p class="grp">Gedeeld door anderen</p><div class="fgrid" id="shOthers"></div>
+<p class="grp sp">Door mij gedeeld</p><div class="fgrid" id="shMine"></div>
+</section></main>
+<div class="modal" id="modal8" aria-hidden="true"><div class="scrim" id="scrim8"></div>
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt8">
+<div class="dh"><h2 id="mt8">Collectie delen</h2><button class="mclose" id="mclose8" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="db">
+<p class="shint">Nodig mensen uit om samen media aan deze collectie toe te voegen. Tags worden mee gedeeld.</p>
+<div id="shInvBox"><label class="fl" for="shEmail">E-mailadres</label>
+<div class="shrow"><input class="fi" id="shEmail" type="email" placeholder="naam@voorbeeld.be" autocomplete="off"><button class="addbtn" id="shGo" type="button">Uitnodigen</button></div></div>
+<p class="msg" id="shMsg" role="status"></p>
+<p class="fl">Personen met toegang</p>
+<div class="shl" id="shList"></div>
+<p class="shnote">Uitnodigingslinks werken in deze demo alleen in deze browser.</p>
+</div>
+<div class="df"><button class="addbtn alt danger" id="shStop" type="button">Stop met delen</button><button class="addbtn alt" id="shClose" type="button">Sluiten</button></div>
+</div></div>
+<script>
+(function(){
+var views={collecties:document.getElementById('view-collecties'),leeslijst:document.getElementById('view-leeslijst'),quotes:document.getElementById('view-quotes'),notities:document.getElementById('view-notities'),detail:document.getElementById('view-detail'),media:document.getElementById('view-media'),account:document.getElementById('view-account'),gedeeld:document.getElementById('view-gedeeld')};
+var links=document.querySelectorAll('nav a');
+function show(n){Object.keys(views).forEach(function(k){views[k].classList.toggle('open',k===n)});
+links.forEach(function(a){a.classList.toggle('on',a.dataset.view===n||((n==='detail'||n==='media')&&a.dataset.view==='collecties'))})}
+links.forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var n=a.dataset.view;if(!n)return;
+if(views[n]&&views[n].classList.contains('open'))n='home';show(n)})});
+document.querySelectorAll('.close').forEach(function(b){b.addEventListener('click',function(){show('home')})});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')show('home')});
+/* collecties */
+var q=document.getElementById('q'),cards=[].slice.call(document.querySelectorAll('.card')),cnt=document.getElementById('count'),none=document.getElementById('none');
+q.addEventListener('input',function(){var s=q.value.trim().toLowerCase(),n=0;
+cards.forEach(function(c){var ok=c.dataset.n.toLowerCase().indexOf(s)>-1;c.hidden=!ok;if(ok)n++});
+cnt.textContent=n;none.hidden=n>0;none.textContent=n?'':'Geen collecties gevonden voor \u201c'+q.value.trim()+'\u201d.'});
+cards.forEach(function(a){a.addEventListener('click',function(e){e.preventDefault()})});
+/* leeslijst */
+var data=[];
+var list=document.getElementById('list'),lc=document.getElementById('lcount');
+var X='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+var PE='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/></svg>';
+var TR='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M9 7V4h6v3"/></svg>';
+function chip(s){var c=document.createElement('span');c.className='chip';c.appendChild(document.createTextNode(s));
+var b=document.createElement('button');b.type='button';b.className='tx';b.setAttribute('aria-label','Tag verwijderen');b.textContent='\u00d7';c.appendChild(b);return c}
+function item(d){var a=document.createElement('article');a.className='item'+(d[3]?' done':'');
+a.innerHTML='<button class="chk" type="button" aria-label="Afvinken"></button><div class="main"><h3 class="ttl"></h3>'+(d[1]?'<p class="sub"></p>':'')+'<a class="lnk" href="#">'+X+'<span>Open link</span></a><div class="tags"><input class="taginput" placeholder="Tag toevoegen..." aria-label="Tag toevoegen"></div></div><div class="act"><button class="gm" type="button" aria-label="Groepen"></button><button class="ib edit" type="button" aria-label="Bewerken">'+PE+'</button><button class="ib del" type="button" aria-label="Verwijderen">'+TR+'</button></div>';
+a.querySelector('.ttl').textContent=d[0];if(d[1])a.querySelector('.sub').textContent=d[1];
+var inp=a.querySelector('.taginput');d[2].forEach(function(s){inp.parentNode.insertBefore(chip(s),inp)});a._g=[];gmUpdate(a);return a}
+function count(){lc.textContent=list.children.length}
+data.forEach(function(d){list.appendChild(item(d))});
+list.addEventListener('click',function(e){var el=e.target.closest('button,a');if(!el)return;var it=el.closest('.item');
+if(el.classList.contains('lnk'))e.preventDefault();
+if(el.classList.contains('chk'))it.classList.toggle('done');
+if(el.classList.contains('del')){it.remove();count()}
+if(el.classList.contains('tx'))el.parentNode.remove();
+if(el.classList.contains('edit')){var t=it.querySelector('.ttl');t.contentEditable='true';t.focus()}});
+list.addEventListener('focusout',function(e){if(e.target.classList.contains('ttl'))e.target.contentEditable='false'});
+list.addEventListener('keydown',function(e){var t=e.target;
+if(t.classList.contains('taginput')&&e.key==='Enter'&&t.value.trim()){t.parentNode.insertBefore(chip(t.value.trim()),t);t.value='';e.preventDefault()}
+if(t.classList.contains('ttl')&&e.key==='Enter'){e.preventDefault();t.blur()}});
+document.getElementById('addItem').addEventListener('click',function(){var a=item(['Nieuw item','',[],0]);list.insertBefore(a,list.firstChild);count();inherit(a);var t=a.querySelector('.ttl');t.contentEditable='true';t.focus();document.execCommand&&document.execCommand('selectAll')});
+/* quotes */
+var qv=document.getElementById('view-quotes'),qg=document.getElementById('qgrid'),qs=document.getElementById('qs'),qn=document.getElementById('qnone'),eb=document.getElementById('editQ');
+var quotes=[];
+function editable(a,on){a.querySelectorAll('.qt,.au,.wk').forEach(function(e){e.contentEditable=on?'true':'false'})}
+function qcard(d){var a=document.createElement('article');a.className='qcard';
+a.innerHTML='<blockquote class="qt"></blockquote><p class="src"><span class="au"></span> \u2014 <em class="wk"></em></p><div class="ntags"></div><button class="gm" type="button" aria-label="Groepen"></button><button class="ib qdel" type="button" aria-label="Quote verwijderen">'+TR+'</button>';
+a.querySelector('.qt').textContent='"'+d[0]+'"';a.querySelector('.au').textContent=d[1];a.querySelector('.wk').textContent=d[2];
+a._t=(d[3]||[]).slice();renderTags(a,qv.classList.contains('editing'));a._g=[];gmUpdate(a);editable(a,qv.classList.contains('editing'));return a}
+quotes.forEach(function(d){qg.appendChild(qcard(d))});
+function setEdit(on){qv.classList.toggle('editing',on);eb.textContent=on?'Klaar':'Bewerken';qg.querySelectorAll('.qcard').forEach(function(a){editable(a,on);renderTags(a,on)})}
+eb.addEventListener('click',function(){setEdit(!qv.classList.contains('editing'))});
+qg.addEventListener('click',function(e){var b=e.target.closest('.qdel');if(b){b.parentNode.remove();qs.dispatchEvent(new Event('input'))}});
+document.getElementById('addQ').addEventListener('click',openQuote);
+qs.addEventListener('input',function(){var s=qs.value.trim().toLowerCase(),n=0,all=qg.querySelectorAll('.qcard');
+all.forEach(function(c){var ok=c.textContent.toLowerCase().indexOf(s)>-1;c.hidden=!ok;if(ok)n++});
+qn.hidden=n>0;qn.textContent=n?'':(all.length?'Geen quotes gevonden voor \u201c'+qs.value.trim()+'\u201d.':'Nog geen quotes. Voeg er een toe.')});
+/* notities */
+var nv=document.getElementById('view-notities'),ng=document.getElementById('ngrid'),nsr=document.getElementById('ns'),nn=document.getElementById('nnone'),nb=document.getElementById('editN');
+var notes=[];
+function ned(a,on){a.querySelectorAll('.nt,.nx').forEach(function(e){e.contentEditable=on?'true':'false'})}
+function ncard(d){var a=document.createElement('article');a.className='ncard';
+a.innerHTML='<h3 class="nt"></h3><p class="nx"></p><div class="ntags"></div><button class="gm" type="button" aria-label="Groepen"></button><p class="nd"></p><button class="ib qdel" type="button" aria-label="Notitie verwijderen">'+TR+'</button>';
+a.querySelector('.nt').textContent=d[0];a.querySelector('.nx').textContent=d[1];a.querySelector('.nd').textContent=d[3];
+a._t=d[2].slice();renderTags(a,nv.classList.contains('editing'));a._g=[];gmUpdate(a);
+ned(a,nv.classList.contains('editing'));return a}
+notes.forEach(function(d){ng.appendChild(ncard(d))});
+function nEdit(on){nv.classList.toggle('editing',on);nb.textContent=on?'Klaar':'Bewerken';ng.querySelectorAll('.ncard').forEach(function(a){ned(a,on);renderTags(a,on)})}
+nb.addEventListener('click',function(){nEdit(!nv.classList.contains('editing'))});
+ng.addEventListener('click',function(e){var b=e.target.closest('.qdel');if(b){b.parentNode.remove();nsr.dispatchEvent(new Event('input'))}});
+document.getElementById('addN').addEventListener('click',openNote);
+nsr.addEventListener('input',function(){var s=nsr.value.trim().toLowerCase(),n=0,all=nv.querySelectorAll('.fold,.ncard');
+all.forEach(function(c){var ok=c.textContent.toLowerCase().indexOf(s)>-1;c.hidden=!ok;if(ok)n++});
+nn.hidden=n>0;nn.textContent=n?'':'Geen notities gevonden voor \u201c'+nsr.value.trim()+'\u201d.'});
+/* nieuwe collectie */
+var md=document.getElementById('modal'),cn=document.getElementById('cn'),cd=document.getElementById('cd'),cu=document.getElementById('cu'),cf=document.getElementById('cf'),pick=document.getElementById('pick'),pickTxt=document.getElementById('pickTxt'),mc=document.getElementById('mcreate'),sbU=document.getElementById('sbUrl'),sbP=document.getElementById('sbUp'),opener=null,mode='url',upData='';
+function mode_(m){mode=m;sbU.classList.toggle('on',m==='url');sbP.classList.toggle('on',m==='up');cu.hidden=m!=='url';pick.hidden=m!=='up'}
+function ready(){mc.disabled=!cn.value.trim()}
+function openM(){opener=document.activeElement;cn.value=cd.value=cu.value='';cf.value='';upData='';pickTxt.textContent='Kies een afbeelding';mode_('url');ready();buildCex();md.classList.add('open');md.setAttribute('aria-hidden','false');setTimeout(function(){cn.focus()},60)}
+function closeM(){md.classList.remove('open');md.setAttribute('aria-hidden','true');if(opener&&opener.focus)opener.focus()}
+document.getElementById('newColl').addEventListener('click',openM);
+document.getElementById('mclose').addEventListener('click',closeM);
+document.getElementById('mcancel').addEventListener('click',closeM);
+document.getElementById('scrim').addEventListener('click',closeM);
+document.addEventListener('keydown',function(e){if(md.classList.contains('open')){if(e.key==='Escape'){e.stopPropagation();closeM()}else if(e.key==='Enter'&&e.target===cn&&!mc.disabled){mc.click()}}},true);
+cn.addEventListener('input',ready);
+sbU.addEventListener('click',function(){mode_('url')});sbP.addEventListener('click',function(){mode_('up')});
+cf.addEventListener('change',function(){var f=cf.files[0];if(!f)return;pickTxt.textContent=f.name;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,800/im.width),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);upData=c.toDataURL('image/jpeg',.88)};im.src=r.result};r.readAsDataURL(f)});
+mc.addEventListener('click',function(){var name=cn.value.trim();if(!name)return;
+var src=mode==='up'?upData:cu.value.trim();
+var a=document.createElement('a');a.className='card';a.href='#';a.dataset.n=name;if(cd.value.trim())a.title=cd.value.trim();
+var th=document.createElement('div');th.className='thumb empty';
+if(src){var im=document.createElement('img');im.alt='';im.onerror=function(){im.remove()};im.onload=function(){th.classList.remove('empty')};im.src=src;th.appendChild(im)}
+var h=document.createElement('h3');h.textContent=name;var pp=document.createElement('p');pp.textContent='0 ITEMS';
+a.appendChild(th);a.appendChild(h);a.appendChild(pp);a.addEventListener('click',function(e){e.preventDefault()});
+document.getElementById('grid').appendChild(a);cards.push(a);a._m=cexP?cexP.selected():[];a._b=0;setCnt(a);if(!src&&a._m.length){var first=a._m.filter(function(x){return x.src})[0];if(first){var ci=document.createElement('img');ci.alt='';ci.src=first.src;th.appendChild(ci);th.classList.remove('empty')}}if(curM)fillCols();q.value='';q.dispatchEvent(new Event('input'));closeM();a.scrollIntoView({block:'nearest'})});
+/* collectie detail */
+var mediaByName={};
+var mas=document.getElementById('mas'),dt=document.getElementById('dt'),ms=document.getElementById('ms'),mn=document.getElementById('mnone'),mf=document.getElementById('mf'),dc=document.getElementById('delColl'),cur=null,figs=[];
+var SH='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>';
+var shareB=document.getElementById('share');shareB.innerHTML=SH+'<span>Delen</span>';
+document.getElementById('rename').innerHTML=PE;dc.innerHTML=TR;
+function layout(){var w=mas.clientWidth||600,cw=180,g=16,n=Math.max(1,Math.floor((w+g)/(cw+g))),cols=[],hs=[];mas.innerHTML='';
+for(var i=0;i<n;i++){var c=document.createElement('div');c.className='mcol';mas.appendChild(c);cols.push(c);hs.push(0)}
+figs.forEach(function(f){if(f.hidden)return;var k=hs.indexOf(Math.min.apply(null,hs));cols[k].appendChild(f);hs[k]+=f._r*cw+44})}
+var KL={pdf:'PDF',image:'Afbeelding',link:'Weblink',social:'Social'};
+function host(u){try{return new URL(u).hostname.replace(/^www\./,'')}catch(x){return u}}
+function tileFor(m){var v=document.createElement(m.u?'a':'div');v.className='tile';if(m.u){v.href=m.u;v.target='_blank';v.rel='noopener'}v.innerHTML='<span class="kd"></span><span class="ku"></span>';v.querySelector('.kd').textContent=KL[m.k]||'Weblink';v.querySelector('.ku').textContent=m.u?host(m.u):(m.f||'');return v}
+function fig(m,i){var f=document.createElement('figure');f.className='mi';f._r=m.r;f._i=i;f.tabIndex=0;f.setAttribute('role','button');f.dataset.s=[m.t,m.d,(m.tags||[]).join(' ')].join(' ').toLowerCase();if(m.d)f.title=m.d;var v;
+if(m.src){v=document.createElement('img');v.alt='';v.src=m.src;v.style.aspectRatio='1/'+m.r}
+else if(m.img){v=document.createElement('img');v.alt='';v.style.aspectRatio='1/'+m.r;v.onerror=function(){var tt=tileFor(m);if(v.parentNode)v.parentNode.replaceChild(tt,v);v=tt};v.src=m.img}
+else{v=tileFor(m)}
+var cap=document.createElement('figcaption');cap.innerHTML='<b></b><span></span>';cap.querySelector('b').textContent=(i+1)+'.';cap.querySelector('span').textContent=m.t;
+f.appendChild(v);f.appendChild(cap);
+
+return f}
+function render(){if(cur._sid)syncShared(cur);figs=cur._m.map(fig);ms.value='';mn.hidden=!!figs.length;mn.textContent=figs.length?'':'Nog geen media in deze collectie.';layout()}
+function openDetail(c){cur=c;if(!c._m)c._m=(mediaByName[c.dataset.n]||[]).slice();dt.textContent=c.dataset.n;if(c._sid&&pullShared(c)===false)return;upSub();applyPerms();show('detail');render()}
+document.getElementById('grid').addEventListener('click',function(e){var c=e.target.closest('.card');if(c){e.preventDefault();openDetail(c)}});
+document.getElementById('back').addEventListener('click',function(){show('collecties')});
+window.addEventListener('resize',function(){if(views.detail.classList.contains('open'))layout()});
+ms.addEventListener('input',function(){var s=ms.value.trim().toLowerCase(),n=0;figs.forEach(function(f){var ok=(f.dataset.s||f.textContent.toLowerCase()).indexOf(s)>-1;f.hidden=!ok;if(ok)n++});
+mn.hidden=n>0;mn.textContent=n?'':(figs.length?'Geen media gevonden voor \u201c'+ms.value.trim()+'\u201d.':'Nog geen media in deze collectie.');layout()});
+shareB.addEventListener('click',function(){openShare()});
+document.getElementById('rename').addEventListener('click',openM3);
+function endRename(){if(dt.contentEditable!=='true')return;dt.contentEditable='false';var v=dt.textContent.trim();if(!v){dt.textContent=cur.dataset.n;return}
+cur.dataset.n=v;cur.querySelector('h3').textContent=v}
+dt.addEventListener('blur',endRename);dt.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();dt.blur()}});
+var dtm;dc.addEventListener('click',function(){if(!dc.classList.contains('confirm')){dc.classList.add('confirm');dc.textContent='Zeker verwijderen?';clearTimeout(dtm);dtm=setTimeout(function(){dc.classList.remove('confirm');dc.innerHTML=TR},3000);return}
+clearTimeout(dtm);dc.classList.remove('confirm');dc.innerHTML=TR;if(cur._sid)dropShared(cur);cards.splice(cards.indexOf(cur),1);cur.remove();q.value='';q.dispatchEvent(new Event('input'));show('collecties')});
+document.getElementById('addMedia').addEventListener('click',openM2);
+mf.addEventListener('change',function(){var fl=[].slice.call(mf.files),left=fl.length;if(!left)return;
+fl.forEach(function(f){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,700/im.width),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+cur._m.push({t:f.name.replace(/\.[^.]+$/,''),r:+(c.height/c.width).toFixed(4),src:c.toDataURL('image/jpeg',.86)});
+if(--left===0){setCnt(cur);render()}};im.src=r.result};r.readAsDataURL(f)});mf.value=''});
+/* media toevoegen */
+var m2=document.getElementById('modal2'),mu=document.getElementById('mu'),mpick=document.getElementById('mpick'),mpt=document.getElementById('mpickTxt'),mfile=document.getElementById('mfile'),mtitle=document.getElementById('mtitle'),mdesc=document.getElementById('mdesc'),mtags=document.getElementById('mtags'),mti=document.getElementById('mtaginput'),madd=document.getElementById('madd'),slb=document.getElementById('srcLbl'),tbtn=document.querySelectorAll('#types .sb'),kind='link',fdata=null,fname='',op2=null;
+function setKind(k){kind=k;document.querySelector('#modal2 .db').classList.toggle('ex',k==='existing');if(k==='existing')buildExisting();tbtn.forEach(function(b){b.classList.toggle('on',b.dataset.k===k)});var u=k==='link'||k==='social';mu.hidden=!u;mpick.hidden=u;
+slb.textContent=u?'URL':(k==='pdf'?'PDF-bestand':'Afbeelding');slb.htmlFor=u?'mu':'mfile';mfile.accept=k==='pdf'?'application/pdf':'image/*';mfile.value='';fdata=null;fname='';mpt.textContent=k==='pdf'?'Kies een PDF':'Kies een afbeelding'}
+function rdy(){madd.disabled=kind==='existing'?!(exP&&exP.count()):!mtitle.value.trim()}
+function openM2(){op2=document.activeElement;if(!cur&&cards.length)cur=cards[0];fillCols2();pendImg='';pendData='';pendR=0;pvHide();document.getElementById('mt2').textContent='Media toevoegen';mu.value=mtitle.value=mdesc.value=mti.value='';
+mtags.querySelectorAll('.chip').forEach(function(c){c.remove()});setKind('link');rdy();m2.classList.add('open');m2.setAttribute('aria-hidden','false');setTimeout(function(){(mu.hidden?mtitle:mu).focus()},60)}
+function closeM2(){m2.classList.remove('open');m2.setAttribute('aria-hidden','true');if(op2&&op2.focus)op2.focus()}
+document.getElementById('mclose2').addEventListener('click',closeM2);document.getElementById('mcancel2').addEventListener('click',closeM2);document.getElementById('scrim2').addEventListener('click',closeM2);
+document.addEventListener('keydown',function(e){if(!m2.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeM2()}else if(e.key==='Enter'&&e.target===mtitle&&!madd.disabled){madd.click()}},true);
+tbtn.forEach(function(b){b.addEventListener('click',function(){setKind(b.dataset.k)})});
+mtitle.addEventListener('input',rdy);
+mtags.addEventListener('click',function(e){if(e.target.classList.contains('tx'))e.target.parentNode.remove();else mti.focus()});
+mti.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===',')&&mti.value.trim()){e.preventDefault();mtags.insertBefore(chip(mti.value.trim()),mti);mti.value=''}});
+mfile.addEventListener('change',function(){var f=mfile.files[0];if(!f)return;fname=f.name;mpt.textContent=f.name;if(!mtitle.value.trim()){mtitle.value=f.name.replace(/\.[^.]+$/,'');rdy()}
+if(kind==='image'){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,700/im.width),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);fdata={src:c.toDataURL('image/jpeg',.86),r:+(c.height/c.width).toFixed(4)}};im.src=r.result};r.readAsDataURL(f)}});
+madd.addEventListener('click',function(){if(kind==='existing'){addExisting();return}var title=mtitle.value.trim();if(!title)return;
+var tg=[].slice.call(mtags.querySelectorAll('.chip')).map(function(c){return c.firstChild.textContent});if(mti.value.trim())tg.push(mti.value.trim());
+var u=mu.value.trim();if((kind==='link'||kind==='social')&&u&&!/^https?:\/\//i.test(u))u='https://'+u;
+var nd=new Date(),it={t:title,k:kind,d:mdesc.value.trim(),tags:tg,r:.75,at:nd.getDate()+'-'+(nd.getMonth()+1)+'-'+nd.getFullYear()};
+if(kind==='link'||kind==='social')it.u=u;else{it.f=fname;if(kind==='image'&&fdata){it.src=fdata.src;it.r=fdata.r}}
+if(pendData&&(kind==='link'||kind==='social')){it.src=pendData;it.r=pendR||.75}else if(pendImg&&(kind==='link'||kind==='social'))it.img=pendImg;var T=tgt();ens(T).push(it);setCnt(T);if(T===cur)render();else if(T._sid)syncShared(T);closeM2()});
+/* collectie bewerken */
+var m3=document.getElementById('modal3'),en=document.getElementById('en'),ed=document.getElementById('ed'),eu=document.getElementById('eu'),ef=document.getElementById('ef'),epick=document.getElementById('epick'),ept=document.getElementById('epickTxt'),el=document.getElementById('el'),ell=document.getElementById('ell'),elh=document.getElementById('elHint'),sv=document.getElementById('msave3'),s3u=document.getElementById('sbUrl3'),s3p=document.getElementById('sbUp3'),emode='url',edata='',op3=null;
+var ds=document.createElement('p');ds.className='dsub';ds.hidden=true;ms.parentNode.parentNode.insertBefore(ds,ms.parentNode);
+function upSub(){var a=[];if(cur._d)a.push(cur._d);if(cur._lb)a.push('\u{1F4CD} '+cur._lb);else if(cur._ll)a.push('\u{1F4CD} '+cur._ll);ds.textContent=a.join('  \u00b7  ');ds.hidden=!a.length}
+var LL=/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/;
+function emode_(m){emode=m;s3u.classList.toggle('on',m==='url');s3p.classList.toggle('on',m==='up');eu.hidden=m!=='url';epick.hidden=m!=='up'}
+function eok(){var bad=el.value.trim()!==''&&!LL.test(el.value);el.classList.toggle('err',bad);elh.hidden=!bad;sv.disabled=bad||!en.value.trim()}
+function openM3(){op3=document.activeElement;en.value=cur.dataset.n;ed.value=cur._d||'';eu.value=cur._cu||'';ef.value='';edata='';ept.textContent='Kies een afbeelding';el.value=cur._ll||'';ell.value=cur._lb||'';emode_('url');eok();m3.classList.add('open');m3.setAttribute('aria-hidden','false');setTimeout(function(){en.focus()},60)}
+function closeM3(){m3.classList.remove('open');m3.setAttribute('aria-hidden','true');if(op3&&op3.focus)op3.focus()}
+document.getElementById('mclose3').addEventListener('click',closeM3);document.getElementById('mcancel3').addEventListener('click',closeM3);document.getElementById('scrim3').addEventListener('click',closeM3);
+document.addEventListener('keydown',function(e){if(!m3.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeM3()}else if(e.key==='Enter'&&e.target===en&&!sv.disabled){sv.click()}},true);
+s3u.addEventListener('click',function(){emode_('url')});s3p.addEventListener('click',function(){emode_('up')});
+en.addEventListener('input',eok);el.addEventListener('input',eok);
+ef.addEventListener('change',function(){var f=ef.files[0];if(!f)return;ept.textContent=f.name;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,800/im.width),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);edata=c.toDataURL('image/jpeg',.88)};im.src=r.result};r.readAsDataURL(f)});
+sv.addEventListener('click',function(){var n=en.value.trim();if(!n)return;
+cur.dataset.n=n;cur.querySelector('h3').textContent=n;dt.textContent=n;cur._d=ed.value.trim();cur.title=cur._d;cur._ll=el.value.trim().replace(/\s+/g,'');cur._lb=ell.value.trim();
+var src=emode==='up'?edata:eu.value.trim();
+if(src){var th=cur.querySelector('.thumb'),im=document.createElement('img');im.alt='';im.onload=function(){var o=th.querySelector('img');if(o)o.remove();th.appendChild(im);th.classList.remove('empty');if(emode==='url'&&src.indexOf('data:')!==0)cur._cu=src};im.src=src}
+if(cur._sid&&cur._own)syncShared(cur);upSub();q.value='';q.dispatchEvent(new Event('input'));closeM3()});
+/* media detail */
+
+var curM=null,curI=-1,mimg=document.getElementById('mimg'),mloc=document.getElementById('mloc'),mdp=document.getElementById('mdescp'),mtg2=document.getElementById('mtg2'),mtgi=document.getElementById('mtgi'),mdl=document.getElementById('mDel'),mdt;
+var PIN='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 0 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+document.getElementById('mEdit').innerHTML=PE+'<span>Bewerken</span>';mdl.innerHTML=TR+'<span>Verwijderen</span>';
+function fillMedia(){var m=curM;document.getElementById('mbackTxt').textContent=cur.dataset.n.toUpperCase();document.getElementById('mtitle2').textContent=m.t;
+mloc.innerHTML=PIN+'<span></span>';mloc.querySelector('span').textContent=m.lb||m.ll||'Geen locatie';
+var sl=document.getElementById('msrc');if(m.u&&m.src){sl.href=m.u;sl.querySelector('small').textContent=host(m.u);sl.hidden=false}else sl.hidden=true;mdp.textContent=m.d||'';mdp.classList.toggle('empty',!m.d);if(!m.d)mdp.textContent='Geen beschrijving';
+mimg.innerHTML='';if(m.src){var im=document.createElement('img');im.alt=m.t;im.src=m.src;mimg.appendChild(im)}
+else if(m.img){var im2=document.createElement('img');im2.alt=m.t;im2.onerror=function(){var tt=tileFor(m);if(im2.parentNode)im2.parentNode.replaceChild(tt,im2)};im2.src=m.img;mimg.appendChild(im2)}
+else{var v=document.createElement(m.u?'a':'div');v.className='tile';if(m.u){v.href=m.u;v.target='_blank';v.rel='noopener'}v.innerHTML='<span class="kd"></span><span class="ku"></span>';v.querySelector('.kd').textContent=KL[m.k]||'Weblink';v.querySelector('.ku').textContent=m.u?host(m.u):(m.f||'');mimg.appendChild(v)}
+mtg2.querySelectorAll('.chip').forEach(function(c){c.remove()});(m.tags||[]).forEach(function(s){mtg2.insertBefore(chip(s),mtgi)});
+var d=document.getElementById('mdate');d.textContent=m.at?'Toegevoegd: '+m.at+(m.by&&cur._sid?' \u00b7 door '+m.by.name:''):'';d.hidden=!m.at;var land=!!(m.src&&m.r<1);mpan.classList.toggle('land',land);minf.classList.toggle('land',land);fillCols();applyMPerms();fitImg()}
+function openMedia(i){curI=i;curM=cur._m[i];fillMedia();mdl.classList.remove('confirm');mdl.innerHTML=TR+'<span>Verwijderen</span>';show('media');fitImg();requestAnimationFrame(fitImg)}
+mas.addEventListener('click',function(e){var f=e.target.closest('.mi');if(f){e.preventDefault();openMedia(f._i)}});
+mas.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.classList.contains('mi'))openMedia(e.target._i)});
+document.getElementById('mback').addEventListener('click',function(){show('detail')});
+function syncTags(){curM.tags=[].slice.call(mtg2.querySelectorAll('.chip')).map(function(c){return c.firstChild.textContent});if(figs[curI])figs[curI].dataset.s=[curM.t,curM.d,curM.tags.join(' ')].join(' ').toLowerCase();if(cur&&cur._sid)syncShared(cur)}
+mtg2.addEventListener('click',function(e){if(e.target.classList.contains('tx')){e.target.parentNode.remove();syncTags()}else mtgi.focus()});
+mtgi.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===',')&&mtgi.value.trim()){e.preventDefault();mtg2.insertBefore(chip(mtgi.value.trim()),mtgi);mtgi.value='';syncTags()}});
+mdl.addEventListener('click',function(){if(!mdl.classList.contains('confirm')){mdl.classList.add('confirm');mdl.querySelector('span').textContent='Zeker verwijderen?';clearTimeout(mdt);mdt=setTimeout(function(){mdl.classList.remove('confirm');mdl.querySelector('span').textContent='Verwijderen'},3000);return}
+clearTimeout(mdt);cur._m.splice(curI,1);setCnt(cur);render();show('detail')});
+/* media bewerken */
+var m4=document.getElementById('modal4'),xt=document.getElementById('xt'),xu=document.getElementById('xu'),xuL=document.getElementById('xuL'),xd=document.getElementById('xd'),xl=document.getElementById('xl'),xll=document.getElementById('xll'),xh=document.getElementById('xlHint'),sv4=document.getElementById('msave4'),op4=null;
+function xok(){var bad=xl.value.trim()!==''&&!LL.test(xl.value);xl.classList.toggle('err',bad);xh.hidden=!bad;sv4.disabled=bad||!xt.value.trim()}
+function openM4(){op4=document.activeElement;var u=curM.k==='link'||curM.k==='social';xt.value=curM.t;xu.value=curM.u||'';xu.hidden=!u;xuL.hidden=!u;xd.value=curM.d||'';xl.value=curM.ll||'';xll.value=curM.lb||'';xok();m4.classList.add('open');m4.setAttribute('aria-hidden','false');setTimeout(function(){xt.focus()},60)}
+function closeM4(){m4.classList.remove('open');m4.setAttribute('aria-hidden','true');if(op4&&op4.focus)op4.focus()}
+document.getElementById('mEdit').addEventListener('click',openM4);
+['mclose4','mcancel4','scrim4'].forEach(function(id){document.getElementById(id).addEventListener('click',closeM4)});
+document.addEventListener('keydown',function(e){if(!m4.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeM4()}else if(e.key==='Enter'&&e.target===xt&&!sv4.disabled){sv4.click()}},true);
+xt.addEventListener('input',xok);xl.addEventListener('input',xok);
+sv4.addEventListener('click',function(){var n=xt.value.trim();if(!n)return;curM.t=n;curM.d=xd.value.trim();curM.ll=xl.value.trim().replace(/\s+/g,'');curM.lb=xll.value.trim();
+if(!xu.hidden){var u=xu.value.trim();if(u&&!/^https?:\/\//i.test(u))u='https://'+u;curM.u=u}
+fillMedia();render();closeM4()});
+/* liggende afbeelding past volledig in widget */
+var mpan=document.querySelector('#view-media .panel'),minf=document.querySelector('#view-media .minfo');
+function fitImg(){var im=mimg.querySelector('img');if(!im)return;
+if(!mpan.classList.contains('land')){im.style.width=im.style.height='';return}
+var cs=getComputedStyle(mimg),W=mimg.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),H=mimg.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),r=curM.r||.75;if(!W||!H)return;var w=Math.min(W,H/r);im.style.width=w+'px';im.style.height=(w*r)+'px'}
+window.addEventListener('resize',function(){if(views.media.classList.contains('open'))fitImg()});
+/* tags (notities + quotes) */
+function renderTags(a,on){var c=a.querySelector('.ntags');if(!c)return;var old=c.querySelector('.tg-in');if(old&&old.value.trim()&&!on)a._t.push(old.value.trim());
+c.innerHTML='';(a._t||[]).forEach(function(s,i){var e=document.createElement('span');e.className='nchip';e.appendChild(document.createTextNode(s));
+if(on){var b=document.createElement('button');b.type='button';b.className='tx2';b.dataset.i=i;b.setAttribute('aria-label','Tag verwijderen');b.textContent='\u00d7';e.appendChild(b)}c.appendChild(e)});
+if(on){var n=document.createElement('input');n.className='tg-in';n.placeholder='Tag toevoegen...';n.setAttribute('aria-label','Tag toevoegen');c.appendChild(n)}
+c.hidden=!on&&!(a._t||[]).length}
+[ng,qg].forEach(function(box){
+box.addEventListener('click',function(e){var b=e.target.closest('.tx2');if(!b)return;var a=b.closest('article');a._t.splice(+b.dataset.i,1);renderTags(a,true)});
+box.addEventListener('keydown',function(e){var i=e.target;if(!i.classList.contains('tg-in'))return;
+if((e.key==='Enter'||e.key===',')&&i.value.trim()){e.preventDefault();var a=i.closest('article');a._t.push(i.value.trim());renderTags(a,true);a.querySelector('.tg-in').focus()}})});
+/* globaal zoeken */
+function ens(c){if(!c._m)c._m=(mediaByName[c.dataset.n]||[]).slice();return c._m}
+function jump(view,el,resetInput){var tt=typeOf(el),gg=gOf(el);setActive(tt,gg.length?(gg.indexOf(A[tt])>-1?A[tt]:gg[0]):null);show(view);if(resetInput){resetInput.value='';resetInput.dispatchEvent(new Event('input'))}
+setTimeout(function(){el.hidden=false;el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')},480)}
+function gather(){var out=[],gtok={};
+allT().forEach(function(c){var n=c.dataset.n;out.push({k:'Collecties',t:n,s:c._d||'',c:'',tags:[],go:function(){openDetail(c)}});
+ens(c).forEach(function(m,i){if(m._seen===gtok){m._cn.push(n);return}m._seen=gtok;m._cn=[n];out.push({k:'Media',m:m,t:m.t,s:m.d||'',c:'',tags:m.tags||[],go:function(){openDetail(c);openMedia(i)}})})});
+ng.querySelectorAll('.ncard').forEach(function(a){out.push({k:'Notities',t:a.querySelector('.nt').textContent,s:a.querySelector('.nx').textContent,c:'',tags:a._t||[],go:function(){jump('notities',a,nsr)}})});
+qg.querySelectorAll('.qcard').forEach(function(a){out.push({k:'Quotes',t:a.querySelector('.qt').textContent,s:'',c:a.querySelector('.au').textContent+' \u2014 '+a.querySelector('.wk').textContent,tags:a._t||[],go:function(){jump('quotes',a,qs)}})});
+list.querySelectorAll('.item').forEach(function(a){var sb=a.querySelector('.sub');out.push({k:'Leeslijst',t:a.querySelector('.ttl').textContent,s:sb?sb.textContent:'',c:'',tags:[].slice.call(a.querySelectorAll('.chip')).map(function(c){return c.firstChild.textContent}),go:function(){jump('leeslijst',a,null)}})});
+Object.keys(G).forEach(function(ty){G[ty].forEach(function(g){out.push({k:'Groepen',t:g.name,s:VL[ty],c:'',tags:[],go:function(){show(ty);setActive(ty,g.id)}})})});
+out.forEach(function(x){if(x.m)x.c='in '+x.m._cn.join(', ');x.h=[x.t,x.s,x.c,(x.tags||[]).join(' ')].join(' ').toLowerCase()});return out}
+var gs=document.getElementById('gs'),gq=document.getElementById('gq'),gres=document.getElementById('gres');
+function openS(){show('home');gq.value='';gs.classList.add('open');gs.setAttribute('aria-hidden','false');renderS();setTimeout(function(){gq.focus()},60)}
+function closeS(){gs.classList.remove('open');gs.setAttribute('aria-hidden','true')}
+function sec(title,nodes){var d=document.createElement('div');d.className='gsec';var h=document.createElement('p');h.className='gh';h.textContent=title;d.appendChild(h);nodes.forEach(function(n){d.appendChild(n)});gres.appendChild(d)}
+function tagBtn(tg){var b=document.createElement('button');b.type='button';b.className='gtag';b.appendChild(document.createTextNode(tg.n));var s=document.createElement('span');s.textContent=tg.c;b.appendChild(s);b.addEventListener('click',function(){gq.value=tg.n;renderS();gq.focus()});return b}
+function renderS(){var terms=gq.value.trim().toLowerCase().split(/\s+/).filter(Boolean),all=gather(),map={};gres.innerHTML='';
+all.forEach(function(x){(x.tags||[]).forEach(function(g){var k=g.toLowerCase();(map[k]=map[k]||{n:g,c:0}).c++})});
+var allTags=Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return b.c-a.c||a.n.localeCompare(b.n)});
+if(!terms.length){if(allTags.length){var w=document.createElement('div');w.className='gtags';allTags.slice(0,16).forEach(function(g){w.appendChild(tagBtn(g))});sec('Populaire tags',[w])}
+else{var p=document.createElement('p');p.className='gnone';p.textContent='Nog geen tags.';gres.appendChild(p)}return}
+var hits=all.filter(function(x){return terms.every(function(q){return x.h.indexOf(q)>-1})});
+var mt=allTags.filter(function(g){return terms.every(function(q){return g.n.toLowerCase().indexOf(q)>-1})}).slice(0,10);
+if(mt.length){var w2=document.createElement('div');w2.className='gtags';mt.forEach(function(g){w2.appendChild(tagBtn(g))});sec('Tags',[w2])}
+['Collecties','Groepen','Media','Notities','Quotes','Leeslijst'].forEach(function(k){var rows=hits.filter(function(x){return x.k===k}).map(function(x){return grow(x,terms)});if(rows.length)sec(k+' \u00b7 '+rows.length,rows)});
+if(!hits.length&&!mt.length){var p2=document.createElement('p');p2.className='gnone';p2.textContent='Geen resultaten voor \u201c'+gq.value.trim()+'\u201d.';gres.appendChild(p2);
+if(allTags.length){var w3=document.createElement('div');w3.className='gtags';allTags.slice(0,10).forEach(function(g){w3.appendChild(tagBtn(g))});sec('Probeer een tag',[w3])}}}
+function grow(x,terms){var b=document.createElement('button');b.type='button';b.className='gr';
+var t=document.createElement('b');t.textContent=x.t||'(zonder titel)';b.appendChild(t);
+var sub=[x.c,x.s].filter(Boolean).join(' \u00b7 ');if(sub){var s=document.createElement('small');s.textContent=sub;b.appendChild(s)}
+if(x.tags&&x.tags.length){var d=document.createElement('span');d.className='grt';x.tags.forEach(function(g){var c=document.createElement('span');c.className='nchip'+(terms.some(function(q){return g.toLowerCase().indexOf(q)>-1})?' hit':'');c.textContent=g;d.appendChild(c)});b.appendChild(d)}
+b.addEventListener('click',function(){closeS();x.go()});return b}
+document.getElementById('navsearch').addEventListener('click',openS);
+document.getElementById('gclose').addEventListener('click',closeS);document.getElementById('gscrim').addEventListener('click',closeS);
+gq.addEventListener('input',renderS);
+document.addEventListener('keydown',function(e){var open=gs.classList.contains('open');
+if(!open){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'&&!document.querySelector('.modal.open')){e.preventDefault();openS()}return}
+if(e.key==='Escape'){e.stopPropagation();closeS();return}
+if(e.key==='ArrowDown'||e.key==='ArrowUp'){var bs=[].slice.call(gres.querySelectorAll('.gr,.gtag')),i=bs.indexOf(document.activeElement);e.preventDefault();
+if(e.key==='ArrowDown'){(bs[i+1]||bs[bs.length-1]||gq).focus()}else{(i<=0?gq:bs[i-1]).focus()}}
+else if(e.key==='Enter'&&e.target===gq){var f=gres.querySelector('.gr');if(f)f.click()}},true);
+/* groepen + meerdere collecties */
+function setCnt(c){c.querySelector('p').textContent=((c._b||0)+ens(c).length)+' ITEMS'+(c._sid&&c._own?' \u00b7 GEDEELD':'')}
+
+var VL={leeslijst:'Leeslijst',notities:'Notities',quotes:'Quotes'},GL={leeslijst:'Zonder groep',notities:'Losse notities',quotes:'Losse quotes'},BL={leeslijst:'Alle items',notities:'Alle notities',quotes:'Alle quotes'};
+var G={leeslijst:[],notities:[],quotes:[]},A={leeslijst:null,notities:null,quotes:null},FG={},GH={},GP={},GE={},gseq=0;
+var ARW='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
+var FOLDER='<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="opacity:.85"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+function typeOf(el){return el.classList.contains('item')?'leeslijst':el.classList.contains('ncard')?'notities':'quotes'}
+function gOf(el){return el._g||(el._g=[])}
+function itemsOf(ty){return [].slice.call((ty==='leeslijst'?list:ty==='notities'?ng:qg).querySelectorAll(ty==='leeslijst'?'.item':ty==='notities'?'.ncard':'.qcard'))}
+function gname(ty,id){var g=G[ty].filter(function(x){return x.id===id})[0];return g?g.name:''}
+function gmUpdate(el){if(!G)return;var b=el.querySelector('.gm');if(!b)return;var ty=typeOf(el),n=gOf(el).map(function(id){return gname(ty,id)}).filter(Boolean);
+b.textContent=!n.length?'Zonder groep':(n.length===1?n[0]:n.length+' groepen');b.title=n.join(', ')}
+function members(ty,id){return itemsOf(ty).filter(function(el){return gOf(el).indexOf(id)>-1}).length}
+function renderFolders(ty){var fg=FG[ty];fg.innerHTML='';G[ty].forEach(function(g){var a=document.createElement('a');a.className='fold';a.href='#';
+var th=document.createElement('div');th.className='thumb'+(g.cover?'':' empty');if(g.cover){var im=document.createElement('img');im.alt='';im.src=g.cover;th.appendChild(im)}else th.innerHTML=FOLDER;
+var h=document.createElement('h3');h.textContent=g.name;var p=document.createElement('p');p.textContent=((g.base||0)+members(ty,g.id))+' ITEMS';
+a.appendChild(th);a.appendChild(h);a.appendChild(p);a.addEventListener('click',function(e){e.preventDefault();setActive(ty,g.id)});fg.appendChild(a)})}
+function applyView(ty){var a=A[ty],n=0;itemsOf(ty).forEach(function(el){var g=gOf(el),off=a?g.indexOf(a)<0:g.length>0;el.classList.toggle('goff',off);if(!off)n++});
+FG[ty].hidden=!!a;GH[ty].hidden=!a;GP[ty].textContent=a?'In deze groep':GL[ty];GE[ty].hidden=!(a&&n===0);if(a)GH[ty].querySelector('.ghn').textContent=gname(ty,a);renderFolders(ty)}
+function setActive(ty,id){A[ty]=id||null;applyView(ty)}
+function inherit(el){var ty=typeOf(el);if(A[ty])gOf(el).push(A[ty]);gmUpdate(el);applyView(ty)}
+/* init structuur per widget */
+var VW={leeslijst:document.getElementById('view-leeslijst'),notities:nv,quotes:qv};
+Object.keys(VW).forEach(function(ty){var v=VW[ty],gp=v.querySelector('.grp'),fg=ty==='notities'?v.querySelector('.fgrid'):document.createElement('div');
+if(ty==='notities'){fg.innerHTML=''}
+else{fg.className='fgrid';gp.parentNode.insertBefore(fg,gp)}
+fg.id='fg-'+ty;FG[ty]=fg;GP[ty]=gp;
+var gh=document.createElement('div');gh.className='ghd';gh.hidden=true;gh.innerHTML='<button class="back" type="button">'+ARW+'<span></span></button><h3 class="ghn"></h3><button class="addbtn alt gren" type="button">Groep bewerken</button><button class="addbtn alt danger gdel" type="button">Groep verwijderen</button>';
+gh.querySelector('.back span').textContent=BL[ty];fg.parentNode.insertBefore(gh,fg);GH[ty]=gh;
+var cont=ty==='leeslijst'?list:ty==='notities'?ng:qg,ge=document.createElement('p');ge.className='none gempty';ge.hidden=true;ge.textContent='Nog niets in deze groep. Voeg een item toe of kies bij een bestaand item deze groep.';cont.parentNode.insertBefore(ge,cont.nextSibling);GE[ty]=ge;
+gh.querySelector('.back').addEventListener('click',function(){setActive(ty,null)});
+gh.querySelector('.gren').addEventListener('click',function(){openG5(ty,A[ty])});
+var dl=gh.querySelector('.gdel'),dtm2;dl.addEventListener('click',function(){if(!dl.classList.contains('confirm')){dl.classList.add('confirm');dl.textContent='Zeker verwijderen?';clearTimeout(dtm2);dtm2=setTimeout(function(){dl.classList.remove('confirm');dl.textContent='Groep verwijderen'},3000);return}
+clearTimeout(dtm2);dl.classList.remove('confirm');dl.textContent='Groep verwijderen';var id=A[ty];itemsOf(ty).forEach(function(el){var g=gOf(el),i=g.indexOf(id);if(i>-1)g.splice(i,1)});
+G[ty]=G[ty].filter(function(x){return x.id!==id});A[ty]=null;itemsOf(ty).forEach(gmUpdate);applyView(ty)});
+[].slice.call(v.querySelectorAll('.bar .addbtn.alt')).forEach(function(b){if(b.textContent.indexOf('Nieuwe groep')>-1)b.addEventListener('click',function(){openG5(ty,null)})});
+itemsOf(ty).forEach(gmUpdate);applyView(ty)});
+/* modal nieuwe/bewerkte groep */
+var m5=document.getElementById('modal5'),gn=document.getElementById('gn'),sv5=document.getElementById('msave5'),g5={ty:null,id:null,cb:null},op5=null;
+function rdy5(){sv5.disabled=!gn.value.trim()}
+function openG5(ty,id,cb){op5=document.activeElement;g5={ty:ty,id:id,cb:cb};document.getElementById('mt5').textContent=(id?'Groep bewerken':'Nieuwe groep')+' \u2014 '+VL[ty];sv5.textContent=id?'Opslaan':'Aanmaken';gn.value=id?gname(ty,id):'';rdy5();buildGP(ty,id);initCover(ty,id);m5.classList.add('open');m5.setAttribute('aria-hidden','false');setTimeout(function(){gn.focus()},60)}
+function closeG5(){m5.classList.remove('open');m5.setAttribute('aria-hidden','true');if(op5&&op5.focus)op5.focus()}
+['mclose5','mcancel5','scrim5'].forEach(function(i){document.getElementById(i).addEventListener('click',closeG5)});
+gn.addEventListener('input',rdy5);
+document.addEventListener('keydown',function(e){if(!m5.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeG5()}else if(e.key==='Enter'&&e.target===gn&&!sv5.disabled){sv5.click()}},true);
+sv5.addEventListener('click',function(){var n=gn.value.trim();if(!n)return;var ty=g5.ty,gid_=g5.id;
+if(g5.id){G[ty].forEach(function(g){if(g.id===g5.id)g.name=n})}else{var g={id:'g'+(++gseq),name:n,base:0};G[ty].push(g);gid_=g.id;if(g5.cb)g5.cb(g)}
+applyCover(ty,gid_);applySel(ty,gid_,!!g5.id);itemsOf(ty).forEach(gmUpdate);applyView(ty);closeG5()});
+/* keuzemenu (groepen en collecties) */
+var MN=null;
+function closeMenu(){if(!MN)return;var m=MN;MN=null;m.el.remove();if(m.cfg.onClose)m.cfg.onClose()}
+function openMenu(btn,cfg){if(MN&&MN.btn===btn){closeMenu();return}closeMenu();var el=document.createElement('div');el.className='gmenu';el.setAttribute('role','menu');
+var rows=cfg.rows();if(!rows.length){var e=document.createElement('p');e.className='gme';e.textContent=cfg.empty||'Niets beschikbaar';el.appendChild(e)}
+rows.forEach(function(r){var b=document.createElement('button');b.type='button';b.className='gmr'+(r.on?' on':'');b.setAttribute('role','menuitemcheckbox');b.setAttribute('aria-checked',r.on?'true':'false');b.innerHTML='<span class="bx"></span><span class="gl"></span>';b.querySelector('.gl').textContent=r.name;
+b.addEventListener('click',function(){var want=!r.on;if(cfg.toggle(r.id,want)===false)return;r.on=want;b.classList.toggle('on',want);b.setAttribute('aria-checked',want?'true':'false')});el.appendChild(b)});
+if(cfg.add){var s=document.createElement('button');s.type='button';s.className='gmr gma';s.textContent=cfg.addLabel||'+ Nieuwe groep';s.addEventListener('click',function(){closeMenu();cfg.add()});el.appendChild(s)}
+document.body.appendChild(el);var r=btn.getBoundingClientRect(),w=el.offsetWidth,h=el.offsetHeight,top=r.bottom+6;if(top+h>innerHeight-12)top=Math.max(12,r.top-h-6);
+el.style.left=Math.max(12,Math.min(r.left,innerWidth-w-12))+'px';el.style.top=top+'px';MN={el:el,btn:btn,cfg:cfg};var f=el.querySelector('.gmr');if(f)f.focus({preventScroll:true})}
+function groupCfg(el){var ty=typeOf(el);return{rows:function(){return G[ty].map(function(g){return{id:g.id,name:g.name,on:gOf(el).indexOf(g.id)>-1}})},
+toggle:function(id,on){var a=gOf(el),i=a.indexOf(id);if(on&&i<0)a.push(id);if(!on&&i>-1)a.splice(i,1);gmUpdate(el);renderFolders(ty)},
+onClose:function(){applyView(ty)},empty:'Nog geen groepen.',add:function(){openG5(ty,null,function(g){gOf(el).push(g.id)})}}}
+function colCfg(){var m=curM;return{rows:function(){return allT().map(function(c){return{id:c,name:c.dataset.n,on:ens(c).indexOf(m)>-1}})},
+toggle:function(c,on){var a=ens(c),i=a.indexOf(m);if(!on){var cnt=allT().filter(function(x){return ens(x).indexOf(m)>-1}).length;if(cnt<2)return false}
+if(on&&i<0)a.push(m);if(!on&&i>-1)a.splice(i,1);setCnt(c);if(c._sid)syncShared(c);fillCols()},
+onClose:function(){var i=cur._m.indexOf(m);if(i<0){render();show('detail')}else{curI=i;render()}},empty:'Nog geen collecties.',addLabel:'+ Nieuwe collectie',add:function(){preSel=[m];openM()}}}
+function fillCols(){var r=document.getElementById('mclr');if(!r)return;r.innerHTML='';allT().forEach(function(c){if(ens(c).indexOf(curM)>-1){var s=document.createElement('span');s.className='nchip';s.textContent=c.dataset.n;r.appendChild(s)}});
+var b=document.createElement('button');b.type='button';b.className='gm';b.id='mcolBtn';b.textContent='+ Collectie';r.appendChild(b)}
+document.addEventListener('click',function(e){var b=e.target.closest('.gm');if(!b)return;if(b.id==='mcolBtn'){openMenu(b,colCfg());return}var el=b.closest('.item,.ncard,.qcard');if(el)openMenu(b,groupCfg(el))});
+document.addEventListener('mousedown',function(e){if(MN&&!MN.el.contains(e.target)&&!e.target.closest('.gm'))closeMenu()},true);
+document.addEventListener('keydown',function(e){if(MN&&e.key==='Escape'){e.stopPropagation();closeMenu()}},true);
+window.addEventListener('scroll',function(e){if(MN&&!MN.el.contains(e.target))closeMenu()},true);
+window.addEventListener('resize',closeMenu);
+/* bestaande items kiezen */
+var preSel=[],cexP=null,exP=null,gP=null;
+function picker(box,items,opts){box.innerHTML='';opts=opts||{};var wrap=document.createElement('div');wrap.className='pk';
+if(!items.length){var e=document.createElement('p');e.className='pkn';e.textContent=opts.empty||'Niets beschikbaar.';wrap.appendChild(e);box.appendChild(wrap);return{selected:function(){return[]},count:function(){return 0}}}
+var s=document.createElement('input');s.className='pks';s.type='search';s.placeholder='Zoeken...';s.setAttribute('aria-label','Zoeken');var l=document.createElement('div');l.className='pkl';var c=document.createElement('p');c.className='pkc';
+function cnt(){var n=items.filter(function(i){return i.on}).length;c.textContent=n?n+(n===1?' geselecteerd':' geselecteerd'):''}
+items.forEach(function(it){var b=document.createElement('button');b.type='button';b.className='pkr'+(it.on?' on':'');b.setAttribute('role','checkbox');b.setAttribute('aria-checked',it.on?'true':'false');
+b.innerHTML='<span class="bx"></span><span class="pkt"></span><span class="pkx"><b></b><small></small></span>';
+var th=b.querySelector('.pkt');if(it.thumb){var im=document.createElement('img');im.alt='';im.src=it.thumb;th.appendChild(im)}else th.textContent=it.badge||'';
+b.querySelector('b').textContent=it.title||'(zonder titel)';b.querySelector('small').textContent=it.sub||'';it._b=b;it._h=((it.title||'')+' '+(it.sub||'')).toLowerCase();
+b.addEventListener('click',function(){it.on=!it.on;b.classList.toggle('on',it.on);b.setAttribute('aria-checked',it.on?'true':'false');cnt();if(opts.onChange)opts.onChange()});l.appendChild(b)});
+s.addEventListener('input',function(){var q=s.value.trim().toLowerCase();items.forEach(function(i){i._b.hidden=!!q&&i._h.indexOf(q)<0})});
+wrap.appendChild(s);wrap.appendChild(l);wrap.appendChild(c);box.appendChild(wrap);cnt();
+return{selected:function(){return items.filter(function(i){return i.on}).map(function(i){return i.key})},count:function(){return items.filter(function(i){return i.on}).length}}}
+function allMedia(){var out=[];allT().forEach(function(c){ens(c).forEach(function(m){var o=out.filter(function(x){return x.m===m})[0];if(o)o.cols.push(c.dataset.n);else out.push({m:m,cols:[c.dataset.n]})})});return out}
+function mItem(o,on){return{key:o.m,title:o.m.t,sub:'in '+o.cols.join(', '),thumb:o.m.src,badge:(KL[o.m.k]||'').slice(0,4),on:on}}
+function buildCex(){var pre=preSel;preSel=[];cexP=picker(document.getElementById('cex'),allMedia().map(function(o){return mItem(o,pre.indexOf(o.m)>-1)}),{empty:'Er is nog geen media om te kiezen.'})}
+function buildExisting(){exP=picker(document.getElementById('mex'),(function(){var T=ens(tgt());return allMedia().filter(function(o){return T.indexOf(o.m)<0})})().map(function(o){return mItem(o,false)}),{onChange:rdy,empty:'Alle bestaande media staat al in deze collectie.'});rdy()}
+function addExisting(){var T=tgt(),A=ens(T);exP.selected().forEach(function(m){if(A.indexOf(m)<0)A.push(m)});setCnt(T);if(T===cur)render();else if(T._sid)syncShared(T);closeM2()}
+function itTitle(el,ty){var q=ty==='leeslijst'?'.ttl':ty==='notities'?'.nt':'.qt';return el.querySelector(q).textContent}
+function itSub(el,ty){var s=ty==='leeslijst'?el.querySelector('.sub'):ty==='notities'?el.querySelector('.nx'):el.querySelector('.au');return s?s.textContent:''}
+function buildGP(ty,gid){gP=picker(document.getElementById('gex'),itemsOf(ty).map(function(el){return{key:el,title:itTitle(el,ty),sub:itSub(el,ty),badge:'',on:!!gid&&gOf(el).indexOf(gid)>-1}}),{empty:'Er zijn nog geen items om te kiezen.'})}
+function applySel(ty,gid,editing){if(!gP||!gid)return;var ch=gP.selected();itemsOf(ty).forEach(function(el){var g=gOf(el),has=g.indexOf(gid)>-1,want=ch.indexOf(el)>-1;if(want&&!has)g.push(gid);if(!want&&has&&editing)g.splice(g.indexOf(gid),1)})}
+/* cover voor groepen */
+var gu=document.getElementById('gu'),gf=document.getElementById('gf'),gpick=document.getElementById('gpick'),gpt=document.getElementById('gpickTxt'),gprev=document.getElementById('gprev'),gpi=document.getElementById('gprevImg'),sbU5=document.getElementById('sbUrl5'),sbP5=document.getElementById('sbUp5'),gmode='url',gUp='',gRem=false;
+function grp(ty,id){return G[ty].filter(function(x){return x.id===id})[0]}
+function gMode(m){gmode=m;sbU5.classList.toggle('on',m==='url');sbP5.classList.toggle('on',m==='up');gu.hidden=m!=='url';gpick.hidden=m!=='up'}
+function showPrev(src){gprev.hidden=!src;if(src)gpi.src=src}
+function initCover(ty,id){var g=id?grp(ty,id):null;gUp='';gRem=false;gf.value='';gpt.textContent='Kies een afbeelding';gu.value=g&&g.cover&&g.cover.indexOf('data:')!==0?g.cover:'';gMode('url');showPrev(g?g.cover:'')}
+sbU5.addEventListener('click',function(){gMode('url')});sbP5.addEventListener('click',function(){gMode('up')});
+document.getElementById('gprevDel').addEventListener('click',function(){gRem=true;gUp='';gu.value='';gf.value='';showPrev('')});
+gf.addEventListener('change',function(){var f=gf.files[0];if(!f)return;gpt.textContent=f.name;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,600/im.width),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);gUp=c.toDataURL('image/jpeg',.88);gRem=false;showPrev(gUp)};im.src=r.result};r.readAsDataURL(f)});
+function applyCover(ty,id){var g=grp(ty,id);if(!g)return;
+if(gmode==='up'&&gUp){g.cover=gUp}
+else if(gmode==='url'&&gu.value.trim()&&gu.value.trim()!==g.cover){var src=gu.value.trim(),im=new Image();im.onload=function(){g.cover=src;renderFolders(ty)};im.src=src}
+else if(gRem){g.cover=''}}
+/* browserknop: klembord -> voorgevuld formulier */
+var pendImg='',pendData='',pendR=0,mcol=document.getElementById('mcol');
+function tgt(){return allT()[+mcol.value]||cur}
+function fillCols2(){mcol.innerHTML='';var A=allT();A.forEach(function(c,i){var o=document.createElement('option');o.value=i;o.textContent=c.dataset.n;mcol.appendChild(o)});var i=A.indexOf(cur);mcol.value=i<0?0:i}
+mcol.addEventListener('change',function(){if(kind==='existing')buildExisting()});
+function fromClip(s){s=(s||'').trim();if(s.indexOf('ARCHIVE:')!==0)return null;try{return JSON.parse(decodeURIComponent(escape(atob(s.slice(8)))))}catch(x){return null}}
+function pvHide(){var p=document.getElementById('mpv');p.hidden=true;document.getElementById('mpvImg').removeAttribute('src')}
+function prefill(p){if(!cards.length)return;if(!cur)cur=cards[0];if(!m2.classList.contains('open'))openM2();
+var site=(p.s||host(p.u||'')||'').replace(/^www\./,''),soc=/pinterest|instagram/i.test(site);setKind(soc?'social':'link');
+mu.value=p.u||'';mtitle.value=(p.t||'').trim();mdesc.value=(p.d||'').trim();mtags.querySelectorAll('.chip').forEach(function(c){c.remove()});
+var parts=site.split('.'),tag=/pinterest/i.test(site)?'pinterest':/instagram/i.test(site)?'instagram':(parts.length>1?parts[parts.length-2]:site);if(tag)mtags.insertBefore(chip(tag),mti);
+pendImg=p.i||'';pendData=p.b||'';pendR=p.r||0;var pv=document.getElementById('mpv'),pi=document.getElementById('mpvImg');pv.hidden=true;
+if(pendData||pendImg){pi.onload=function(){pv.hidden=false;document.getElementById('mpvTxt').textContent=site};pi.onerror=function(){pv.hidden=true};pi.src=pendData||pendImg}
+rdy();mtitle.focus();if(!pendData&&p.u)enrich(p.u)}
+window.__prefill=prefill;
+function shrink(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,800/im.width),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb({src:c.toDataURL('image/jpeg',.86),r:+(c.height/c.width).toFixed(4)})};im.src=r.result};r.readAsDataURL(file)}
+function startAdd(){if(!cards.length)return false;if(!cur)cur=cards[0];if(!m2.classList.contains('open'))openM2();return true}
+function addImage(file){if(!startAdd())return;shrink(file,function(d){setKind('image');fdata=d;fname=file.name||'afbeelding';mpt.textContent=fname;
+if(!mtitle.value.trim()){var nm=(file.name||'').replace(/\.[^.]+$/,'');mtitle.value=nm&&!/^(image|afbeelding)$/i.test(nm)?nm:(document.documentElement.lang==='en'?'Pasted image':'Geplakte afbeelding')}rdy();mtitle.focus();if(mtitle.select)mtitle.select()})}
+function addUrl(u,img){if(!startAdd())return;prefill({u:u,t:'',d:'',i:img||'',s:host(u)});enrich(u)}
+function handleText(s){s=(s||'').trim();var p=fromClip(s);if(p){prefill(p);return true}if(/^https?:\/\/\S+$/i.test(s)){addUrl(s);return true}return false}
+function imgFiles(cd){var f=[].slice.call(cd.files||[]).filter(function(x){return /^image\//.test(x.type)});
+if(!f.length)[].forEach.call(cd.items||[],function(it){if(it.kind==='file'&&/^image\//.test(it.type)){var x=it.getAsFile();if(x)f.push(x)}});return f}
+document.addEventListener('paste',function(e){if(document.body.classList.contains('locked'))return;var cd=e.clipboardData||window.clipboardData;if(!cd)return;
+var tg=e.target,inField=!!tg&&(/^(INPUT|TEXTAREA)$/.test(tg.tagName)||tg.isContentEditable),fs=imgFiles(cd),s=(cd.getData('text')||'').trim();
+if(fromClip(s)){e.preventDefault();prefill(fromClip(s));return}
+if(fs.length){e.preventDefault();addImage(fs[0]);return}
+if(!inField&&/^https?:\/\/\S+$/i.test(s)){e.preventDefault();addUrl(s)}});
+document.getElementById('mpaste').addEventListener('click',function(){var b=this,sp=b.previousElementSibling,o=sp.getAttribute('data-o')||sp.textContent;sp.setAttribute('data-o',o);
+function say(m){sp.textContent=m;clearTimeout(say.t);say.t=setTimeout(function(){sp.textContent=o},4000)}
+function txt(){if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(function(s){if(!handleText(s))say('Niets gevonden in je klembord.')},function(){say('Plak met Ctrl/Cmd+V.')})}else say('Plak met Ctrl/Cmd+V.')}
+if(navigator.clipboard&&navigator.clipboard.read){navigator.clipboard.read().then(function(items){var img=null;items.forEach(function(it){var ty=it.types.filter(function(x){return /^image\//.test(x)})[0];if(ty&&!img)img={it:it,ty:ty}});
+if(img){img.it.getType(img.ty).then(function(bl){addImage(new File([bl],'afbeelding.png',{type:img.ty}))})}else txt()},txt)}else txt()});
+/* slepen */
+var dz=document.createElement('div');dz.className='dropz';dz.hidden=true;dz.innerHTML='<div><b></b><span></span></div>';dz.querySelector('b').textContent='Laat los om toe te voegen';dz.querySelector('span').textContent='Afbeelding of link';document.body.appendChild(dz);
+var selfDrag=false;
+function dragOk(e){var ty=e.dataTransfer&&e.dataTransfer.types;if(!ty)return false;var a=[].slice.call(ty);return a.indexOf('Files')>-1||a.indexOf('text/uri-list')>-1||a.indexOf('text/html')>-1}
+document.addEventListener('dragstart',function(){selfDrag=true});document.addEventListener('dragend',function(){selfDrag=false;dz.hidden=true});
+document.addEventListener('dragenter',function(e){if(selfDrag||document.body.classList.contains('locked')||!dragOk(e))return;dz.hidden=false});
+document.addEventListener('dragleave',function(e){if(!e.relatedTarget)dz.hidden=true});
+document.addEventListener('dragover',function(e){if(!dz.hidden)e.preventDefault()});
+document.addEventListener('drop',function(e){if(dz.hidden)return;e.preventDefault();dz.hidden=true;var dt=e.dataTransfer,fs=[].slice.call(dt.files||[]).filter(function(f){return /^image\//.test(f.type)});
+if(fs.length){addImage(fs[0]);return}
+var uri=(dt.getData('text/uri-list')||'').split('\n').filter(function(l){return l&&l[0]!=='#'})[0]||'',html=dt.getData('text/html')||'',im=/<img[^>]+src=["']([^"']+)["']/i.exec(html),ln=/<a[^>]+href=["']([^"']+)["']/i.exec(html),u=(ln&&ln[1])||uri||(dt.getData('text')||'').trim();
+if(/^https?:/i.test(u)){addUrl(u,im&&/^https?:/i.test(im[1])?im[1]:'')}else if(im&&/^https?:/i.test(im[1])){addUrl(im[1],im[1])}});
+
+
+/* nieuwe notitie / quote via venster */
+function tagField(box,inp){box.addEventListener('click',function(e){if(e.target.classList.contains('tx'))e.target.parentNode.remove();else inp.focus()});
+inp.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===',')&&inp.value.trim()){e.preventDefault();box.insertBefore(chip(inp.value.trim()),inp);inp.value=''}});
+return{get:function(){var a=[].slice.call(box.querySelectorAll('.chip')).map(function(c){return c.firstChild.textContent});if(inp.value.trim())a.push(inp.value.trim());return a},reset:function(){box.querySelectorAll('.chip').forEach(function(c){c.remove()});inp.value=''}}}
+function simpleModal(id,focusEl,reqEl,btn,onSave){var m=document.getElementById(id),op=null;
+function ok(){btn.disabled=!reqEl.value.trim()}
+function open(reset){op=document.activeElement;reset();ok();m.classList.add('open');m.setAttribute('aria-hidden','false');setTimeout(function(){focusEl.focus()},60)}
+function close(){m.classList.remove('open');m.setAttribute('aria-hidden','true');if(op&&op.focus)op.focus()}
+['mclose','mcancel','scrim'].forEach(function(p){document.getElementById(p+id.slice(5)).addEventListener('click',close)});
+reqEl.addEventListener('input',ok);
+document.addEventListener('keydown',function(e){if(!m.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();close()}else if(e.key==='Enter'&&e.target===focusEl&&focusEl.tagName==='INPUT'&&!btn.disabled){btn.click()}},true);
+btn.addEventListener('click',function(){if(btn.disabled)return;onSave();close()});
+return{open:open,close:close}}
+var nTit=document.getElementById('nT'),nCon=document.getElementById('nC'),nTf=tagField(document.getElementById('nTags'),document.getElementById('nTag'));
+var NM6=simpleModal('modal6',nTit,nTit,document.getElementById('madd6'),function(){
+var d=new Date().toLocaleDateString('nl-BE',{day:'numeric',month:'short'}).replace('.',''),a=ncard([nTit.value.trim(),nCon.value.trim(),nTf.get(),d]);
+nsr.value='';nsr.dispatchEvent(new Event('input'));ng.insertBefore(a,ng.firstChild);inherit(a)});
+function openNote(){NM6.open(function(){nTit.value=nCon.value='';nTf.reset()})}
+var qTx=document.getElementById('qT'),qAu=document.getElementById('qA'),qBr=document.getElementById('qB'),qTf=tagField(document.getElementById('qTags'),document.getElementById('qTag'));
+var QM7=simpleModal('modal7',qTx,qTx,document.getElementById('madd7'),function(){
+var txt=qTx.value.trim().replace(/^["\u201c\u201e\u00ab]+|["\u201d\u00bb]+$/g,'').trim(),a=qcard([txt,qAu.value.trim()||'Auteur',qBr.value.trim()||'Bron',qTf.get()]);
+qs.value='';qs.dispatchEvent(new Event('input'));qg.insertBefore(a,qg.firstChild);inherit(a)});
+function openQuote(){QM7.open(function(){qTx.value=qAu.value=qBr.value='';qTf.reset()})}
+
+/* ---------- gedeelde collecties (demo: opslag in deze browser) ---------- */
+var shCards=[],stash=[],SKEY='archive.shared',memS=null,shRoot=null,m8Op=null;
+function allT(){return cards.concat(shCards)}
+var SHC={cols:{}};
+function loadS(){return SHC}
+function saveS(S){SHC=S;shDirty();return true}
+function uidS(n){var a=new Uint8Array(n||8);crypto.getRandomValues(a);return [].map.call(a,function(x){return ('0'+x.toString(16)).slice(-2)}).join('')}
+function meU(){return window.__me&&window.__me()}
+var FLD=['t','k','r','src','img','u','f','d','at','ll','lb'];
+function ser(m){var r={id:m._id};FLD.forEach(function(k){if(m[k]!==undefined)r[k]=m[k]});r.tags=(m.tags||[]).slice();if(m.by)r.by=m.by;r._u=m._u||0;return r}
+function sig(r){var o={};FLD.concat(['tags','by']).forEach(function(k){if(r[k]!==undefined)o[k]=r[k]});return JSON.stringify(o)}
+function hydrate(c,sc){if(!c._m)c._m=[];var ex={};c._m.forEach(function(m){if(m._id)ex[m._id]=m});var out=[];
+sc.media.forEach(function(r){var m=ex[r.id]||{};FLD.forEach(function(k){delete m[k]});delete m.by;FLD.forEach(function(k){if(r[k]!==undefined)m[k]=r[k]});m.tags=(r.tags||[]).slice();if(r.by)m.by=r.by;m._id=r.id;m._u=r._u;out.push(m)});
+c._m.length=0;out.forEach(function(m){c._m.push(m)});c._known=sc.media.map(function(r){return r.id})}
+function syncShared(c){if(!c||!c._sid)return false;var S=loadS(),sc=S.cols[c._sid];if(!sc)return false;var u=meU(),by={},order=[];
+sc.media.forEach(function(r){by[r.id]=r;order.push(r.id)});var loc={};c._m.forEach(function(m){if(m._id)loc[m._id]=1});
+(c._known||[]).forEach(function(id){if(!loc[id]&&by[id]){delete by[id];order.splice(order.indexOf(id),1)}});
+c._m.forEach(function(m){if(!m._id){m._id=uidS(8);if(u)m.by={name:u.name,email:u.email}}var rec=ser(m),old=by[m._id];
+if(!old){rec._u=Date.now();by[m._id]=rec;order.push(m._id)}else if(sig(old)!==sig(rec)){rec._u=Date.now();by[m._id]=rec}});
+if(c._own){sc.name=c.dataset.n;sc.desc=c._d||'';var im=c.querySelector('.thumb img');if(im&&im.getAttribute('src'))sc.cover=im.getAttribute('src')}
+sc.media=order.map(function(id){return by[id]});var ok=saveS(S);hydrate(c,sc);return ok}
+function pullShared(c){var sc=loadS().cols[c._sid];if(!sc){unlinkShared(c);return false}
+if(!c._own){c.dataset.n=sc.name;c._d=sc.desc;c.querySelector('h3').textContent=sc.name}hydrate(c,sc);setCnt(c);return true}
+function unlinkShared(c){c._sid=null;c._own=false;c._known=null;setCnt(c);var i=shCards.indexOf(c);if(i>-1)shCards.splice(i,1);if(cur===c&&views.detail.classList.contains('open'))show('collecties')}
+function makeShared(c){var u=meU();if(!u)return false;var S=loadS(),id='s'+uidS(6),im=c.querySelector('.thumb img');
+S.cols[id]={id:id,name:c.dataset.n,desc:c._d||'',cover:im?im.getAttribute('src'):'',ln:c.dataset.n,rev:null,owner:{name:u.name,email:u.email},members:[],invites:[],media:[]};
+if(!saveS(S)){return false}c._sid=id;c._own=true;ens(c);c._known=[];syncShared(c);setCnt(c);return true}
+function dropShared(c){var id=c._sid;delete SHC.cols[id];delete shLast[id];api('DELETE','/api/shared/'+id).catch(function(){});unlinkShared(c)}
+function detachCard(c){var i=cards.indexOf(c);if(i<0)return;c._idx=i;cards.splice(i,1);if(c.parentNode)c.parentNode.removeChild(c);stash.push(c)}
+function attachCard(c){var i=stash.indexOf(c);if(i<0)return;stash.splice(i,1);var g=document.getElementById('grid'),at=Math.min(c._idx||0,cards.length);cards.splice(at,0,c);g.insertBefore(c,g.children[at]||null)}
+function mkShCard(sc){var a=document.createElement('a');a.className='card';a.href='#';a.dataset.n=sc.name;a.innerHTML='<div class="thumb"></div><h3></h3><p></p>';a.querySelector('h3').textContent=sc.name;
+a._sid=sc.id;a._own=false;a._m=[];a._b=0;a._d=sc.desc;a.addEventListener('click',function(e){e.preventDefault()});hydrate(a,sc);setCnt(a);return a}
+function refreshShared(){var u=meU(),S=loadS(),all=cards.concat(stash);
+all.forEach(function(c){if(c._sid&&!S.cols[c._sid])unlinkShared(c)});
+Object.keys(S.cols).forEach(function(id){var sc=S.cols[id];if(!u)return;
+if(sc.owner.email===u.email){var c=all.filter(function(x){return x._sid===id})[0]||all.filter(function(x){return !x._sid&&x.dataset.n===sc.ln})[0];
+if(c){if(!c._sid){c._sid=id;c._own=true;ens(c)}hydrate(c,sc);setCnt(c);attachCard(c)}}
+else if(sc.members.some(function(m){return m.email===u.email})){var h=shCards.filter(function(x){return x._sid===id})[0];if(!h){h=mkShCard(sc);shCards.push(h)}else{h.dataset.n=sc.name;h._d=sc.desc;h.querySelector('h3').textContent=sc.name;hydrate(h,sc);setCnt(h)}}});
+cards.concat(stash).forEach(function(c){if(c._sid){var sc=S.cols[c._sid];if(sc&&(!u||sc.owner.email!==u.email))detachCard(c)}});
+shCards=shCards.filter(function(h){var sc=S.cols[h._sid];return sc&&u&&sc.members.some(function(m){return m.email===u.email})});
+q.dispatchEvent(new Event('input'))}
+function initials2(s){var p=(s||'').trim().split(/\s+/).filter(Boolean);return ((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase()}
+function sp(txt,cls){var e=document.createElement('span');if(cls)e.className=cls;e.textContent=txt;return e}
+function mkFold(c,sub){var a=document.createElement('a');a.className='fold';a.href='#';var th=document.createElement('div');th.className='thumb';var im=c.querySelector('.thumb img'),sc=loadS().cols[c._sid];
+var src=im&&im.src||(sc&&sc.cover);if(src){var i2=document.createElement('img');i2.alt='';i2.src=src;th.appendChild(i2)}else{th.className='thumb empty';th.innerHTML=FOLDER}
+var h=document.createElement('h3');h.textContent=c.dataset.n;var p=document.createElement('p');p.textContent=((c._b||0)+ens(c).length)+' ITEMS';a.appendChild(th);a.appendChild(h);a.appendChild(p);if(sub)a.appendChild(sub);
+a.addEventListener('click',function(e){e.preventDefault();openDetail(c)});return a}
+function renderShared(){var u=meU(),S=loadS(),inv=document.getElementById('shInv'),o=document.getElementById('shOthers'),m=document.getElementById('shMine');inv.innerHTML=o.innerHTML=m.innerHTML='';if(!u)return;
+var list=[];Object.keys(S.cols).forEach(function(id){S.cols[id].invites.forEach(function(i){if(i.email===u.email)list.push({sc:S.cols[id],i:i})})});
+if(list.length){var h=document.createElement('p');h.className='grp';h.textContent='Uitnodigingen';inv.appendChild(h);
+list.forEach(function(x){var r=document.createElement('div');r.className='shr';var tx=document.createElement('div');tx.className='shtx';var b=document.createElement('b');b.className='cn';b.textContent=x.sc.name;var s=document.createElement('small');s.appendChild(sp('van'));s.appendChild(document.createTextNode(' '));s.appendChild(sp(x.sc.owner.name,'cn'));tx.appendChild(b);tx.appendChild(s);r.appendChild(tx);
+var ok=document.createElement('button');ok.className='addbtn';ok.type='button';ok.textContent='Accepteren';ok.addEventListener('click',function(){acceptInvite(x.sc.id,x.i.token)});
+var no=document.createElement('button');no.className='addbtn alt';no.type='button';no.textContent='Weigeren';no.addEventListener('click',function(){declineInvite(x.sc.id,x.i.token)});r.appendChild(ok);r.appendChild(no);inv.appendChild(r)})}
+shCards.forEach(function(c){var s=document.createElement('small');s.className='cby';s.appendChild(sp('door'));s.appendChild(document.createTextNode(' '));s.appendChild(sp(S.cols[c._sid].owner.name,'cn'));o.appendChild(mkFold(c,s))});
+if(!shCards.length){var e1=document.createElement('p');e1.className='none';e1.textContent='Nog niets met je gedeeld.';o.appendChild(e1)}
+var mine=cards.filter(function(c){return c._sid&&c._own});mine.forEach(function(c){var sc=S.cols[c._sid],n=sc?sc.members.length:0,s=document.createElement('small');s.className='cby';s.appendChild(sp('gedeeld met'));s.appendChild(document.createTextNode(' '));s.appendChild(sp(String(n),'cn'));s.appendChild(document.createTextNode(' '));s.appendChild(sp(n===1?'persoon':'personen'));m.appendChild(mkFold(c,s))});
+if(!mine.length){var e2=document.createElement('p');e2.className='none';e2.textContent='Je hebt nog geen collecties gedeeld.';m.appendChild(e2)}}
+function banner(msg){var b=document.getElementById('shBanner');b.textContent=msg||'';b.hidden=!msg}
+async function acceptInvite(sid,token){try{var r=await api('POST','/api/shared/'+sid+'/accept',{token:token});SHC.cols[sid]=r.col;shLast[sid]=colSig(r.col);refreshShared();renderShared();banner('Je bent toegevoegd aan de collectie.')}
+catch(e){banner(e.data&&e.data.error==='wrong_email'?'Deze uitnodiging is voor een ander e-mailadres. Log in met dat adres.':'Deze uitnodiging bestaat niet meer.')}}
+async function declineInvite(sid,token){try{await api('POST','/api/shared/'+sid+'/decline',{token:token})}catch(e){}delete SHC.cols[sid];renderShared()}
+function handleInvite(token){var u=meU(),S=loadS(),f=null;Object.keys(S.cols).forEach(function(id){S.cols[id].invites.forEach(function(i){if(i.token===token)f={sc:S.cols[id],i:i}})});
+if(!f)banner('Deze uitnodiging bestaat niet meer.');else if(!u||f.i.email!==u.email)banner('Deze uitnodiging is voor een ander e-mailadres. Log in met dat adres.');else banner('');renderShared();show('gedeeld')}
+window.__sh={init:function(tok){refreshShared();if(tok)handleInvite(tok)}};
+var shNav=document.querySelector('nav a[data-view=gedeeld]');if(shNav)shNav.addEventListener('click',function(){refreshShared();renderShared()});
+
+/* rechten */
+var dshare=document.createElement('p');dshare.className='dshare';dshare.hidden=true;ds.parentNode.insertBefore(dshare,ds.nextSibling);
+function applyPerms(){var own=!cur._sid||cur._own;document.getElementById('rename').hidden=!own;dc.hidden=!own;dshare.innerHTML='';
+if(cur._sid){var sc=loadS().cols[cur._sid];if(sc){if(cur._own){var n=sc.members.length;dshare.appendChild(sp('Gedeeld met'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(String(n),'cn'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(n===1?'persoon':'personen'))}
+else{dshare.appendChild(sp('Gedeeld door'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(sc.owner.name,'cn'))}}}
+dshare.hidden=!dshare.childNodes.length}
+function applyMPerms(){var u=meU(),ok=!cur._sid||cur._own||!!(curM&&curM.by&&u&&curM.by.email===u.email);document.getElementById('mEdit').hidden=!ok;document.getElementById('mDel').hidden=!ok}
+/* deelvenster */
+var m8=document.getElementById('modal8'),shEmail=document.getElementById('shEmail'),shMsg=document.getElementById('shMsg'),shList=document.getElementById('shList'),shStop=document.getElementById('shStop'),stopT;
+function shSay(m,ok){shMsg.textContent=m||'';shMsg.className='msg'+(m?(ok?' ok':' err'):'')}
+function inviteLink(tok){return location.href.split('#')[0]+'#invite='+tok}
+function mailFor(sc,inv){var en=document.documentElement.lang==='en',lk=inviteLink(inv.token),o=sc.owner.name;
+var sub=en?o+' invites you to the collection "'+sc.name+'"':o+' nodigt je uit voor de collectie "'+sc.name+'"';
+var body=en?'Hi,\n\n'+o+' invites you to add media together to the collection "'+sc.name+'" in Archive.\n\nOpen this link to accept the invitation:\n'+lk+'\n\nNote: log in or sign up with this email address.\n':'Hoi,\n\n'+o+' nodigt je uit om samen media toe te voegen aan de collectie "'+sc.name+'" in Archive.\n\nOpen deze link om de uitnodiging te accepteren:\n'+lk+'\n\nLet op: log in of registreer met dit e-mailadres.\n';
+return 'mailto:'+encodeURIComponent(inv.email).replace('%40','@')+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body)}
+function row(name,email,role,acts){var r=document.createElement('div');r.className='shr';var av=document.createElement('span');av.className='shav';av.textContent=initials2(name||email);var tx=document.createElement('div');tx.className='shtx';
+var b=document.createElement('b');b.className='cn';b.textContent=name||email;tx.appendChild(b);if(name&&email){var s=document.createElement('small');s.className='cn';s.textContent=email;tx.appendChild(s)}
+r.appendChild(av);r.appendChild(tx);r.appendChild(sp(role,'shrole'));(acts||[]).forEach(function(a){r.appendChild(a)});return r}
+function actBtn(txt,fn,cls){var b=document.createElement('button');b.type='button';b.className='addbtn alt shb'+(cls?' '+cls:'');b.textContent=txt;b.addEventListener('click',fn);return b}
+function renderShare(){var u=meU(),sc=cur._sid?loadS().cols[cur._sid]:null,own=!cur._sid||cur._own;shList.innerHTML='';
+document.getElementById('shInvBox').hidden=!own;shStop.hidden=!(cur._sid);shStop.textContent=own?'Stop met delen':'Collectie verlaten';shStop.classList.remove('confirm');
+var ow=sc?sc.owner:u;shList.appendChild(row(ow.name,ow.email,'Eigenaar'));
+if(sc){sc.members.forEach(function(m){var acts=own?[actBtn('\u00d7',function(){api('DELETE','/api/shared/'+cur._sid+'/members/'+encodeURIComponent(m.email)).then(function(){var s=loadS().cols[cur._sid];if(s)s.members=s.members.filter(function(x){return x.email!==m.email});renderShare();applyPerms()}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x')]:[];shList.appendChild(row(m.name,m.email,'Lid',acts))});
+if(own)sc.invites.forEach(function(i){var a=document.createElement('a');a.className='addbtn alt shb';a.href=mailFor(sc,i);a.target='_blank';a.rel='noopener';a.textContent='E-mail';
+var acts=[actBtn('Kopieer link',function(){var l=inviteLink(i.token),ok=function(){shSay('Link gekopieerd',true)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(l).then(ok,function(){window.prompt('',l)})}else window.prompt('',l)}),a,
+actBtn('\u00d7',function(){api('DELETE','/api/shared/'+cur._sid+'/invites/'+i.token).then(function(){var s=loadS().cols[cur._sid];if(s)s.invites=s.invites.filter(function(x){return x.token!==i.token});renderShare()}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x')];shList.appendChild(row('',i.email,'Uitgenodigd',acts))})}}
+function openShare(){if(!cur)return;m8Op=document.activeElement;shEmail.value='';shSay('');renderShare();m8.classList.add('open');m8.setAttribute('aria-hidden','false');setTimeout(function(){(document.getElementById('shInvBox').hidden?shList:shEmail).focus&&(document.getElementById('shInvBox').hidden?shClose:shEmail).focus()},60)}
+var shClose=document.getElementById('shClose');
+function closeShare(){m8.classList.remove('open');m8.setAttribute('aria-hidden','true');if(m8Op&&m8Op.focus)m8Op.focus();applyPerms();upSub();q.dispatchEvent(new Event('input'));if(views.gedeeld.classList.contains('open'))renderShared()}
+['mclose8','scrim8','shClose'].forEach(function(i){document.getElementById(i).addEventListener('click',closeShare)});
+document.addEventListener('keydown',function(e){if(!m8.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeShare()}else if(e.key==='Enter'&&e.target===shEmail){e.preventDefault();document.getElementById('shGo').click()}},true);
+document.getElementById('shGo').addEventListener('click',async function(){var em=shEmail.value.trim().toLowerCase(),u=meU();shSay('');
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){shSay('Vul een geldig e-mailadres in.');return}if(u&&em===u.email){shSay('Dit is je eigen e-mailadres.');return}
+var go=document.getElementById('shGo');go.disabled=true;
+try{if(!cur._sid){if(!makeShared(cur)){shSay('Er ging iets mis. Probeer opnieuw.');return}clearTimeout(shT);await pushShared();if(!SHC.cols[cur._sid]||SHC.cols[cur._sid].rev==null){shSay('Er ging iets mis. Probeer opnieuw.');return}}
+var sid=cur._sid,r=await api('POST','/api/shared/'+sid+'/invites',{email:em}),sc=SHC.cols[sid];if(sc){sc.invites=sc.invites||[];sc.invites.push(r.invite)}
+shEmail.value='';shSay(r.emailed?'Uitnodiging verzonden.':'',!!r.emailed);renderShare();upSub();setCnt(cur);applyPerms()}
+catch(e){shSay(e.status===409?'Dit e-mailadres is al uitgenodigd.':(e.data&&e.data.error==='invalid_email'?'Vul een geldig e-mailadres in.':'Er ging iets mis. Probeer opnieuw.'))}finally{go.disabled=false}});
+shStop.addEventListener('click',async function(){if(!shStop.classList.contains('confirm')){shStop.classList.add('confirm');var o=shStop.textContent;shStop.textContent='Zeker stoppen?';clearTimeout(stopT);stopT=setTimeout(function(){shStop.classList.remove('confirm');shStop.textContent=o},3000);return}
+clearTimeout(stopT);
+try{if(cur._own){dropShared(cur)}else{var sid=cur._sid;await api('POST','/api/shared/'+sid+'/leave');delete SHC.cols[sid];refreshShared();show('gedeeld');renderShared()}}catch(e){shSay('Er ging iets mis. Probeer opnieuw.');return}
+closeShare();if(views.detail.classList.contains('open')&&!cur._sid&&!cur._own&&shCards.indexOf(cur)<0&&allT().indexOf(cur)<0)show('collecties')});
+/* ---------- opslaan op de server (Cloudflare D1 + R2) ---------- */
+var active=false,wsRev=0,lastJSON='',saveT=null,uiT=null,saving=false,pollT=null,shLast={},shT=null,shBusy=false,upl={},statT=null;
+function api(){return window.__api.apply(null,arguments)}
+var statEl=document.createElement('div');statEl.id='savestat';statEl.setAttribute('role','status');statEl.hidden=true;document.body.appendChild(statEl);
+function setStatus(txt,cls,ms){clearTimeout(statT);statEl.textContent=txt||'';statEl.className=cls||'';statEl.hidden=!txt;if(ms)statT=setTimeout(function(){statEl.hidden=true},ms)}
+async function uploadData(v){if(upl[v])return upl[v];var bl=await (await fetch(v)).blob(),ct=bl.type||'image/jpeg';
+var r=await fetch('/api/upload',{method:'POST',credentials:'same-origin',headers:{'content-type':ct,'x-requested-with':'archive'},body:bl});
+if(!r.ok){var e=new Error('upload');e.status=r.status;throw e}var j=await r.json();upl[v]=j.url;return j.url}
+async function ext(){var jobs=[];function up(v,set){if(v&&v.indexOf('data:')===0)jobs.push(uploadData(v).then(set))}
+cards.forEach(function(c){var im=c.querySelector('.thumb img');if(im)up(im.getAttribute('src'),function(u){im.setAttribute('src',u)});if(!(c._sid&&c._own))ens(c).forEach(function(m){up(m.src,function(u){m.src=u})})});
+['leeslijst','notities','quotes'].forEach(function(ty){G[ty].forEach(function(g){up(g.cover,function(u){g.cover=u})})});await Promise.all(jobs)}
+function mkColCard(o){var a=document.createElement('a');a.className='card';a.href='#';a.dataset.n=o.name;var th=document.createElement('div');th.className='thumb'+(o.cover?'':' empty');
+if(o.cover){var im=document.createElement('img');im.alt='';im.src=o.cover;th.appendChild(im)}
+var h=document.createElement('h3');h.textContent=o.name;var p=document.createElement('p');p.textContent='0 ITEMS';a.appendChild(th);a.appendChild(h);a.appendChild(p);
+a._m=[];a._b=0;a._d=o.desc||'';a._ll=o.ll||'';a._lb=o.lb||'';a._cid=o.id;a.addEventListener('click',function(e){e.preventDefault()});return a}
+function mrec(m){var r={id:m._mid};FLD.forEach(function(k){if(m[k]!==undefined)r[k]=m[k]});r.tags=(m.tags||[]).slice();return r}
+function snapshot(){var mm={},media=[];function mref(m){if(!m._mid)m._mid='m'+uidS(6);if(!mm[m._mid]){mm[m._mid]=1;media.push(mrec(m))}return m._mid}
+var cols=cards.map(function(c){if(!c._cid)c._cid='c'+uidS(6);var im=c.querySelector('.thumb img'),o={id:c._cid,name:c.dataset.n,desc:c._d||'',ll:c._ll||'',lb:c._lb||'',cover:im?im.getAttribute('src'):''};
+if(c._sid&&c._own)o.sid=c._sid;else o.m=ens(c).map(mref);return o});
+var notes=itemsOf('notities').map(function(a){return{t:a.querySelector('.nt').textContent,x:a.querySelector('.nx').textContent,tags:(a._t||[]).slice(),d:a.querySelector('.nd').textContent,g:gOf(a).slice()}});
+var quotes=itemsOf('quotes').map(function(a){var t=a.querySelector('.qt').textContent;if(t.length>1&&t.charAt(0)==='"'&&t.slice(-1)==='"')t=t.slice(1,-1);return{t:t,au:a.querySelector('.au').textContent,wk:a.querySelector('.wk').textContent,tags:(a._t||[]).slice(),g:gOf(a).slice()}});
+var reading=itemsOf('leeslijst').map(function(a){var s=a.querySelector('.sub');return{t:a.querySelector('.ttl').textContent,sub:s?s.textContent:'',tags:[].slice.call(a.querySelectorAll('.chip')).map(function(c){return c.firstChild.textContent}),done:a.classList.contains('done')?1:0,g:gOf(a).slice()}});
+var groups={};['leeslijst','notities','quotes'].forEach(function(ty){groups[ty]=G[ty].map(function(g){return{id:g.id,name:g.name,cover:g.cover||'',base:g.base||0}})});
+return{v:1,collections:cols,media:media,notes:notes,quotes:quotes,reading:reading,groups:groups}}
+function clearAll(){cards.splice(0);stash.length=0;shCards.length=0;document.getElementById('grid').innerHTML='';list.innerHTML='';ng.innerHTML='';qg.innerHTML='';G.leeslijst=[];G.notities=[];G.quotes=[];A.leeslijst=A.notities=A.quotes=null;gseq=0}
+function restore(d){clearAll();d=d||{};var mm={};(d.media||[]).forEach(function(r){var m={_mid:r.id};FLD.forEach(function(k){if(r[k]!==undefined)m[k]=r[k]});m.tags=(r.tags||[]).slice();mm[r.id]=m});
+var grid=document.getElementById('grid');(d.collections||[]).forEach(function(o){var c=mkColCard(o);if(o.sid){c._sid=o.sid;c._own=true;c._known=[]}else c._m=(o.m||[]).map(function(id){return mm[id]}).filter(Boolean);cards.push(c);grid.appendChild(c);setCnt(c)});
+var g=d.groups||{};['leeslijst','notities','quotes'].forEach(function(ty){G[ty]=(g[ty]||[]).map(function(x){var n=parseInt(String(x.id).replace(/\D/g,''),10)||0;if(n>gseq)gseq=n;return{id:x.id,name:x.name,cover:x.cover||'',base:x.base||0}})});
+(d.notes||[]).forEach(function(n){var a=ncard([n.t,n.x,n.tags||[],n.d||'']);a._g=(n.g||[]).slice();gmUpdate(a);ng.appendChild(a)});
+(d.quotes||[]).forEach(function(x){var a=qcard([x.t,x.au,x.wk,x.tags||[]]);a._g=(x.g||[]).slice();gmUpdate(a);qg.appendChild(a)});
+(d.reading||[]).forEach(function(r){var a=item([r.t,r.sub||'',r.tags||[],r.done]);a._g=(r.g||[]).slice();gmUpdate(a);list.appendChild(a)});
+count();['leeslijst','notities','quotes'].forEach(applyView);q.dispatchEvent(new Event('input'));updateUI()}
+function isEmpty(){return !cards.length&&!itemsOf('leeslijst').length&&!itemsOf('notities').length&&!itemsOf('quotes').length&&!G.leeslijst.length&&!G.notities.length&&!G.quotes.length}
+/* lege toestanden en teller */
+var HINT={};function mkHint(after,txt){var p=document.createElement('p');p.className='none ehint';p.textContent=txt;p.hidden=true;after.parentNode.insertBefore(p,after.nextSibling);return p}
+HINT.col=mkHint(document.getElementById('grid'),'Nog geen collecties. Maak er een met "+ Nieuwe collectie".');
+HINT.leeslijst=mkHint(GE.leeslijst,'Je leeslijst is leeg. Voeg een item toe met "+ Toevoegen".');
+HINT.notities=mkHint(GE.notities,'Nog geen notities. Maak er een met "+ Notitie toevoegen".');
+HINT.quotes=mkHint(GE.quotes,'Nog geen quotes. Voeg er een toe met "+ Quote toevoegen".');
+function updateUI(){var set=new Set();cards.forEach(function(c){ens(c).forEach(function(m){set.add(m)})});
+var n=set.size+itemsOf('leeslijst').length+itemsOf('notities').length+itemsOf('quotes').length,b=document.querySelector('#stat b');if(b)b.textContent=n;
+HINT.col.hidden=cards.length>0;
+['leeslijst','notities','quotes'].forEach(function(ty){HINT[ty].hidden=!(itemsOf(ty).length===0&&G[ty].length===0&&!A[ty])});
+var sb=document.getElementById('seedBtn');if(sb)sb.hidden=!isEmpty()}
+/* opslaan */
+function dirty(){if(!active)return;clearTimeout(saveT);saveT=setTimeout(doSave,900);clearTimeout(uiT);uiT=setTimeout(updateUI,200)}
+async function reloadFromServer(){var w=await api('GET','/api/workspace');wsRev=w.rev;restore(w.data||{});lastJSON=JSON.stringify(snapshot());setStatus('Bijgewerkt vanuit een ander venster.','',4000)}
+async function doSave(){if(!active)return;if(saving){dirty();return}saving=true;
+try{await ext();var s=JSON.stringify(snapshot());if(s===lastJSON)return;setStatus('Opslaan...');
+var r=await api('PUT','/api/workspace',{rev:wsRev,data:JSON.parse(s)});wsRev=r.rev;lastJSON=s;setStatus('Alles opgeslagen','',1800)}
+catch(e){if(e.status===409){try{await reloadFromServer()}catch(x){}}else if(e.status===401){if(window.__sessionExpired)window.__sessionExpired()}else{setStatus('Opslaan mislukt. Probeer opnieuw.','err');clearTimeout(saveT);saveT=setTimeout(doSave,8000)}}
+finally{saving=false}}
+function flushNow(){clearTimeout(saveT);if(saving)return;try{var s=JSON.stringify(snapshot());if(s===lastJSON)return;if(s.indexOf('"data:')>-1||s.length>60000){doSave();return}
+fetch('/api/workspace',{method:'PUT',keepalive:true,credentials:'same-origin',headers:{'content-type':'application/json','x-requested-with':'archive'},body:JSON.stringify({rev:wsRev,data:JSON.parse(s)})}).then(function(r){return r.json()}).then(function(j){if(j.rev){wsRev=j.rev;lastJSON=s}}).catch(function(){})}catch(x){}}
+['click','keyup','change','input','paste','drop','focusout'].forEach(function(ev){document.addEventListener(ev,dirty,true)});
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&active)flushNow()});
+window.addEventListener('pagehide',function(){if(active)flushNow()});
+/* gedeelde collecties bijhouden */
+function shDirty(){clearTimeout(shT);shT=setTimeout(pushShared,500)}
+function colSig(c){return JSON.stringify([c.name,c.desc,c.cover,c.media])}
+async function extShared(col){var jobs=[];function up(v,set){if(v&&v.indexOf('data:')===0)jobs.push(uploadData(v).then(set))}up(col.cover,function(u){col.cover=u});col.media.forEach(function(r){up(r.src,function(u){r.src=u})});await Promise.all(jobs)}
+async function pushShared(){shT=null;if(!active)return;if(shBusy){shDirty();return}shBusy=true;var u=meU();
+try{var ids=Object.keys(SHC.cols);for(var i=0;i<ids.length;i++){var id=ids[i],col=SHC.cols[id];if(!col||!u)continue;
+var own=col.owner.email===u.email,mem=col.members.some(function(m){return m.email===u.email});if(!own&&!mem)continue;
+await extShared(col);var sig=colSig(col);if(col.rev!=null&&shLast[id]===sig)continue;var res;
+try{if(col.rev==null)res=await api('POST','/api/shared',{id:id,name:col.name,desc:col.desc,cover:col.cover,ln:col.ln,media:col.media});
+else res=await api('PUT','/api/shared/'+id,{rev:col.rev,name:col.name,desc:col.desc,cover:col.cover,media:col.media})}
+catch(e){if(e.status===409&&e.data&&e.data.col){var cd=allT().filter(function(c){return c._sid===id})[0];SHC.cols[id]=e.data.col;if(cd)syncShared(cd);continue}
+if(e.status===401){if(window.__sessionExpired)window.__sessionExpired();return}throw e}
+SHC.cols[id]=res.col;shLast[id]=colSig(res.col);var c2=allT().filter(function(c){return c._sid===id})[0];if(c2){hydrate(c2,res.col);setCnt(c2)}
+if(cur&&cur._sid===id&&views.detail.classList.contains('open')){figs=cur._m.map(fig);layout()}}}
+catch(e){setStatus('Opslaan mislukt. Probeer opnieuw.','err',4000);setTimeout(shDirty,8000)}finally{shBusy=false}}
+async function pollShared(){if(!active||shT||shBusy||document.visibilityState==='hidden')return;
+try{var r=await api('GET','/api/shared');if(shT||shBusy)return;if(JSON.stringify(r.cols)===JSON.stringify(SHC.cols))return;
+SHC={cols:r.cols};Object.keys(r.cols).forEach(function(id){shLast[id]=colSig(r.cols[id])});refreshShared();
+if(views.gedeeld.classList.contains('open'))renderShared();
+if(views.detail.classList.contains('open')&&cur&&cur._sid&&pullShared(cur)!==false){figs=cur._m.map(fig);layout();applyPerms()}}catch(e){}}
+/* starten en stoppen */
+async function startData(){var w=await api('GET','/api/workspace');wsRev=w.rev;restore(w.data||{});lastJSON=JSON.stringify(snapshot());
+var s=await api('GET','/api/shared');SHC={cols:s.cols||{}};shLast={};Object.keys(SHC.cols).forEach(function(id){shLast[id]=colSig(SHC.cols[id])});refreshShared();
+active=true;clearInterval(pollT);pollT=setInterval(pollShared,15000);updateUI()}
+function stopData(){active=false;clearTimeout(saveT);clearTimeout(shT);shT=null;clearInterval(pollT);SHC={cols:{}};shLast={};restore({});wsRev=0;lastJSON='';setStatus('')}
+async function loadSeed(){var r=await fetch('seed.json');if(!r.ok)throw new Error('seed');restore(await r.json());dirty()}
+window.__data={poll:pollShared,updateUI:updateUI,start:startData,stop:stopData,snapshot:snapshot,restore:restore,loadSeed:loadSeed,isEmpty:isEmpty,flush:flushNow,save:doSave};
+/* link automatisch aanvullen (titel, beschrijving, afbeelding) */
+function enrich(u){if(!window.__api||!active)return;api('POST','/api/preview',{url:u}).then(function(p){if(!m2.classList.contains('open')||mu.value.trim()!==u)return;
+if(p.title&&!mtitle.value.trim())mtitle.value=p.title;if(p.description&&!mdesc.value.trim())mdesc.value=p.description;
+if(p.image&&!pendData){var im=new Image();im.onload=function(){if(!m2.classList.contains('open')||mu.value.trim()!==u)return;pendData=p.image;pendR=+(im.naturalHeight/im.naturalWidth).toFixed(4);var pi=document.getElementById('mpvImg'),pv=document.getElementById('mpv');pi.onload=function(){pv.hidden=false;document.getElementById('mpvTxt').textContent=p.site||''};pi.src=p.image};im.src=p.image}
+rdy()}).catch(function(){})}
+mu.addEventListener('change',function(){var v=mu.value.trim();if(/^https?:\/\//i.test(v)&&(kind==='link'||kind==='social')&&!mtitle.value.trim())enrich(v)});
+
+window.__show=show;
+})();
+</script>
+<script>
+(function(){
+var BG=[{"id": "iso", "name": "Isometrisch landschap"}, {"id": "woonwijk", "name": "Woonwijk aan zee", "thumb": "assets/bg-woonwijk-thumb.jpg", "full": "assets/bg-woonwijk.jpg"}, {"id": "stad", "name": "Stadje aan de rivier", "thumb": "assets/bg-stad-thumb.jpg", "full": "assets/bg-stad.jpg"}, {"id": "duinweg", "name": "Duinweg", "thumb": "assets/bg-duinweg-thumb.jpg", "full": "assets/bg-duinweg.jpg"}, {"id": "ballonnen", "name": "Heteluchtballonnen", "thumb": "assets/bg-ballonnen-thumb.jpg", "full": "assets/bg-ballonnen.jpg"}, {"id": "heuvels", "name": "Heuvels en akkers", "thumb": "assets/bg-heuvels-thumb.jpg", "full": "assets/bg-heuvels.jpg"}];
+var mem={};
+function ld(k,d){try{var v=localStorage.getItem(k);if(v!==null)return JSON.parse(v)}catch(x){}return k in mem?mem[k]:d}
+function sv(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(x){}}
+/* ---------- vertaling ---------- */
+var L='nl',D=Object.create(null);
+var DICT={'(optioneel)':'(optional)','+ Media toevoegen':'+ Add media','+ Nieuwe collectie':'+ New collection','+ Nieuwe groep':'+ New group','+ Notitie toevoegen':'+ Add note','+ Quote toevoegen':'+ Add quote','+ Toevoegen':'+ Add','+ Collectie':'+ Collection','Aanmaken':'Create','Afbeelding':'Image','Alle collecties':'All collections','Annuleren':'Cancel','Beschrijving':'Description','Bestaand':'Existing','Bestaande items toevoegen':'Add existing items','Bestaande media toevoegen':'Add existing media','Bewerken':'Edit','COLLECTIES':'COLLECTIONS','Collectie':'Collection','Collectie bewerken':'Edit collection','Collectie verwijderen':'Delete collection','Collecties':'Collections','Collecties zoeken...':'Search collections...','Cover afbeelding':'Cover image','Cover verwijderen':'Remove cover','Delen':'Share','Gebruik het formaat 50.879,4.6997':'Use the format 50.879,4.6997','Gedeeld met mij':'Shared with me','Kies een afbeelding':'Choose an image','Kies een bestand':'Choose a file','Kies een PDF':'Choose a PDF','Korte omschrijving...':'Short description...','Leeslijst':'Reading list','Locatie (lat,lng)':'Location (lat,lng)','Locatie-label':'Location label','Losse notities':'Loose notes','Losse quotes':'Loose quotes','Media bewerken':'Edit media','Media toevoegen':'Add media','Media zoeken...':'Search media...','Naam':'Name','Naam bewerken':'Edit name','Nieuwe collectie':'New collection','Nieuwe groep':'New group','Notities':'Notes','Notities zoeken...':'Search notes...','Opslaan':'Save','Quotes zoeken...':'Search quotes...','Sluiten':'Close','Tag toevoegen':'Add tag','Tag toevoegen...':'Add tag...','Titel':'Title','Titel van het item':'Title of the item','Toevoegen':'Add','Uploaden':'Upload','Zoek op naam of tag...':'Search by name or tag...','Zoeken':'Search','Zoeken...':'Search...','Zonder groep':'No group','bv. Houten gevels':'e.g. Wooden facades','bv. Leuven':'e.g. Leuven','bv. Voorbeeldgroep':'e.g. Example group','Afvinken':'Mark as done','Alle bestaande media staat al in deze collectie.':'All existing media is already in this collection.','Alle items':'All items','Alle notities':'All notes','Alle quotes':'All quotes','Auteur':'Author','Bron':'Source','Er is nog geen media om te kiezen.':'There is no media to choose from yet.','Er zijn nog geen items om te kiezen.':'There are no items to choose from yet.','Geen beschrijving':'No description','Geen locatie':'No location','Groep bewerken':'Edit group','Groep verwijderen':'Delete group','Groepen':'Groups','In deze groep':'In this group','Klaar':'Done','Link gekopieerd':'Link copied','Niets beschikbaar':'Nothing available','Niets beschikbaar.':'Nothing available.','Nieuw item':'New item','Nieuwe notitie':'New note','Nieuwe quote':'New quote','Nog geen collecties.':'No collections yet.','Nog geen groepen.':'No groups yet.','Nog geen media in deze collectie.':'No media in this collection yet.','Nog geen quotes. Voeg er een toe.':'No quotes yet. Add one.','Nog geen tags.':'No tags yet.','Nog niets in deze groep. Voeg een item toe of kies bij een bestaand item deze groep.':'Nothing in this group yet. Add an item or choose this group on an existing item.','Notitie verwijderen':'Delete note','PDF-bestand':'PDF file','Populaire tags':'Popular tags','Probeer een tag':'Try a tag','Quote verwijderen':'Delete quote','Schrijf hier je notitie...':'Write your note here...','Tag verwijderen':'Remove tag','Verwijderen':'Delete','Zeker verwijderen?':'Really delete?',
+'Uitloggen':'Log out','Profiel':'Profile','E-mailadres':'Email address','Wachtwoord wijzigen':'Change password','Huidig wachtwoord':'Current password','Nieuw wachtwoord':'New password','Bevestig nieuw wachtwoord':'Confirm new password','Achtergrond':'Background','Kies de illustratie die de pagina vult.':'Choose the illustration that fills the page.','Taal':'Language','Welkom terug':'Welcome back','Log in om verder te gaan.':'Log in to continue.','Maak een account':'Create an account','Registreer om je archief te starten.':'Sign up to start your archive.','Inloggen':'Log in','Registreren':'Sign up','Wachtwoord':'Password',
+'Vul alle velden in.':'Fill in all fields.','Ongeldig e-mailadres.':'Invalid email address.','Het wachtwoord moet minstens 8 tekens bevatten.':'The password must be at least 8 characters.','Er bestaat al een account met dit e-mailadres.':'An account with this email address already exists.','Onjuist e-mailadres of wachtwoord.':'Incorrect email address or password.','Kan het wachtwoord niet veilig verwerken in deze omgeving.':'The password cannot be processed securely in this environment.','Huidig wachtwoord is onjuist.':'Current password is incorrect.','De wachtwoorden komen niet overeen.':'The passwords do not match.','Naam en e-mailadres zijn verplicht.':'Name and email address are required.','Dit e-mailadres is al in gebruik.':'This email address is already in use.','Opgeslagen.':'Saved.','Wachtwoord gewijzigd.':'Password changed.','Isometrisch landschap':'Isometric landscape','Woonwijk aan zee':'Seaside neighbourhood','Stadje aan de rivier':'Town by the river','Duinweg':'Dune road','Heteluchtballonnen':'Hot-air balloons','Heuvels en akkers':'Hills and fields','Plak een afbeelding of link met Ctrl/Cmd+V, of sleep ze hierheen.':'Paste an image or link with Ctrl/Cmd+V, or drag it here.','Laat los om toe te voegen':'Drop to add','Afbeelding of link':'Image or link','Plak van klembord':'Paste from clipboard','Plak met Ctrl/Cmd+V.':'Paste with Ctrl/Cmd+V.','Niets gevonden in je klembord.':'Nothing found on your clipboard.','Browserknop':'Browser button','Sleep de knop naar je bladwijzerbalk. Klik erop op een pagina van Instagram, Pinterest of een andere site, ga terug naar Archive en plak met Ctrl/Cmd+V in "Media toevoegen".':'Drag the button to your bookmarks bar. Click it on a page from Instagram, Pinterest or any other site, go back to Archive and paste with Ctrl/Cmd+V into "Add media".','Bewaar in Archive':'Save to Archive','Kopieer bladwijzercode':'Copy bookmarklet code','Gekopieerd.':'Copied.','Opslaan...':'Saving...','Alles opgeslagen':'All changes saved','Opslaan mislukt. Probeer opnieuw.':'Saving failed. Try again.','Bijgewerkt vanuit een ander venster.':'Updated from another window.','Nog geen collecties. Maak er een met "+ Nieuwe collectie".':'No collections yet. Create one with "+ New collection".','Je leeslijst is leeg. Voeg een item toe met "+ Toevoegen".':'Your reading list is empty. Add an item with "+ Add".','Nog geen notities. Maak er een met "+ Notitie toevoegen".':'No notes yet. Create one with "+ Add note".','Nog geen quotes. Voeg er een toe met "+ Quote toevoegen".':'No quotes yet. Add one with "+ Add quote".','Voorbeeldgegevens':'Example data','Laad voorbeeldcollecties, notities en quotes om de app uit te proberen. Dit kan alleen als je archief nog leeg is.':'Load example collections, notes and quotes to try the app. Only possible while your archive is empty.','Voorbeeldgegevens toevoegen':'Add example data','Voorbeeldgegevens geladen.':'Example data loaded.','Account verwijderen':'Delete account','Verwijdert je account, je collecties en alle afbeeldingen definitief.':'Permanently deletes your account, your collections and all images.','Te veel pogingen. Probeer het later opnieuw.':'Too many attempts. Try again later.','Kan geen verbinding maken met de server.':'Cannot reach the server.','Er ging iets mis. Probeer opnieuw.':'Something went wrong. Try again.','De server is nog niet ingesteld (database en opslag koppelen).':'The server is not set up yet (connect the database and storage).','Uitnodiging verzonden.':'Invitation sent.','Uitnodigingen':'Invitations','Gedeeld door anderen':'Shared by others','Door mij gedeeld':'Shared by me','Accepteren':'Accept','Weigeren':'Decline','Nog niets met je gedeeld.':'Nothing has been shared with you yet.','Je hebt nog geen collecties gedeeld.':'You have not shared any collections yet.','Collectie delen':'Share collection','Nodig mensen uit om samen media aan deze collectie toe te voegen. Tags worden mee gedeeld.':'Invite people to add media to this collection together. Tags are shared too.','Uitnodigen':'Invite','Personen met toegang':'People with access','Eigenaar':'Owner','Lid':'Member','Uitgenodigd':'Invited','Kopieer link':'Copy link','E-mail':'Email','Stop met delen':'Stop sharing','Collectie verlaten':'Leave collection','Zeker stoppen?':'Really stop?','Uitnodigingslinks werken in deze demo alleen in deze browser.':'Invitation links only work in this browser in this demo.','Vul een geldig e-mailadres in.':'Enter a valid email address.','Dit e-mailadres is al uitgenodigd.':'This email address has already been invited.','Dit is je eigen e-mailadres.':'This is your own email address.','Opslag is vol. Gebruik minder of kleinere afbeeldingen.':'Storage is full. Use fewer or smaller images.','Deze uitnodiging is voor een ander e-mailadres. Log in met dat adres.':'This invitation is for a different email address. Log in with that address.','Deze uitnodiging bestaat niet meer.':'This invitation no longer exists.','Je bent toegevoegd aan de collectie.':'You have joined the collection.','van':'from','door':'by','gedeeld met':'shared with','Gedeeld met':'Shared with','Gedeeld door':'Shared by','persoon':'person','personen':'people','naam@voorbeeld.be':'name@example.com','Inhoud':'Content','Schrijf je notitie...':'Write your note...','bv. Materiaalonderzoek baksteen':'e.g. Brick material study','Plak of typ de quote...':'Paste or type the quote...','Open bron':'Open source','Sleep deze knop naar je bladwijzerbalk.':'Drag this button to your bookmarks bar.'};
+Object.keys(DICT).forEach(function(k){D[k]=DICT[k]});
+var NM={collecties:'collections',media:'media',notities:'notes',quotes:'quotes',Collecties:'Collections',Groepen:'Groups',Media:'Media',Notities:'Notes',Quotes:'Quotes',Leeslijst:'Reading list'};
+var PATS=[[/^Toegevoegd: (.*?)(?: \u00b7 door (.*))?$/,function(m){return 'Added: '+m[1]+(m[2]?' \u00b7 by '+m[2]:'')}],[/^(\d+) ITEMS \u00b7 GEDEELD$/,function(m){return m[1]+' ITEMS \u00b7 SHARED'}],[/^(\d+) geselecteerd$/,function(m){return m[1]+' selected'}],[/^(\d+) groepen$/,function(m){return m[1]+' groups'}],
+[/^Geen (collecties|media|notities|quotes) gevonden voor (.*)$/,function(m){return 'No '+NM[m[1]]+' found for '+m[2]}],[/^Geen resultaten voor (.*)$/,function(m){return 'No results for '+m[1]}],
+[/^(Collecties|Groepen|Media|Notities|Quotes|Leeslijst) \u00b7 (\d+)$/,function(m){return NM[m[1]]+' \u00b7 '+m[2]}],[/^Media toevoegen aan (.*)$/,function(m){return 'Add media to '+m[1]}],
+[/^(Nieuwe groep|Groep bewerken) \u2014 (Leeslijst|Notities|Quotes)$/,function(m){return (m[1]==='Nieuwe groep'?'New group':'Edit group')+' \u2014 '+NM[m[2]]}]];
+function trS(s){if(L==='nl')return s;var m=s.trim();if(!m)return s;if(m in D){return s.replace(m,function(){return D[m]})}
+for(var i=0;i<PATS.length;i++){var r=PATS[i][0].exec(m);if(r){var o=PATS[i][1](r);return s.replace(m,function(){return o})}}return s}
+var SKIP='.nt,.nx,.qt,.au,.wk,.ttl,.sub,.chip,.nchip,.ghn,.fold h3,.card h3,.mi figcaption,.mtitle,.mdescp:not(.empty),.gl,.pkx,.gtag,.gr,.dsub,#dt,.ku,.bgb-user,.cn,textarea,script,style';
+var ATTR=['placeholder','aria-label','title'];
+function skipEl(el){return !el||!!el.closest(SKIP)}
+function txt(n,force){var p=n.parentElement;if(!p||skipEl(p))return;var cur=n.nodeValue;if(!force&&n.__t!==undefined&&cur===n.__t)return;
+var src=(force&&n.__t!==undefined&&cur===n.__t)?n.__o:cur,t=trS(src);n.__o=src;n.__t=t!==src?t:undefined;if(cur!==t)n.nodeValue=t}
+var SKIPA=SKIP.replace(',textarea','');
+function att(el,force){if(!el.closest||el.closest(SKIPA))return;ATTR.forEach(function(a){if(!el.hasAttribute(a))return;var v=el.getAttribute(a),r=el.__a&&el.__a[a];if(!force&&r&&v===r.t)return;
+var src=(r&&v===r.t)?r.o:v,t=trS(src);if(t!==src){(el.__a=el.__a||{})[a]={o:src,t:t}}else if(r)delete el.__a[a];if(v!==t)el.setAttribute(a,t)})}
+function scan(root,force){if(root.nodeType===3){txt(root,force);return}if(root.nodeType!==1||root.tagName==='SCRIPT'||root.tagName==='STYLE')return;att(root,force);
+var w=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.nodeType===1&&(n.tagName==='SCRIPT'||n.tagName==='STYLE')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT}}),n;
+while((n=w.nextNode())){if(n.nodeType===3)txt(n,force);else att(n,force)}}
+new MutationObserver(function(ms){if(L==='nl')return;ms.forEach(function(m){if(m.type==='childList'){m.addedNodes.forEach(function(n){scan(n,false)})}else if(m.type==='characterData'){txt(m.target,false)}else{att(m.target,false)}})}).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTR});
+function setLang(l){L=l;document.documentElement.lang=l;scan(document.body,true);mkBm();sv('archive.lang',l);if(cur&&cur.prefs&&cur.prefs.lang!==l){cur.prefs.lang=l;api('PATCH','/api/me',{prefs:{lang:l}}).catch(function(){})}
+document.querySelectorAll('#langAuth .sb,#langAcc .sb').forEach(function(b){b.classList.toggle('on',b.dataset.l===l);b.setAttribute('aria-pressed',b.dataset.l===l?'true':'false')})}
+/* browserknop */
+var BMBODY="var d=document;function m(p){var e=d.querySelector('meta[property=\"'+p+'\"],meta[name=\"'+p+'\"]');return e&&e.content||''}\nvar u1=m('og:image')||m('twitter:image'),us=[];if(u1)us.push(u1);\nvar bi=null,bs=0;[].forEach.call(d.images,function(g){var z=(g.naturalWidth||0)*(g.naturalHeight||0);if(z>bs){bs=z;bi=g}});var u2=bi&&(bi.currentSrc||bi.src);if(u2&&u2!==u1)us.push(u2);\nvar o={v:1,u:location.href,t:(m('og:title')||d.title||'').slice(0,200),d:(m('og:description')||m('description')||'').slice(0,500),i:u1||u2||'',s:location.hostname.replace(/^www\\./,'')};\nfunction done(msg){var t=d.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;top:20px;right:20px;z-index:2147483647;background:#1b1d1c;color:#fff;font:500 14px system-ui,sans-serif;padding:14px 20px;border-radius:999px;box-shadow:0 8px 30px rgba(0,0,0,.35)';d.body.appendChild(t);setTimeout(function(){t.remove()},3500)}\nfunction load(u){return new Promise(function(res,rej){var im=new Image();im.crossOrigin='anonymous';var tm=setTimeout(rej,6000);im.onload=function(){clearTimeout(tm);res(im)};im.onerror=function(){clearTimeout(tm);rej()};im.src=u})}\nfunction thumb(im){var w=im.naturalWidth,h=im.naturalHeight;if(!w||!h)throw 0;var k=Math.min(1,800/w),c=d.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);return{b:c.toDataURL('image/jpeg',.82),r:+(c.height/c.width).toFixed(4)}}\nfunction first(i){if(i>=us.length)return Promise.resolve(null);return load(us[i]).then(thumb).catch(function(){return first(i+1)})}\nfunction copy(img){var s='ARCHIVE:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));var msg=img?OK:ON;\nfunction fb(){var a=d.createElement('textarea');a.value=s;a.style.cssText='position:fixed;opacity:0';d.body.appendChild(a);a.select();var k=false;try{k=d.execCommand('copy')}catch(e){}a.remove();if(k)done(msg);else prompt(FM,s)}\nif(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(function(){done(msg)},fb)}else fb()}\nfirst(0).then(function(t){if(t){o.b=t.b;o.r=t.r}copy(!!t)})",bmk=document.getElementById('bmk'),bmMsg=document.getElementById('bmMsg');
+function bmCode(){var en=L==='en',ok=en?'Copied \u2014 paste it into Archive':'Gekopieerd \u2014 plak het in Archive',on=en?'Copied (without image) \u2014 paste it into Archive':'Gekopieerd (zonder afbeelding) \u2014 plak het in Archive',fail=en?'Copy this text and paste it into Archive':'Kopieer deze tekst en plak hem in Archive';
+return '(function(){var OK='+JSON.stringify(ok)+',ON='+JSON.stringify(on)+',FM='+JSON.stringify(fail)+';'+BMBODY+'})()'}
+function mkBm(){if(bmk)bmk.setAttribute('href','javascript:'+encodeURIComponent(bmCode()))}
+bmk.addEventListener('click',function(e){e.preventDefault();bmMsg.className='msg';bmMsg.textContent='Sleep deze knop naar je bladwijzerbalk.';setTimeout(function(){bmMsg.textContent=''},4000)});
+document.getElementById('bmCopy').addEventListener('click',function(){var c='javascript:'+bmCode(),done=function(){bmMsg.className='msg ok';bmMsg.textContent='Gekopieerd.';setTimeout(function(){bmMsg.textContent=''},3000)};
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c).then(done,function(){window.prompt('',c)})}else{window.prompt('',c)}});
+/* ---------- accounts (server: Cloudflare D1) ---------- */
+var cur=null;window.__me=function(){return cur?{email:cur.email,name:cur.name}:null};
+var hm=/[#&]invite=([0-9a-f]+)/.exec(location.hash),pend=hm?hm[1]:null;
+async function api(method,url,body){var o={method:method,credentials:'same-origin',headers:{'x-requested-with':'archive'}};if(body!==undefined){o.headers['content-type']='application/json';o.body=JSON.stringify(body)}
+var r;try{r=await fetch(url,o)}catch(x){var e=new Error('network');e.status=0;throw e}
+var j=null;try{j=await r.json()}catch(x){}
+if(!r.ok){var e2=new Error((j&&j.error)||'server');e2.status=r.status;e2.data=j;throw e2}return j}
+window.__api=api;
+var ERR={exists:'Er bestaat al een account met dit e-mailadres.',invalid_email:'Ongeldig e-mailadres.',weak_password:'Het wachtwoord moet minstens 8 tekens bevatten.',invalid_credentials:'Onjuist e-mailadres of wachtwoord.',missing:'Vul alle velden in.',too_many:'Te veel pogingen. Probeer het later opnieuw.',network:'Kan geen verbinding maken met de server.',not_configured:'De server is nog niet ingesteld (database en opslag koppelen).'};
+function errMsg(e){return ERR[e&&e.message]||'Er ging iets mis. Probeer opnieuw.'}
+function initials(a){var p=a.name.trim().split(/\s+/).filter(Boolean);return ((p[0]||a.email)[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase()}
+function applyBg(id){var b=BG.filter(function(x){return x.id===id})[0]||BG[0];var st=document.getElementById('bgstyle');if(!st){st=document.createElement('style');st.id='bgstyle';document.head.appendChild(st)}st.textContent=b.id==='iso'?'':'body{background-image:url("'+b.full+'")!important}';sv('archive.bg',b.id);
+document.querySelectorAll('.bgb').forEach(function(x){x.setAttribute('aria-pressed',x.dataset.id===b.id?'true':'false')})}
+var auth=document.getElementById('auth'),circle=document.querySelector('.account');
+async function enter(a,manual){cur=a;a.prefs=a.prefs||{};applyBg(a.prefs.bg||ld('archive.bg','iso'));
+if(!manual&&a.prefs.lang&&a.prefs.lang!==L)setLang(a.prefs.lang);
+try{await window.__data.start()}catch(x){cur=null;throw x}
+document.body.classList.remove('locked');auth.classList.add('out');circle.textContent=initials(a);circle.setAttribute('aria-label','Account');
+var tk=pend;pend=null;if(tk){try{history.replaceState(null,'',location.href.split('#')[0])}catch(x){}}if(window.__sh)window.__sh.init(tk);
+if(manual&&(a.prefs.lang!==L||!a.prefs.bg)){a.prefs.lang=L;a.prefs.bg=a.prefs.bg||ld('archive.bg','iso');api('PATCH','/api/me',{prefs:{lang:L,bg:a.prefs.bg}}).catch(function(){})}}
+function lock(){cur=null;window.__show('home');var g=document.getElementById('gs');if(g)g.classList.remove('open');
+['rName','rEmail','rPass'].forEach(function(i){document.getElementById(i).value=''});err('');document.body.classList.add('locked');auth.classList.remove('out');setTimeout(function(){document.getElementById('rEmail').focus()},80)}
+window.__sessionExpired=function(){if(window.__data)window.__data.stop();lock()};
+/* login / registreren */
+var mode='login',eN=document.getElementById('rName'),eE=document.getElementById('rEmail'),eP=document.getElementById('rPass'),aerr=document.getElementById('aerr'),go=document.getElementById('aGo');
+function err(m){aerr.textContent=m||'';aerr.hidden=!m}
+function setMode(m){mode=m;var r=m==='reg';document.getElementById('tabLogin').classList.toggle('on',!r);document.getElementById('tabReg').classList.toggle('on',r);document.getElementById('fName').hidden=!r;
+document.getElementById('authT').textContent=r?'Maak een account':'Welkom terug';document.getElementById('authS').textContent=r?'Registreer om je archief te starten.':'Log in om verder te gaan.';
+go.textContent=r?'Registreren':'Inloggen';eP.setAttribute('autocomplete',r?'new-password':'current-password');err('')}
+document.getElementById('tabLogin').addEventListener('click',function(){setMode('login')});document.getElementById('tabReg').addEventListener('click',function(){setMode('reg')});
+var EM=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+go.addEventListener('click',async function(){err('');var n=eN.value.trim(),e=eE.value.trim(),p=eP.value;
+if(!e||!p||(mode==='reg'&&!n)){err('Vul alle velden in.');return}if(!EM.test(e)){err('Ongeldig e-mailadres.');return}
+if(mode==='reg'&&p.length<8){err('Het wachtwoord moet minstens 8 tekens bevatten.');return}
+go.disabled=true;try{var r=await api('POST',mode==='reg'?'/api/auth/register':'/api/auth/login',mode==='reg'?{name:n,email:e,password:p}:{email:e,password:p});eP.value='';await enter(r.user,true)}
+catch(x){err(errMsg(x))}finally{go.disabled=false}});
+[eN,eE,eP].forEach(function(i){i.addEventListener('keydown',function(e){if(e.key==='Enter')go.click()})});
+/* account instellingen */
+var vA=document.getElementById('view-account'),aN=document.getElementById('aN'),aE=document.getElementById('aE');
+function msg(id,m,ok){var e=document.getElementById(id);e.textContent=m||'';e.className='msg'+(m?(ok?' ok':' err'):'')}
+circle.addEventListener('click',function(){if(!cur)return;if(vA.classList.contains('open')){window.__show('home');return}
+aN.value=cur.name;aE.value=cur.email;['aP0','aP1','aP2','aDelPw'].forEach(function(i){document.getElementById(i).value=''});['aMsg','aPwMsg','seedMsg','aDelMsg'].forEach(function(i){msg(i,'')});applyBg((cur.prefs&&cur.prefs.bg)||'iso');if(window.__data.updateUI)window.__data.updateUI();window.__show('account')});
+document.getElementById('aSave').addEventListener('click',async function(){var n=aN.value.trim(),e=aE.value.trim();
+if(!n||!e){msg('aMsg','Naam en e-mailadres zijn verplicht.');return}if(!EM.test(e)){msg('aMsg','Ongeldig e-mailadres.');return}
+try{var r=await api('PATCH','/api/me',{name:n,email:e});cur.name=r.user.name;cur.email=r.user.email;circle.textContent=initials(cur);msg('aMsg','Opgeslagen.',true)}
+catch(x){msg('aMsg',x.message==='exists'?'Dit e-mailadres is al in gebruik.':errMsg(x))}});
+document.getElementById('aPw').addEventListener('click',async function(){var p0=document.getElementById('aP0').value,p1=document.getElementById('aP1').value,p2=document.getElementById('aP2').value;
+if(!p0||!p1||!p2){msg('aPwMsg','Vul alle velden in.');return}if(p1.length<8){msg('aPwMsg','Het wachtwoord moet minstens 8 tekens bevatten.');return}if(p1!==p2){msg('aPwMsg','De wachtwoorden komen niet overeen.');return}
+try{await api('POST','/api/me/password',{current:p0,next:p1});['aP0','aP1','aP2'].forEach(function(i){document.getElementById(i).value=''});msg('aPwMsg','Wachtwoord gewijzigd.',true)}
+catch(x){msg('aPwMsg',x.message==='invalid_credentials'?'Huidig wachtwoord is onjuist.':errMsg(x))}});
+document.getElementById('logout').addEventListener('click',async function(){try{if(window.__data.flush)window.__data.flush();await api('POST','/api/auth/logout')}catch(x){}window.__data.stop();lock()});
+document.getElementById('seedBtn').addEventListener('click',async function(){try{await window.__data.loadSeed();msg('seedMsg','Voorbeeldgegevens geladen.',true)}catch(x){msg('seedMsg',errMsg(x))}});
+var delT;document.getElementById('aDel').addEventListener('click',async function(){var b=this,pw=document.getElementById('aDelPw').value;
+if(!pw){msg('aDelMsg','Vul alle velden in.');return}
+if(!b.classList.contains('confirm')){b.classList.add('confirm');b.setAttribute('data-o',b.textContent);b.textContent='Zeker verwijderen?';clearTimeout(delT);delT=setTimeout(function(){b.classList.remove('confirm');b.textContent=b.getAttribute('data-o')},3000);return}
+clearTimeout(delT);b.classList.remove('confirm');b.textContent=b.getAttribute('data-o')||b.textContent;
+try{await api('DELETE','/api/me',{password:pw});window.__data.stop();lock()}catch(x){msg('aDelMsg',x.message==='invalid_credentials'?'Onjuist e-mailadres of wachtwoord.':errMsg(x))}});
+/* achtergrondkeuze */
+var def=getComputedStyle(document.body).backgroundImage,m1=/url\(["']?(.*?)["']?\)\s*$/.exec(def);BG[0].thumb=m1?m1[1]:'';
+var bgs=document.getElementById('bgs');
+BG.forEach(function(b){var x=document.createElement('button');x.type='button';x.className='bgb';x.dataset.id=b.id;x.setAttribute('aria-pressed','false');
+x.innerHTML='<span class="bgt"><img alt=""></span><span class="bgn"></span>';x.querySelector('img').src=b.thumb;x.querySelector('.bgn').textContent=b.name;
+x.addEventListener('click',function(){applyBg(b.id);if(cur){cur.prefs=cur.prefs||{};cur.prefs.bg=b.id;api('PATCH','/api/me',{prefs:{bg:b.id}}).catch(function(){})}});bgs.appendChild(x)});
+/* taal */
+document.querySelectorAll('#langAuth .sb,#langAcc .sb').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.l)})});
+/* start */
+setLang(ld('archive.lang','nl'));applyBg(ld('archive.bg','iso'));setMode('login');
+(async function(){try{var r=await api('GET','/api/me');if(r.user){await enter(r.user,false)}else{document.body.classList.add('locked');setTimeout(function(){eE.focus()},120)}}
+catch(x){document.body.classList.add('locked');err(errMsg(x))}})();
+})();
+</script>
+</body></html>
