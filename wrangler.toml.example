@@ -1,0 +1,19 @@
+# Hernoem dit bestand naar wrangler.toml als je lokaal wilt ontwikkelen
+# of de database via de opdrachtregel wilt beheren (npm run db:remote).
+#
+# LET OP: als wrangler.toml in je GitHub-repo staat, gebruikt Cloudflare Pages dit
+# bestand als bron voor de koppelingen (bindings). Zet het dus niet in GitHub
+# als je de koppelingen in het Cloudflare-dashboard hebt ingesteld (het staat in .gitignore).
+
+name = "archive"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "archive-db"
+database_id = "VUL-HIER-JE-DATABASE-ID-IN"   # lokaal mag elke UUID
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "archive-files"
