@@ -5,7 +5,7 @@ Een privé referentie-archief voor architecten: collecties met media, leeslijst,
 ```
 public/                 de website (index.html, afbeeldingen, seed.json met voorbeeldgegevens)
 functions/api/[[path]].js   de server (alle /api/-routes: inloggen, gegevens, uploads, delen, link-voorbeeld)
-migrations/0001_init.sql    het databaseschema voor D1
+migrations/0001_init.sql    het SQLite-databaseschema voor Turso (en D1-fallback)
 tests/api.test.mjs          integratietest voor de server
 wrangler.toml.example       alleen nodig voor lokaal ontwikkelen
 ```
@@ -32,11 +32,13 @@ Liever de opdrachtregel? `git init && git add . && git commit -m "Archive" && gi
 
 ## Stap 2 — de database en de bestandsopslag aanmaken
 
-In het [Cloudflare-dashboard](https://dash.cloudflare.com):
+In [Turso](https://turso.tech/):
 
-1. **Storage & databases → D1 SQL database → Create.** Geef de database de naam `archive-db`. Kies eventueel een locatiehint in Europa.
-2. Open de database en ga naar het tabblad **Console**. Plak de volledige inhoud van `migrations/0001_init.sql` en voer uit. Lukt dat in één keer niet, plak de blokken dan één voor één (elk `CREATE TABLE`/`CREATE INDEX` apart). Daarna staan er 8 tabellen.
-3. **Storage & databases → R2 object storage → Create bucket.** Naam: `archive-files`. (R2 vraagt een betaalmethode, maar blijft binnen het gratis niveau gratis.)
+1. Maak een database aan, bijvoorbeeld `archive`, en kies een Europese regio.
+2. Maak een database auth token aan. Bewaar de database URL (`libsql://...`) en het token; voeg die later als Cloudflare secrets toe.
+3. Open de SQL-console van Turso en voer de volledige inhoud van `migrations/0001_init.sql` uit. Het schema gebruikt SQLite en maakt de tabellen voor accounts, sessies, werkruimte en gedeelde collecties aan.
+
+Maak daarnaast in het [Cloudflare-dashboard](https://dash.cloudflare.com) onder **Storage & databases → R2 object storage** een bucket `archive-files` aan.
 
 ## Stap 3 — GitHub koppelen aan Cloudflare Pages
 
@@ -49,11 +51,12 @@ In het [Cloudflare-dashboard](https://dash.cloudflare.com):
 
 ## Stap 4 — de koppelingen (bindings) instellen
 
-In je Pages-project: **Settings → Bindings** (of *Functions → Bindings*), voor zowel **Production** als **Preview**:
+In je Pages-project: **Settings → Variables and Secrets**, voor zowel **Production** als **Preview**:
 
 | Type | Naam (exact zo) | Waarde |
 |------|-----------------|--------|
-| Turso database | Secrets `TURSO_DATABASE_URL` en `TURSO_AUTH_TOKEN` | je Turso database en auth token |
+| Secret | `TURSO_DATABASE_URL` | je Turso database URL (`libsql://...`) |
+| Secret | `TURSO_AUTH_TOKEN` | het database auth token |
 | R2 bucket | `FILES` | `archive-files` |
 
 Daarna: **Deployments → Retry deployment** (of maak een kleine wijziging in GitHub). Open je site (`https://jouwproject.pages.dev`), registreer je account en alles werkt.
@@ -75,8 +78,9 @@ Pages-project → **Custom domains → Set up a custom domain**. Cloudflare rege
 
 ```bash
 npm install
-cp wrangler.toml.example wrangler.toml      # lokaal mag database_id elke UUID zijn
-npm run db:local                            # maakt de lokale database aan
+cp wrangler.toml.example wrangler.toml      # D1-fallback voor lokaal gebruik
+# Zet TURSO_DATABASE_URL en TURSO_AUTH_TOKEN in .dev.vars om lokaal Turso te gebruiken
+npm run db:local                            # maakt de lokale D1-fallback aan
 npm run dev                                 # http://localhost:8788
 # in een tweede venster:
 npm test                                    # 14 testgroepen voor de server
