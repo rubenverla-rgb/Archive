@@ -15,5 +15,6 @@
   "dependencies": {
     "@libsql/client": "^0.15.15",
     "@aws-sdk/client-s3": "^3.850.0"
-  }
+  },
+  "type": "module"
 }
