@@ -26,7 +26,7 @@ export function createR2Storage(env) {
       try {
         const result = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
         return {
-          body: result.Body,
+          body: result.Body?.transformToWebStream ? result.Body.transformToWebStream() : result.Body,
           httpMetadata: { contentType: result.ContentType || 'application/octet-stream' }
         };
       } catch (error) {
