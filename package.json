@@ -2,9 +2,9 @@
   "name": "archive",
   "version": "1.0.0",
   "private": true,
-  "description": "Archive: privé referentie-archief voor architecten (Cloudflare Pages + Turso/libSQL + R2)",
+  "description": "Archive: privé referentie-archief voor architecten (Vercel Functions + Turso + Cloudflare R2)",
   "scripts": {
-    "dev": "wrangler pages dev public --port 8788",
+    "dev": "vercel dev",
     "db:local": "wrangler d1 migrations apply archive-db --local",
     "db:remote": "wrangler d1 migrations apply archive-db --remote",
     "test": "node tests/api.test.mjs"
@@ -13,6 +13,7 @@
     "wrangler": "^4.0.0"
   },
   "dependencies": {
-    "@libsql/client": "^0.15.15"
+    "@libsql/client": "^0.15.15",
+    "@aws-sdk/client-s3": "^3.850.0"
   }
 }
