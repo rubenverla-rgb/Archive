@@ -1,11 +1,14 @@
 # Archive
 
-Een privé referentie-archief voor architecten: collecties met media, leeslijst, notities, quotes, tags, groepen en gedeelde collecties. Draait volledig op **Cloudflare** (Pages + Functions, D1-database, R2-bestandsopslag) en wordt vanuit **GitHub** automatisch gepubliceerd.
+Een privé referentie-archief voor architecten: collecties met media, leeslijst, notities, quotes, tags, groepen en gedeelde collecties. Draait op **Vercel Functions**, **Turso/libSQL** voor relationele data en **Cloudflare R2** voor bestanden en wordt vanuit **GitHub** automatisch gepubliceerd.
 
 ```
 public/                 de website (index.html, afbeeldingen, seed.json met voorbeeldgegevens)
-functions/api/[[path]].js   de server (alle /api/-routes: inloggen, gegevens, uploads, delen, link-voorbeeld)
-migrations/0001_init.sql    het databaseschema voor D1
+api/[...path].js             Vercel API-ingang voor alle /api/-routes
+functions/api/[[path]].js     gedeelde API-logica (auth, gegevens, uploads, delen, link-voorbeeld)
+functions/lib/turso.js        Turso/libSQL-adapter
+functions/lib/r2-s3.js        Cloudflare R2-adapter via S3
+migrations/0001_init.sql    het SQLite-databaseschema voor Turso (en D1-fallback)
 tests/api.test.mjs          integratietest voor de server
 wrangler.toml.example       alleen nodig voor lokaal ontwikkelen
 ```
@@ -13,7 +16,7 @@ wrangler.toml.example       alleen nodig voor lokaal ontwikkelen
 ## Wat is er allemaal in gebouwd
 
 - **Accounts:** registreren, inloggen, uitloggen, profiel, wachtwoord wijzigen, account verwijderen. Wachtwoorden worden op de server met PBKDF2 (SHA-256, 100.000 iteraties, eigen salt) opgeslagen, de sessie zit in een HttpOnly-cookie en pogingen worden beperkt.
-- **Gegevens:** collecties, media, notities, quotes, leeslijst, groepen en tags worden automatisch bewaard in D1 (per gebruiker, met versiecontrole zodat een oud tabblad niets overschrijft).
+- **Gegevens:** collecties, media, notities, quotes, leeslijst, groepen en tags worden automatisch bewaard in Turso/libSQL (per gebruiker, met versiecontrole zodat een oud tabblad niets overschrijft).
 - **Afbeeldingen:** elke upload, plak- of sleepactie gaat naar R2 (max. 6 MB per bestand; jpg, png, webp, gif, avif of pdf). Bestanden zijn alleen zichtbaar voor de eigenaar en voor leden van een gedeelde collectie.
 - **Delen:** collecties delen via een uitnodigingslink (of automatisch per e-mail), leden voegen samen media toe, tags worden gedeeld, wijzigingen verschijnen binnen ~15 seconden bij de anderen. Rechten zitten in de server: leden mogen alleen eigen items bewerken of verwijderen en kunnen de collectie niet hernoemen of verwijderen.
 - **Link-voorbeeld:** bij een geplakte link haalt de server titel, beschrijving en voorbeeldafbeelding op en bewaart de afbeelding in R2.
@@ -32,11 +35,13 @@ Liever de opdrachtregel? `git init && git add . && git commit -m "Archive" && gi
 
 ## Stap 2 — de database en de bestandsopslag aanmaken
 
-In het [Cloudflare-dashboard](https://dash.cloudflare.com):
+In [Turso](https://turso.tech/):
 
-1. **Storage & databases → D1 SQL database → Create.** Geef de database de naam `archive-db`. Kies eventueel een locatiehint in Europa.
-2. Open de database en ga naar het tabblad **Console**. Plak de volledige inhoud van `migrations/0001_init.sql` en voer uit. Lukt dat in één keer niet, plak de blokken dan één voor één (elk `CREATE TABLE`/`CREATE INDEX` apart). Daarna staan er 8 tabellen.
-3. **Storage & databases → R2 object storage → Create bucket.** Naam: `archive-files`. (R2 vraagt een betaalmethode, maar blijft binnen het gratis niveau gratis.)
+1. Maak een database aan, bijvoorbeeld `archive`, en kies een Europese regio.
+2. Maak een database auth token aan. Bewaar de database URL (`libsql://...`) en het token; voeg die later als Cloudflare secrets toe.
+3. Open de SQL-console van Turso en voer de volledige inhoud van `migrations/0001_init.sql` uit. Het schema gebruikt SQLite en maakt de tabellen voor accounts, sessies, werkruimte en gedeelde collecties aan.
+
+Maak daarnaast in het [Cloudflare-dashboard](https://dash.cloudflare.com) onder **Storage & databases → R2 object storage** een bucket `archive-files` aan.
 
 ## Stap 3 — GitHub koppelen aan Cloudflare Pages
 
@@ -49,11 +54,12 @@ In het [Cloudflare-dashboard](https://dash.cloudflare.com):
 
 ## Stap 4 — de koppelingen (bindings) instellen
 
-In je Pages-project: **Settings → Bindings** (of *Functions → Bindings*), voor zowel **Production** als **Preview**:
+In je Pages-project: **Settings → Variables and Secrets**, voor zowel **Production** als **Preview**:
 
 | Type | Naam (exact zo) | Waarde |
 |------|-----------------|--------|
-| D1 database | `DB` | `archive-db` |
+| Secret | `TURSO_DATABASE_URL` | je Turso database URL (`libsql://...`) |
+| Secret | `TURSO_AUTH_TOKEN` | het database auth token |
 | R2 bucket | `FILES` | `archive-files` |
 
 Daarna: **Deployments → Retry deployment** (of maak een kleine wijziging in GitHub). Open je site (`https://jouwproject.pages.dev`), registreer je account en alles werkt.
@@ -75,8 +81,9 @@ Pages-project → **Custom domains → Set up a custom domain**. Cloudflare rege
 
 ```bash
 npm install
-cp wrangler.toml.example wrangler.toml      # lokaal mag database_id elke UUID zijn
-npm run db:local                            # maakt de lokale database aan
+cp wrangler.toml.example wrangler.toml      # D1-fallback voor lokaal gebruik
+# Zet TURSO_DATABASE_URL en TURSO_AUTH_TOKEN in .dev.vars om lokaal Turso te gebruiken
+npm run db:local                            # maakt de lokale D1-fallback aan
 npm run dev                                 # http://localhost:8788
 # in een tweede venster:
 npm test                                    # 14 testgroepen voor de server
@@ -84,10 +91,64 @@ npm test                                    # 14 testgroepen voor de server
 
 ## Goed om te weten
 
-- **Gratis niveau:** Pages-functies tellen 100.000 aanvragen per dag. De site vraagt alleen `/api/*` aan de server (zie `public/_routes.json`); de rest zijn gewone bestanden. D1 en R2 hebben ruime gratis limieten, controleer de actuele cijfers op cloudflare.com.
+- **Gratis niveau:** Pages-functies tellen 100.000 aanvragen per dag. De site vraagt alleen `/api/*` aan de server (zie `public/_routes.json`); de rest zijn gewone bestanden. Turso en R2 hebben eigen limieten en tarieven; controleer de actuele cijfers bij de aanbieders.
 - **Grootte van je gegevens:** per gebruiker worden de gegevens in 6 blokken bewaard (collecties, media, notities, quotes, leeslijst, groepen) van elk maximaal ongeveer 1,9 MB tekst. Afbeeldingen tellen daar niet in mee. Voor een persoonlijk archief met duizenden items is dat ruim voldoende.
 - **Meerdere apparaten:** wijzigingen worden binnen een seconde of twee opgeslagen. Open je het archief op twee toestellen tegelijk en bewerk je beide, dan wint de eerste opslag en herlaadt de tweede met de nieuwste gegevens.
-- **Back-ups:** D1 bewaart automatisch eerdere toestanden (Time Travel). Maak daarnaast af en toe een export (`wrangler d1 export archive-db --remote --output backup.sql`).
+- **Back-ups:** Maak regelmatig een export van Turso en bewaar die los van de database.
 - **Beveiliging:** schakel in Cloudflare onder *Security → WAF → Rate limiting rules* eventueel een extra regel in voor `/api/auth/*`. Wachtwoorden verlaten nooit je server leesbaar. Een gebruiker kan zijn account en alle bestanden zelf definitief verwijderen via Account.
-- **Privacy (AVG):** voeg een privacyverklaring toe als anderen de site gebruiken en kies bij D1 een Europese locatie. Instagram- en Pinterest-afbeeldingen blijven van de makers: gebruik ze alleen als je daar de rechten voor hebt.
-- **Foutmelding "De server is nog niet ingesteld":** de bindings `DB` en `FILES` ontbreken of de deployment is nog niet opnieuw uitgevoerd (stap 4).
+- **Privacy (AVG):** voeg een privacyverklaring toe als anderen de site gebruiken en kies bij Turso een Europese database-regio. Instagram- en Pinterest-afbeeldingen blijven van de makers: gebruik ze alleen als je daar de rechten voor hebt.
+- **Foutmelding "De server is nog niet ingesteld":** de secrets `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` of de fallback-binding `DB`, of de binding `FILES`, ontbreken of de deployment is nog niet opnieuw uitgevoerd (stap 4).
+
+
+## Turso instellen
+
+1. Maak een database aan via [Turso](https://turso.tech/) en kies een Europese regio.
+2. Maak een database auth token aan en bewaar de database URL (`libsql://...`) en het token.
+3. Voer `migrations/0001_init.sql` uit op de nieuwe database; het schema gebruikt SQLite en is compatibel met Turso.
+4. Voeg in Cloudflare Pages → **Settings → Variables and Secrets** voor Production én Preview de secrets `TURSO_DATABASE_URL` en `TURSO_AUTH_TOKEN` toe.
+5. Laat de bestaande R2-binding `FILES` actief. Als beide Turso-secrets aanwezig zijn, gebruikt de API Turso; anders blijft de bestaande D1-binding `DB` als fallback beschikbaar.
+
+**Bestaande D1-data overzetten:** maak eerst een backup en voer de export/import uit vóór je de Turso-secrets activeert:
+
+```bash
+npx wrangler d1 export archive-db --remote --output archive-d1-backup.sql
+# Maak de Turso database en voer daarna de export in:
+turso db shell archive < archive-d1-backup.sql
+```
+
+Vervang `archive-db` en `archive` door de namen van jouw D1- en Turso-database. Controleer in Turso of de tabellen en aantallen overeenkomen. Bewaar D1 als rollback totdat de migratie gevalideerd is. De code schakelt niet automatisch data over; activeer Turso pas nadat de import geslaagd is.
+
+**Sociale links:** Archive leest publiek beschikbare Open Graph-metadata. Pinterest-pins krijgen waar mogelijk een lokale thumbnail in R2 en gebruiken anders de officiële Pinterest embed. Instagram-posts worden niet als afbeelding gekopieerd; Archive toont de officiële Instagram embed. Privéposts en content waarvoor het platform toegang weigert, blijven alleen als link zichtbaar.
+
+
+## Vercel + Turso + R2 (productie)
+
+De Vercel-deployment gebruikt `api/[...path].js` als Node.js catch-all voor alle `/api/*`-aanvragen. De gedeelde API-logica gebruikt Turso voor SQLite-data en Cloudflare R2 voor privébestanden.
+
+### 1. Database-schema initialiseren
+
+Open de SQL-console van je Turso-database en voer de volledige inhoud van `migrations/0001_init.sql` één keer uit. Controleer daarna of de tabellen `users`, `sessions`, `throttle`, `workspace`, `shared_collections`, `members` en `invites` bestaan. Omdat dit een lege start is, is geen data-import nodig.
+
+### 2. Cloudflare R2 instellen
+
+Archive gebruikt R2 voor geüploade afbeeldingen, PDF's en lokaal opgeslagen preview-afbeeldingen. Maak in Cloudflare een private bucket aan (bijvoorbeeld `archive-files`) en maak een R2 API-token met Object Read & Write-rechten voor die bucket. Noteer de Account ID, Access Key ID en Secret Access Key.
+
+### 3. Vercel environment variables
+
+Voeg deze variabelen toe aan je Vercel-project voor **Production**, **Preview** en **Development**. Gebruik voor de Turso-variabelen exact dezelfde URL en token die je al hebt aangemaakt.
+
+| Variabele | Waarde |
+|---|---|
+| `TURSO_DATABASE_URL` | Turso database URL (`libsql://...`) |
+| `TURSO_AUTH_TOKEN` | Turso database auth token |
+| `R2_ACCOUNT_ID` | Cloudflare Account ID |
+| `R2_ACCESS_KEY_ID` | R2 Access Key ID |
+| `R2_SECRET_ACCESS_KEY` | R2 Secret Access Key |
+| `R2_BUCKET_NAME` | Naam van de private R2-bucket, bijvoorbeeld `archive-files` |
+| `APP_ORIGIN` | `https://archive-ruben26.vercel.app` |
+
+Zet secrets als Sensitive/Encrypted en maak ze nooit publiek beschikbaar met een `NEXT_PUBLIC_`-prefix. `RESEND_API_KEY` en `MAIL_FROM` zijn optioneel en alleen nodig voor uitnodigingsmails.
+
+### 4. Deploy en controleren
+
+Push/merge de branch naar de productiebranch die aan Vercel gekoppeld is en laat Vercel opnieuw deployen. Test daarna eerst `/api/me` (zonder sessie hoort dit `{"user":null}` terug te geven), maak een account aan en controleer of je kunt inloggen, een collectie kunt bewaren en een afbeelding kunt uploaden. Een ontbrekende database- of R2-configuratie geeft een duidelijke `503` in plaats van een stille databasefout.

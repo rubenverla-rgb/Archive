@@ -1,4 +1,4 @@
--- Archive: databaseschema voor Cloudflare D1 (SQLite)
+-- Archive: gedeeld SQLite-schema voor Turso/libSQL en optioneel Cloudflare D1
 
 CREATE TABLE IF NOT EXISTS users (
   id          TEXT PRIMARY KEY,
