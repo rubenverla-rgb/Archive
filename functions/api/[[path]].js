@@ -323,15 +323,15 @@ async function preview(req, env, user) {
   try { u = new URL(str(b.url, 2000)); } catch { return bad('invalid_url'); }
   if (!/^https?:$/.test(u.protocol) || privateHost(u.hostname)) bad('invalid_url');
 
-  const host = u.hostname.toLowerCase().replace(/^www\\./, '');
+  const host = u.hostname.toLowerCase().replace(/^www\./, '');
   let provider = '', embedUrl = '';
   if (host === 'pinterest.com' || host.endsWith('.pinterest.com')) {
     provider = 'pinterest';
-    const pin = u.pathname.match(/\\/pin\\/(\\d+)/i);
+    const pin = u.pathname.match(/\/pin\/(\d+)/i);
     if (pin) embedUrl = 'https://assets.pinterest.com/ext/embed.html?id=' + pin[1];
   } else if (host === 'instagram.com' || host.endsWith('.instagram.com')) {
     provider = 'instagram';
-    const post = u.pathname.match(/\\/(p|reel|tv)\\/([A-Za-z0-9_-]+)/i);
+    const post = u.pathname.match(/\/(p|reel|tv)\/([A-Za-z0-9_-]+)/i);
     if (post) embedUrl = 'https://www.instagram.com/' + post[1].toLowerCase() + '/' + post[2] + '/embed/';
   }
   const empty = () => json({ title: '', description: '', image: '', site: host, provider, embedUrl });
@@ -343,7 +343,7 @@ async function preview(req, env, user) {
     html = await limitedText(res, 300000);
   } catch { return empty(); }
 
-  const title = meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\\/title>/i) || [])[1] || '').trim();
+  const title = meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').trim();
   const description = meta(html, ['og:description', 'twitter:description', 'description']);
   let image = '';
   // Instagram media wordt niet gekopieerd; toon de officiële embed.
