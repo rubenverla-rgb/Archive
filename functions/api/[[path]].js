@@ -1,5 +1,7 @@
-// Archive API — Cloudflare Pages Functions (D1 + R2)
-// Alle routes onder /api/*. Bindings: DB (D1) en FILES (R2). Optioneel: RESEND_API_KEY, MAIL_FROM, APP_ORIGIN.
+import { createTursoDatabase } from '../lib/turso.js';
+
+// Archive API — Cloudflare Pages Functions (Turso/libSQL + R2; D1 fallback)
+// Bindings: FILES (R2), TURSO_DATABASE_URL en TURSO_AUTH_TOKEN; DB (D1) blijft optioneel.
 
 const enc = new TextEncoder();
 const SESSION_MS = 30 * 24 * 3600 * 1000;
@@ -84,6 +86,9 @@ function cleanRec(r) {
   const k = ['pdf', 'image', 'link', 'social'].includes(r.k) ? r.k : 'link';
   const ratio = Number(r.r); 
   const o = { id, t: str(r.t, 300), k, r: ratio > 0.05 && ratio < 20 ? ratio : 0.75, src, img, u, f: str(r.f, 300), d: str(r.d, 5000), at: str(r.at, 30), ll: str(r.ll, 40), lb: str(r.lb, 120), tags: cleanTags(r.tags), _u: Number(r._u) || 0 };
+  const embed = str(r.embed, 1000);
+  if (/^https:\/\/(?:www\.instagram\.com\/(?:p|reel|tv)\/[^/]+\/embed\/|assets\.pinterest\.com\/ext\/embed\.html\?id=\d+)$/i.test(embed)) o.embed = embed;
+  if (['instagram', 'pinterest'].includes(r.provider)) o.provider = r.provider;
   if (r.by && typeof r.by === 'object') o.by = { name: str(r.by.name, 80), email: str(r.by.email, 200).toLowerCase() };
   return o;
 }
@@ -104,19 +109,29 @@ async function sendMail(env, to, subject, text) {
 // ---------- router ----------
 export async function onRequest({ request: req, env }) {
   const url = new URL(req.url);
+  let dbClient = null;
   try {
-    if (!env.DB || !env.FILES) return json({ error: 'not_configured' }, 503);
+    let db = env.DB || null;
+    if (env.TURSO_DATABASE_URL && env.TURSO_AUTH_TOKEN) {
+      dbClient = createTursoDatabase(env.TURSO_DATABASE_URL, env.TURSO_AUTH_TOKEN);
+      db = dbClient;
+    }
+    if (!db || !env.FILES) return json({ error: 'not_configured' }, 503);
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       const o = req.headers.get('origin');
       if (o && new URL(o).host !== url.host) bad('forbidden', 403);
       if (req.headers.get('x-requested-with') !== 'archive') bad('forbidden', 403);
     }
+    const runtimeEnv = Object.create(env);
+    runtimeEnv.DB = db;
     const path = url.pathname.replace(/^\/api\/?/, '').replace(/\/+$/, '');
-    return await route(req, env, url, path, path.split('/'));
+    return await route(req, runtimeEnv, url, path, path.split('/'));
   } catch (e) {
     if (e instanceof HttpError) return json({ error: e.code }, e.status);
     console.error(e);
     return json({ error: 'server' }, 500);
+  } finally {
+    if (dbClient) await dbClient.close();
   }
 }
 
