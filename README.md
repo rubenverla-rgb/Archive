@@ -105,6 +105,14 @@ npm test                                    # 14 testgroepen voor de server
 4. Voeg in Cloudflare Pages → **Settings → Variables and Secrets** voor Production én Preview de secrets `TURSO_DATABASE_URL` en `TURSO_AUTH_TOKEN` toe.
 5. Laat de bestaande R2-binding `FILES` actief. Als beide Turso-secrets aanwezig zijn, gebruikt de API Turso; anders blijft de bestaande D1-binding `DB` als fallback beschikbaar.
 
-**Bestaande data:** de code schakelt D1-data niet automatisch over. Exporteer en importeer de tabellen eerst naar Turso en controleer aantallen en relaties voordat je Turso in Production activeert. Bewaar D1 als rollback totdat de migratie gevalideerd is.
+**Bestaande D1-data overzetten:** maak eerst een backup en voer de export/import uit vóór je de Turso-secrets activeert:
+
+```bash
+npx wrangler d1 export archive-db --remote --output archive-d1-backup.sql
+# Maak de Turso database en voer daarna de export in:
+turso db shell archive < archive-d1-backup.sql
+```
+
+Vervang `archive-db` en `archive` door de namen van jouw D1- en Turso-database. Controleer in Turso of de tabellen en aantallen overeenkomen. Bewaar D1 als rollback totdat de migratie gevalideerd is. De code schakelt niet automatisch data over; activeer Turso pas nadat de import geslaagd is.
 
 **Sociale links:** Archive leest publiek beschikbare Open Graph-metadata. Pinterest-pins krijgen waar mogelijk een lokale thumbnail in R2 en gebruiken anders de officiële Pinterest embed. Instagram-posts worden niet als afbeelding gekopieerd; Archive toont de officiële Instagram embed. Privéposts en content waarvoor het platform toegang weigert, blijven alleen als link zichtbaar.
