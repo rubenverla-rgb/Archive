@@ -143,7 +143,7 @@ async function route(req, env, url, path, seg) {
 
   // ----- auth -----
   if (m === 'POST' && path === 'auth/register') {
-    const ip = req.headers.get('cf-connecting-ip') || 'x';
+    const ip = (req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'x').split(',')[0].trim();
     await throttle(env, 'r:' + ip, 20, 3600000);
     const b = await readJson(req);
     const name = str(b.name, 80).trim(), email = str(b.email, 200).trim().toLowerCase(), pw = str(b.password, 200);
