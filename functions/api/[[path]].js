@@ -322,17 +322,32 @@ async function preview(req, env, user) {
   let u;
   try { u = new URL(str(b.url, 2000)); } catch { return bad('invalid_url'); }
   if (!/^https?:$/.test(u.protocol) || privateHost(u.hostname)) bad('invalid_url');
+
+  const host = u.hostname.toLowerCase().replace(/^www\\./, '');
+  let provider = '', embedUrl = '';
+  if (host === 'pinterest.com' || host.endsWith('.pinterest.com')) {
+    provider = 'pinterest';
+    const pin = u.pathname.match(/\\/pin\\/(\\d+)/i);
+    if (pin) embedUrl = 'https://assets.pinterest.com/ext/embed.html?id=' + pin[1];
+  } else if (host === 'instagram.com' || host.endsWith('.instagram.com')) {
+    provider = 'instagram';
+    const post = u.pathname.match(/\\/(p|reel|tv)\\/([A-Za-z0-9_-]+)/i);
+    if (post) embedUrl = 'https://www.instagram.com/' + post[1].toLowerCase() + '/' + post[2] + '/embed/';
+  }
+  const empty = () => json({ title: '', description: '', image: '', site: host, provider, embedUrl });
   const ua = { 'user-agent': 'Mozilla/5.0 (compatible; ArchiveBot/1.0; +link-preview)', accept: 'text/html,application/xhtml+xml' };
   let html = '';
   try {
     const res = await fetch(u.href, { headers: ua, redirect: 'follow', signal: AbortSignal.timeout(7000) });
-    if (!res.ok || !/html/i.test(res.headers.get('content-type') || '')) return json({ title: '', description: '', image: '', site: u.hostname.replace(/^www\./, '') });
+    if (!res.ok || !/html/i.test(res.headers.get('content-type') || '')) return empty();
     html = await limitedText(res, 300000);
-  } catch { return json({ title: '', description: '', image: '', site: u.hostname.replace(/^www\./, '') }); }
-  const title = meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').trim();
+  } catch { return empty(); }
+
+  const title = meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\\/title>/i) || [])[1] || '').trim();
   const description = meta(html, ['og:description', 'twitter:description', 'description']);
   let image = '';
-  const im = meta(html, ['og:image', 'og:image:url', 'twitter:image']);
+  // Instagram media wordt niet gekopieerd; toon de officiële embed.
+  const im = provider === 'instagram' ? '' : meta(html, ['og:image', 'og:image:url', 'twitter:image']);
   if (im) {
     try {
       const iu = new URL(im, u.href);
@@ -349,9 +364,9 @@ async function preview(req, env, user) {
           }
         }
       }
-    } catch { /* geen afbeelding */ }
+    } catch { /* geen afbeelding beschikbaar */ }
   }
-  return json({ title: title.slice(0, 300), description: description.slice(0, 1000), image, site: u.hostname.replace(/^www\./, '') });
+  return json({ title: title.slice(0, 300), description: description.slice(0, 1000), image, site: host, provider, embedUrl });
 }
 
 // ---------- gedeelde collecties ----------
