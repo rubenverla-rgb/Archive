@@ -1,10 +1,13 @@
 # Archive
 
-Een privé referentie-archief voor architecten: collecties met media, leeslijst, notities, quotes, tags, groepen en gedeelde collecties. Draait op **Cloudflare Pages + Functions**, **Turso/libSQL** voor relationele data en **Cloudflare R2** voor bestanden en wordt vanuit **GitHub** automatisch gepubliceerd.
+Een privé referentie-archief voor architecten: collecties met media, leeslijst, notities, quotes, tags, groepen en gedeelde collecties. Draait op **Vercel Functions**, **Turso/libSQL** voor relationele data en **Cloudflare R2** voor bestanden en wordt vanuit **GitHub** automatisch gepubliceerd.
 
 ```
 public/                 de website (index.html, afbeeldingen, seed.json met voorbeeldgegevens)
-functions/api/[[path]].js   de server (alle /api/-routes: inloggen, gegevens, uploads, delen, link-voorbeeld)
+api/[...path].js             Vercel API-ingang voor alle /api/-routes
+functions/api/[[path]].js     gedeelde API-logica (auth, gegevens, uploads, delen, link-voorbeeld)
+functions/lib/turso.js        Turso/libSQL-adapter
+functions/lib/r2-s3.js        Cloudflare R2-adapter via S3
 migrations/0001_init.sql    het SQLite-databaseschema voor Turso (en D1-fallback)
 tests/api.test.mjs          integratietest voor de server
 wrangler.toml.example       alleen nodig voor lokaal ontwikkelen
@@ -116,3 +119,36 @@ turso db shell archive < archive-d1-backup.sql
 Vervang `archive-db` en `archive` door de namen van jouw D1- en Turso-database. Controleer in Turso of de tabellen en aantallen overeenkomen. Bewaar D1 als rollback totdat de migratie gevalideerd is. De code schakelt niet automatisch data over; activeer Turso pas nadat de import geslaagd is.
 
 **Sociale links:** Archive leest publiek beschikbare Open Graph-metadata. Pinterest-pins krijgen waar mogelijk een lokale thumbnail in R2 en gebruiken anders de officiële Pinterest embed. Instagram-posts worden niet als afbeelding gekopieerd; Archive toont de officiële Instagram embed. Privéposts en content waarvoor het platform toegang weigert, blijven alleen als link zichtbaar.
+
+
+## Vercel + Turso + R2 (productie)
+
+De Vercel-deployment gebruikt `api/[...path].js` als Node.js catch-all voor alle `/api/*`-aanvragen. De gedeelde API-logica gebruikt Turso voor SQLite-data en Cloudflare R2 voor privébestanden.
+
+### 1. Database-schema initialiseren
+
+Open de SQL-console van je Turso-database en voer de volledige inhoud van `migrations/0001_init.sql` één keer uit. Controleer daarna of de tabellen `users`, `sessions`, `throttle`, `workspace`, `shared_collections`, `members` en `invites` bestaan. Omdat dit een lege start is, is geen data-import nodig.
+
+### 2. Cloudflare R2 instellen
+
+Archive gebruikt R2 voor geüploade afbeeldingen, PDF's en lokaal opgeslagen preview-afbeeldingen. Maak in Cloudflare een private bucket aan (bijvoorbeeld `archive-files`) en maak een R2 API-token met Object Read & Write-rechten voor die bucket. Noteer de Account ID, Access Key ID en Secret Access Key.
+
+### 3. Vercel environment variables
+
+Voeg deze variabelen toe aan je Vercel-project voor **Production**, **Preview** en **Development**. Gebruik voor de Turso-variabelen exact dezelfde URL en token die je al hebt aangemaakt.
+
+| Variabele | Waarde |
+|---|---|
+| `TURSO_DATABASE_URL` | Turso database URL (`libsql://...`) |
+| `TURSO_AUTH_TOKEN` | Turso database auth token |
+| `R2_ACCOUNT_ID` | Cloudflare Account ID |
+| `R2_ACCESS_KEY_ID` | R2 Access Key ID |
+| `R2_SECRET_ACCESS_KEY` | R2 Secret Access Key |
+| `R2_BUCKET_NAME` | Naam van de private R2-bucket, bijvoorbeeld `archive-files` |
+| `APP_ORIGIN` | `https://archive-ruben26.vercel.app` |
+
+Zet secrets als Sensitive/Encrypted en maak ze nooit publiek beschikbaar met een `NEXT_PUBLIC_`-prefix. `RESEND_API_KEY` en `MAIL_FROM` zijn optioneel en alleen nodig voor uitnodigingsmails.
+
+### 4. Deploy en controleren
+
+Push/merge de branch naar de productiebranch die aan Vercel gekoppeld is en laat Vercel opnieuw deployen. Test daarna eerst `/api/me` (zonder sessie hoort dit `{"user":null}` terug te geven), maak een account aan en controleer of je kunt inloggen, een collectie kunt bewaren en een afbeelding kunt uploaden. Een ontbrekende database- of R2-configuratie geeft een duidelijke `503` in plaats van een stille databasefout.
