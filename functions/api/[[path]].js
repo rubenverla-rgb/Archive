@@ -112,7 +112,10 @@ export async function onRequest({ request: req, env }) {
   let dbClient = null;
   try {
     let db = env.DB || null;
-    if (env.TURSO_DATABASE_URL && env.TURSO_AUTH_TOKEN) {
+    const hasTursoUrl = !!env.TURSO_DATABASE_URL;
+    const hasTursoToken = !!env.TURSO_AUTH_TOKEN;
+    if (hasTursoUrl !== hasTursoToken) return json({ error: 'turso_not_configured' }, 503);
+    if (hasTursoUrl && hasTursoToken) {
       dbClient = createTursoDatabase(env.TURSO_DATABASE_URL, env.TURSO_AUTH_TOKEN);
       db = dbClient;
     }
