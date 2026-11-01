@@ -32,6 +32,11 @@ export default async function handler(req, res) {
         status: 503, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
       }));
     }
+    if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY || !process.env.R2_BUCKET_NAME) {
+      return send(res, new Response(JSON.stringify({ error: 'not_configured' }), {
+        status: 503, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+      }));
+    }
     db = createTursoDatabase(process.env.TURSO_DATABASE_URL, process.env.TURSO_AUTH_TOKEN);
     const files = createR2Storage(process.env);
     const env = {
@@ -45,8 +50,9 @@ export default async function handler(req, res) {
     return await send(res, response);
   } catch (error) {
     console.error('Archive API error:', error);
-    return send(res, new Response(JSON.stringify({ error: 'server' }), {
-      status: 500, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+    const missingConfig = error?.message === 'R2_NOT_CONFIGURED';
+    return send(res, new Response(JSON.stringify({ error: missingConfig ? 'not_configured' : 'server' }), {
+      status: missingConfig ? 503 : 500, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
     }));
   } finally {
     if (db) await db.close().catch((error) => console.error('Turso close error:', error));
@@ -56,6 +62,6 @@ export default async function handler(req, res) {
 async function send(res, response) {
   res.statusCode = response.status;
   response.headers.forEach((value, key) => res.setHeader(key, value));
-  const body = ['HEAD', '204', '304'].includes(res.req?.method) ? null : Buffer.from(await response.arrayBuffer());
+  const body = ['HEAD'].includes(res.req?.method) || [204, 304].includes(response.status) ? null : Buffer.from(await response.arrayBuffer());
   res.end(body);
 }
