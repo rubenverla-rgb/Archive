@@ -340,11 +340,10 @@ async function preview(req, env, user) {
   let html = '';
   try {
     const res = await fetch(u.href, { headers: ua, redirect: 'follow', signal: AbortSignal.timeout(7000) });
-    if (!res.ok || !/html/i.test(res.headers.get('content-type') || '')) return empty();
-    html = await limitedText(res, 300000);
-  } catch { return empty(); }
+    if (res.ok && /html/i.test(res.headers.get('content-type') || '')) html = await limitedText(res, 300000);
+  } catch { /* Pinterest oEmbed kan nog steeds bruikbare gegevens bevatten */ }
 
-  const title = meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').trim();
+  const title = (pinterestData && pinterestData.title) || meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').trim();
   const description = (pinterestData && pinterestData.description) || meta(html, ['og:description', 'twitter:description', 'description']);
   let image = '';
   // Instagram media wordt niet gekopieerd; toon de officiële embed.
