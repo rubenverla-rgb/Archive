@@ -331,7 +331,11 @@ async function preview(req, env, user) {
   if (provider === 'pinterest') {
     try {
       const endpoint = new URL('https://www.pinterest.com/oembed.json');
-      endpoint.searchParams.set('url', u.href);
+      // Pinterest oEmbed accepts canonical www.pinterest.com URLs; regional hosts such as nl.pinterest.com may be rejected.
+      const pinUrl = new URL(u.href);
+      pinUrl.protocol = 'https:';
+      pinUrl.hostname = 'www.pinterest.com';
+      endpoint.searchParams.set('url', pinUrl.href);
       const pr = await fetch(endpoint.href, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; ArchiveBot/1.0)', accept: 'application/json' }, redirect: 'follow', signal: AbortSignal.timeout(7000) });
       if (pr.ok && /json/i.test(pr.headers.get('content-type') || '')) pinterestData = await pr.json();
     } catch { /* probeer daarna de gewone Open Graph-preview */ }
