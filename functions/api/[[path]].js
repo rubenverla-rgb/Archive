@@ -1,12 +1,9 @@
-import { createTursoDatabase } from '../lib/turso.js';
-
-// Archive API — Cloudflare Pages Functions (Turso/libSQL + R2; D1 fallback)
-// Bindings: FILES (R2), TURSO_DATABASE_URL en TURSO_AUTH_TOKEN; DB (D1) blijft optioneel.
+// Shared Archive API logic. Runtime database and private file storage are injected by the Vercel entrypoint.
 
 const enc = new TextEncoder();
 const SESSION_MS = 30 * 24 * 3600 * 1000;
 const MAX_JSON = 2_000_000;
-const MAX_FILE = 6_000_000;
+const MAX_FILE = 4_000_000;
 const FILE_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'application/pdf': 'pdf' };
 const KINDS = ['collections', 'media', 'notes', 'quotes', 'reading', 'groups'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -109,16 +106,8 @@ async function sendMail(env, to, subject, text) {
 // ---------- router ----------
 export async function onRequest({ request: req, env }) {
   const url = new URL(req.url);
-  let dbClient = null;
   try {
-    let db = env.DB || null;
-    const hasTursoUrl = !!env.TURSO_DATABASE_URL;
-    const hasTursoToken = !!env.TURSO_AUTH_TOKEN;
-    if (hasTursoUrl !== hasTursoToken) return json({ error: 'turso_not_configured' }, 503);
-    if (hasTursoUrl && hasTursoToken) {
-      dbClient = createTursoDatabase(env.TURSO_DATABASE_URL, env.TURSO_AUTH_TOKEN);
-      db = dbClient;
-    }
+    const db = env.DB || null;
     if (!db || !env.FILES) return json({ error: 'not_configured' }, 503);
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       const o = req.headers.get('origin');
@@ -133,8 +122,6 @@ export async function onRequest({ request: req, env }) {
     if (e instanceof HttpError) return json({ error: e.code }, e.status);
     console.error(e);
     return json({ error: 'server' }, 500);
-  } finally {
-    if (dbClient) await dbClient.close();
   }
 }
 
@@ -143,7 +130,7 @@ async function route(req, env, url, path, seg) {
 
   // ----- auth -----
   if (m === 'POST' && path === 'auth/register') {
-    const ip = (req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'x').split(',')[0].trim();
+    const ip = (req.headers.get('x-forwarded-for') || 'x').split(',')[0].trim();
     await throttle(env, 'r:' + ip, 20, 3600000);
     const b = await readJson(req);
     const name = str(b.name, 80).trim(), email = str(b.email, 200).trim().toLowerCase(), pw = str(b.password, 200);
