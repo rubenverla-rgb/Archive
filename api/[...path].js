@@ -51,7 +51,13 @@ export default async function handler(req, res) {
       status: 500, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
     }));
   } finally {
-    if (db) await db.close().catch((error) => console.error('Turso close error:', error));
+    if (db) {
+      try {
+        await db.close();
+      } catch (error) {
+        console.error('Turso close error:', error);
+      }
+    }
   }
 }
 
