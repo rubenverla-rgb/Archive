@@ -356,17 +356,22 @@ async function preview(req, env, user) {
     try {
       const iu = new URL(im, u.href);
       if (/^https?:$/.test(iu.protocol) && !privateHost(iu.hostname)) {
-        const r = await fetch(iu.href, { headers: { 'user-agent': ua['user-agent'], accept: 'image/*' }, redirect: 'follow', signal: AbortSignal.timeout(8000) });
-        const ct = (r.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
-        const ext = FILE_TYPES[ct];
-        if (r.ok && ext && ext !== 'pdf') {
-          const buf = await r.arrayBuffer();
-          if (buf.byteLength > 0 && buf.byteLength <= MAX_FILE) {
-            const name = rnd(16) + '.' + ext;
-            await env.FILES.put(`u/${user.id}/${name}`, buf, { httpMetadata: { contentType: ct } });
-            image = `/api/file/${user.id}/${name}`;
+        // Keep the original image URL as a browser-side fallback. Pinterest may
+        // block server-side image downloads even when its thumbnail URL is valid.
+        image = iu.href;
+        try {
+          const r = await fetch(iu.href, { headers: { 'user-agent': ua['user-agent'], accept: 'image/*' }, redirect: 'follow', signal: AbortSignal.timeout(8000) });
+          const ct = (r.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+          const ext = FILE_TYPES[ct];
+          if (r.ok && ext && ext !== 'pdf') {
+            const buf = await r.arrayBuffer();
+            if (buf.byteLength > 0 && buf.byteLength <= MAX_FILE) {
+              const name = rnd(16) + '.' + ext;
+              await env.FILES.put(`u/${user.id}/${name}`, buf, { httpMetadata: { contentType: ct } });
+              image = `/api/file/${user.id}/${name}`;
+            }
           }
-        }
+        } catch { /* gebruik de originele URL rechtstreeks in de browser */ }
       }
     } catch { /* geen afbeelding beschikbaar */ }
   }
