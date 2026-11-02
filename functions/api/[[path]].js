@@ -325,6 +325,17 @@ async function preview(req, env, user) {
     if (post) embedUrl = 'https://www.instagram.com/' + post[1].toLowerCase() + '/' + post[2] + '/embed/';
   }
   const empty = () => json({ title: '', description: '', image: '', site: host, provider, embedUrl });
+  // Pinterest blocks or omits Open Graph metadata for many Pin URLs.
+  // Its public oEmbed endpoint provides a reliable thumbnail for public Pins.
+  let pinterestData = null;
+  if (provider === 'pinterest') {
+    try {
+      const endpoint = new URL('https://www.pinterest.com/oembed.json');
+      endpoint.searchParams.set('url', u.href);
+      const pr = await fetch(endpoint.href, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; ArchiveBot/1.0)', accept: 'application/json' }, redirect: 'follow', signal: AbortSignal.timeout(7000) });
+      if (pr.ok && /json/i.test(pr.headers.get('content-type') || '')) pinterestData = await pr.json();
+    } catch { /* probeer daarna de gewone Open Graph-preview */ }
+  }
   const ua = { 'user-agent': 'Mozilla/5.0 (compatible; ArchiveBot/1.0; +link-preview)', accept: 'text/html,application/xhtml+xml' };
   let html = '';
   try {
@@ -334,10 +345,10 @@ async function preview(req, env, user) {
   } catch { return empty(); }
 
   const title = meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').trim();
-  const description = meta(html, ['og:description', 'twitter:description', 'description']);
+  const description = (pinterestData && pinterestData.description) || meta(html, ['og:description', 'twitter:description', 'description']);
   let image = '';
   // Instagram media wordt niet gekopieerd; toon de officiële embed.
-  const im = provider === 'instagram' ? '' : meta(html, ['og:image', 'og:image:url', 'twitter:image']);
+  const im = provider === 'instagram' ? '' : ((pinterestData && pinterestData.thumbnail_url) || meta(html, ['og:image', 'og:image:url', 'twitter:image']));
   if (im) {
     try {
       const iu = new URL(im, u.href);
