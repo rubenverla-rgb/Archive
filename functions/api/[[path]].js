@@ -366,7 +366,7 @@ async function preview(req, env, user) {
         // potentially very large original file.
         const originalImageUrl = iu.href;
         if (provider === 'pinterest') {
-          iu.pathname = iu.pathname.replace(/\/(?:\d+x\d+|originals)\//, '/736x/');
+          iu.pathname = iu.pathname.replace(/\/(?:\d+x(?:\d+)?|originals)\//, '/736x/');
         }
         image = iu.href;
         try {
