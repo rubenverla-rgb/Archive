@@ -361,26 +361,32 @@ async function preview(req, env, user) {
     try {
       const iu = new URL(im, u.href);
       if (/^https?:$/.test(iu.protocol) && !privateHost(iu.hostname)) {
-        // Keep the original image URL as a browser-side fallback. Pinterest may
-        // block server-side image downloads even when its thumbnail URL is valid.
+        // Pinterest oEmbed often returns a tiny 236px thumbnail. Request its
+        // optimized 736px CDN rendition for sharper previews without using the
+        // potentially very large original file.
+        const originalImageUrl = iu.href;
+        if (provider === 'pinterest') {
+          iu.pathname = iu.pathname.replace(/\/(?:\d+x\d+|originals)\//, '/736x/');
+        }
         image = iu.href;
         try {
           const r = await fetch(iu.href, { headers: { 'user-agent': ua['user-agent'], accept: 'image/*' }, redirect: 'follow', signal: AbortSignal.timeout(8000) });
           const ct = (r.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
           if (provider === 'pinterest') console.log('[preview:pinterest] image fetch', { status: r.status, contentType: ct, bytes: Number(r.headers.get('content-length') || 0), finalHost: (() => { try { return new URL(r.url).hostname; } catch { return ''; } })() });
+          if (!r.ok && provider === 'pinterest') image = originalImageUrl;
           const ext = FILE_TYPES[ct];
           if (r.ok && ext && ext !== 'pdf') {
             const buf = await r.arrayBuffer();
             if (buf.byteLength > 0 && buf.byteLength <= MAX_FILE) {
               const name = rnd(16) + '.' + ext;
               await env.FILES.put(`u/${user.id}/${name}`, buf, { httpMetadata: { contentType: ct } });
-              // Keep the original Pinterest CDN URL for browser rendering. The
-              // stored copy is retained, but its private API path can fail to
-              // load in image elements on some deployments.
-              // image remains iu.href.
+              // Keep the CDN URL for browser rendering; the private API path
+              // has caused broken image elements in the deployed frontend.
             }
           }
-        } catch { /* gebruik de originele URL rechtstreeks in de browser */ }
+        } catch {
+          image = originalImageUrl;
+        }
       }
     } catch { /* geen afbeelding beschikbaar */ }
   }
