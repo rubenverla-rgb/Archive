@@ -340,7 +340,7 @@ async function preview(req, env, user) {
       console.log('[preview:pinterest] oembed', { status: pr.status, contentType: pr.headers.get('content-type') || '' });
       if (pr.ok && /json/i.test(pr.headers.get('content-type') || '')) {
         pinterestData = await pr.json();
-        console.log('[preview:pinterest] oembed fields', { title: !!pinterestData.title, description: !!pinterestData.description, thumbnail: !!pinterestData.thumbnail_url, type: pinterestData.type || '' });
+        console.log('[preview:pinterest] oembed fields', { title: !!pinterestData.title, description: !!pinterestData.description, thumbnail: !!pinterestData.thumbnail_url, thumbnailHost: pinterestData.thumbnail_url ? (() => { try { return new URL(pinterestData.thumbnail_url).hostname; } catch { return 'invalid'; } })() : '', type: pinterestData.type || '' });
       }
     } catch { /* probeer daarna de gewone Open Graph-preview */ }
   }
@@ -367,6 +367,7 @@ async function preview(req, env, user) {
         try {
           const r = await fetch(iu.href, { headers: { 'user-agent': ua['user-agent'], accept: 'image/*' }, redirect: 'follow', signal: AbortSignal.timeout(8000) });
           const ct = (r.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+          if (provider === 'pinterest') console.log('[preview:pinterest] image fetch', { status: r.status, contentType: ct, bytes: Number(r.headers.get('content-length') || 0), finalHost: (() => { try { return new URL(r.url).hostname; } catch { return ''; } })() });
           const ext = FILE_TYPES[ct];
           if (r.ok && ext && ext !== 'pdf') {
             const buf = await r.arrayBuffer();
