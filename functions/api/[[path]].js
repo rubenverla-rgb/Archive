@@ -337,13 +337,18 @@ async function preview(req, env, user) {
       pinUrl.hostname = 'www.pinterest.com';
       endpoint.searchParams.set('url', pinUrl.href);
       const pr = await fetch(endpoint.href, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; ArchiveBot/1.0)', accept: 'application/json' }, redirect: 'follow', signal: AbortSignal.timeout(7000) });
-      if (pr.ok && /json/i.test(pr.headers.get('content-type') || '')) pinterestData = await pr.json();
+      console.log('[preview:pinterest] oembed', { status: pr.status, contentType: pr.headers.get('content-type') || '' });
+      if (pr.ok && /json/i.test(pr.headers.get('content-type') || '')) {
+        pinterestData = await pr.json();
+        console.log('[preview:pinterest] oembed fields', { title: !!pinterestData.title, description: !!pinterestData.description, thumbnail: !!pinterestData.thumbnail_url, type: pinterestData.type || '' });
+      }
     } catch { /* probeer daarna de gewone Open Graph-preview */ }
   }
   const ua = { 'user-agent': 'Mozilla/5.0 (compatible; ArchiveBot/1.0; +link-preview)', accept: 'text/html,application/xhtml+xml' };
   let html = '';
   try {
     const res = await fetch(u.href, { headers: ua, redirect: 'follow', signal: AbortSignal.timeout(7000) });
+    console.log('[preview:pinterest] page', { status: res.status, contentType: res.headers.get('content-type') || '' });
     if (res.ok && /html/i.test(res.headers.get('content-type') || '')) html = await limitedText(res, 300000);
   } catch { /* Pinterest oEmbed kan nog steeds bruikbare gegevens bevatten */ }
 
@@ -375,6 +380,7 @@ async function preview(req, env, user) {
       }
     } catch { /* geen afbeelding beschikbaar */ }
   }
+  if (provider === 'pinterest') console.log('[preview:pinterest] result', { title: !!title, description: !!description, image: !!image, imageHost: image ? (() => { try { return new URL(image, u.href).hostname; } catch { return 'invalid'; } })() : '' });
   return json({ title: title.slice(0, 300), description: description.slice(0, 1000), image, site: host, provider, embedUrl });
 }
 
