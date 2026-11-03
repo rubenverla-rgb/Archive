@@ -357,7 +357,19 @@ async function preview(req, env, user) {
   let image = '';
   // Gebruik bij openbare Instagram-posts de Open Graph-thumbnail als preview.
   // De officiële embed blijft beschikbaar voor het openen van de volledige post.
-  const im = (pinterestData && pinterestData.thumbnail_url) || meta(html, ['og:image', 'og:image:url', 'twitter:image']);
+  // Instagram's og:image is often a square social thumbnail. Prefer the
+  // original display_url embedded in the public page metadata when available.
+  let instagramImage = '';
+  if (provider === 'instagram' && html) {
+    const displayMatch = html.match(/"display_url"\s*:\s*"((?:https?:\\\/\\\/|https?:\/\/)[^"]+)"/i);
+    if (displayMatch) {
+      instagramImage = displayMatch[1]
+        .replace(/\\u0026/gi, '&')
+        .replace(/\\\//g, '/')
+        .replace(/&amp;/gi, '&');
+    }
+  }
+  const im = (provider === 'instagram' && instagramImage) || (pinterestData && pinterestData.thumbnail_url) || meta(html, ['og:image', 'og:image:url', 'twitter:image']);
   if (im) {
     try {
       const iu = new URL(im, u.href);
