@@ -355,8 +355,9 @@ async function preview(req, env, user) {
   const title = (pinterestData && pinterestData.title) || meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').trim();
   const description = (pinterestData && pinterestData.description) || meta(html, ['og:description', 'twitter:description', 'description']);
   let image = '';
-  // Instagram media wordt niet gekopieerd; toon de officiële embed.
-  const im = provider === 'instagram' ? '' : ((pinterestData && pinterestData.thumbnail_url) || meta(html, ['og:image', 'og:image:url', 'twitter:image']));
+  // Gebruik bij openbare Instagram-posts de Open Graph-thumbnail als preview.
+  // De officiële embed blijft beschikbaar voor het openen van de volledige post.
+  const im = (pinterestData && pinterestData.thumbnail_url) || meta(html, ['og:image', 'og:image:url', 'twitter:image']);
   if (im) {
     try {
       const iu = new URL(im, u.href);
@@ -390,7 +391,7 @@ async function preview(req, env, user) {
       }
     } catch { /* geen afbeelding beschikbaar */ }
   }
-  if (provider === 'pinterest') console.log('[preview:pinterest] result', { title: !!title, description: !!description, image: !!image, imageHost: image ? (() => { try { return new URL(image, u.href).hostname; } catch { return 'invalid'; } })() : '' });
+  if (provider) console.log('[preview:' + provider + '] result', { title: !!title, description: !!description, image: !!image, imageHost: image ? (() => { try { return new URL(image, u.href).hostname; } catch { return 'invalid'; } })() : '' });
   return json({ title: title.slice(0, 300), description: description.slice(0, 1000), image, site: host, provider, embedUrl });
 }
 
