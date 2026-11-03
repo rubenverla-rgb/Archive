@@ -1220,7 +1220,7 @@ async function loadSeed(){var r=await fetch('seed.json');if(!r.ok)throw new Erro
 window.__data={poll:pollShared,updateUI:updateUI,start:startData,stop:stopData,snapshot:snapshot,restore:restore,loadSeed:loadSeed,isEmpty:isEmpty,flush:flushNow,save:doSave};
 /* link automatisch aanvullen (titel, beschrijving, afbeelding) */
 function enrich(u){if(!window.__api||!active)return;api('POST','/api/preview',{url:u}).then(function(p){if(!m2.classList.contains('open')||mu.value.trim()!==u)return;
-if(p.title&&!mtitle.value.trim())mtitle.value=p.title;if(p.description&&!mdesc.value.trim())mdesc.value=p.description;if(p.embedUrl){pendEmbed=p.embedUrl;pendProvider=p.provider||'';}
+if(!mdesc.value.trim())mdesc.value=p.title||p.description||'';if(p.embedUrl){pendEmbed=p.embedUrl;pendProvider=p.provider||'';}
 if(p.image&&!pendData){pendData=new URL(p.image,window.location.href).href;pendR=.75;var im=new Image();im.onload=function(){if(!m2.classList.contains('open')||mu.value.trim()!==u)return;pendR=+(im.naturalHeight/im.naturalWidth).toFixed(4);var pi=document.getElementById('mpvImg'),pv=document.getElementById('mpv');pi.onload=function(){pv.hidden=false;document.getElementById('mpvTxt').textContent=p.site||''};pi.src=pendData};im.src=pendData}
 rdy()}).catch(function(){})}
 mu.addEventListener('change',function(){var v=mu.value.trim();if(/^https?:\/\//i.test(v)&&(kind==='link'||kind==='social')&&!mtitle.value.trim())enrich(v)});
