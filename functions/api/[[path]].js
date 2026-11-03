@@ -361,7 +361,7 @@ async function preview(req, env, user) {
   // original display_url embedded in the public page metadata when available.
   let instagramImage = '';
   if (provider === 'instagram' && html) {
-    const displayMatch = html.match(/"display_url"\s*:\s*"((?:https?:\\\/\\\/|https?:\/\/)[^"]+)"/i);
+    const displayMatch = html.match(/"display_url"\s*:\s*"([^"]+)"/i);
     if (displayMatch) {
       instagramImage = displayMatch[1]
         .replace(/\\u0026/gi, '&')
