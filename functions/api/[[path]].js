@@ -363,18 +363,18 @@ async function preview(req, env, user) {
   if (provider === 'instagram' && html) {
     // Instagram exposes several renditions in image_versions2.candidates.
     // Pick the largest by pixel area instead of relying on the first display_url.
-    const versionsMatch = html.match(/"image_versions2"\\s*:\\s*\\{[\\s\\S]*?"candidates"\\s*:\\s*\\[([\\s\\S]*?)\\]/i);
+    const versionsMatch = html.match(/"image_versions2"\s*:\s*\{[\s\S]*?"candidates"\s*:\s*\[([\s\S]*?)\]/i);
     const candidates = [];
     if (versionsMatch) {
-      const objects = versionsMatch[1].match(/\\{[^{}]*\\}/g) || [];
+      const objects = versionsMatch[1].match(/\{[^{}]*\}/g) || [];
       for (const object of objects) {
-        const urlMatch = object.match(/"url"\\s*:\\s*"((?:\\\\.|[^"\\\\])*)"/i);
-        const widthMatch = object.match(/"width"\\s*:\\s*(\\d+)/i);
-        const heightMatch = object.match(/"height"\\s*:\\s*(\\d+)/i);
+        const urlMatch = object.match(/"url"\s*:\s*"((?:\\.|[^"\\])*)"/i);
+        const widthMatch = object.match(/"width"\s*:\s*(\d+)/i);
+        const heightMatch = object.match(/"height"\s*:\s*(\d+)/i);
         if (urlMatch && widthMatch && heightMatch) {
           const candidateUrl = urlMatch[1]
-            .replace(/\\\\u0026/gi, '&')
-            .replace(/\\\\\\//g, '/')
+            .replace(/\\u0026/gi, '&')
+            .replace(/\\\//g, '/')
             .replace(/&amp;/gi, '&');
           candidates.push({ url: candidateUrl, area: Number(widthMatch[1]) * Number(heightMatch[1]) });
         }
@@ -385,11 +385,11 @@ async function preview(req, env, user) {
       instagramImage = candidates[0].url;
       console.log('[preview:instagram] selected rendition', { candidates: candidates.length, pixels: candidates[0].area });
     } else {
-      const displayMatch = html.match(/"display_url"\\s*:\\s*"([^"]+)"/i);
+      const displayMatch = html.match(/"display_url"\s*:\s*"([^"]+)"/i);
       if (displayMatch) {
         instagramImage = displayMatch[1]
-          .replace(/\\\\u0026/gi, '&')
-          .replace(/\\\\\\//g, '/')
+          .replace(/\\u0026/gi, '&')
+          .replace(/\\\//g, '/')
           .replace(/&amp;/gi, '&');
       }
     }
