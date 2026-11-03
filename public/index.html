@@ -143,6 +143,7 @@ h1 b{font-weight:700}
 .mi[hidden]{display:none}
 .mi img{display:block;width:100%;object-fit:contain;border-radius:16px;box-shadow:0 10px 20px rgba(0,0,0,.22)}
 .mi.instagram img{height:auto!important;aspect-ratio:auto!important;object-fit:contain}
+.mi.instagram iframe{display:block;width:100%;height:540px;border:0;border-radius:12px;background:transparent}
 .mi figcaption{display:flex;gap:6px;align-items:baseline;margin-top:9px;font-size:12px;line-height:1.3}
 .mi figcaption b{font-size:15px;font-weight:700}
 .card{cursor:pointer}
@@ -686,13 +687,13 @@ figs.forEach(function(f){if(f.hidden)return;var k=hs.indexOf(Math.min.apply(null
 var KL={pdf:'PDF',image:'Afbeelding',link:'Weblink',social:'Social'};
 function host(u){try{return new URL(u).hostname.replace(/^www\./,'')}catch(x){return u}}
 function tileFor(m){var v=document.createElement(m.u?'a':'div');v.className='tile';if(m.u){v.href=m.u;v.target='_blank';v.rel='noopener'}v.innerHTML='<span class="kd"></span><span class="ku"></span>';v.querySelector('.kd').textContent=KL[m.k]||'Weblink';v.querySelector('.ku').textContent=m.u?host(m.u):(m.f||'');return v}
-function fig(m,i){var f=document.createElement('figure');f.className='mi'+(m.provider==='instagram'?' instagram':'');f._r=m.r;f._i=i;f.tabIndex=0;f.setAttribute('role','button');f.dataset.s=[m.t,m.d,(m.tags||[]).join(' ')].join(' ').toLowerCase();if(m.d)f.title=m.d;var v;
-if(m.src){v=document.createElement('img');v.alt='';v.src=m.src;v.style.aspectRatio='1/'+m.r}
+function fig(m,i){var f=document.createElement('figure');f.className='mi'+(m.provider==='instagram'?' instagram':'');f._r=m.provider==='instagram'&&m.embed?3:(m.r||1);f._i=i;f.tabIndex=0;f.setAttribute('role','button');f.dataset.s=[m.t,m.d,(m.tags||[]).join(' ')].join(' ').toLowerCase();if(m.d)f.title=m.d;var v;
+if(m.provider==='instagram'&&m.embed){v=document.createElement('iframe');v.src=m.embed;v.title='Instagram-post';v.loading='lazy';v.referrerPolicy='strict-origin-when-cross-origin';v.sandbox='allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox';v.style.cssText='display:block;width:100%;height:540px;border:0;border-radius:12px'}
+else if(m.src){v=document.createElement('img');v.alt='';v.src=m.src;v.style.aspectRatio='1/'+m.r}
 else if(m.img){v=document.createElement('img');v.alt='';v.style.aspectRatio='1/'+m.r;v.onerror=function(){var tt=tileFor(m);if(v.parentNode)v.parentNode.replaceChild(tt,v);v=tt};v.src=m.img}
 else{v=tileFor(m)}
 var cap=document.createElement('figcaption');cap.innerHTML='<b></b><span></span>';cap.querySelector('b').textContent=(i+1)+'.';cap.querySelector('span').textContent=m.t;
 f.appendChild(v);f.appendChild(cap);
-
 return f}
 function render(){if(cur._sid)syncShared(cur);figs=cur._m.map(fig);ms.value='';mn.hidden=!!figs.length;mn.textContent=figs.length?'':'Nog geen media in deze collectie.';layout()}
 function openDetail(c){cur=c;if(!c._m)c._m=(mediaByName[c.dataset.n]||[]).slice();dt.textContent=c.dataset.n;if(c._sid&&pullShared(c)===false)return;upSub();applyPerms();show('detail');render()}
