@@ -374,7 +374,10 @@ async function preview(req, env, user) {
             if (buf.byteLength > 0 && buf.byteLength <= MAX_FILE) {
               const name = rnd(16) + '.' + ext;
               await env.FILES.put(`u/${user.id}/${name}`, buf, { httpMetadata: { contentType: ct } });
-              image = `/api/file/${user.id}/${name}`;
+              // Keep the original Pinterest CDN URL for browser rendering. The
+              // stored copy is retained, but its private API path can fail to
+              // load in image elements on some deployments.
+              // image remains iu.href.
             }
           }
         } catch { /* gebruik de originele URL rechtstreeks in de browser */ }
