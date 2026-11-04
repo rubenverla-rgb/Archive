@@ -353,7 +353,22 @@ async function preview(req, env, user) {
   } catch { /* Pinterest oEmbed kan nog steeds bruikbare gegevens bevatten */ }
 
   const title = (pinterestData && pinterestData.title) || meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').trim();
-  const description = (pinterestData && pinterestData.description) || meta(html, ['og:description', 'twitter:description', 'description']);
+  const pinterestDescription = (() => {
+    if (provider !== 'pinterest' || !html) return '';
+    const candidates = [
+      meta(html, ['og:description', 'twitter:description', 'description']),
+      (html.match(/data-pin-description=["']([^"']*)["']/i) || [])[1] || '',
+      (html.match(/["']description["']\\s*:\\s*["']((?:\\\\.|[^"'\\\\])*)["']/i) || [])[1] || ''
+    ];
+    for (let value of candidates) {
+      if (!value) continue;
+      try { value = JSON.parse('"' + value.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'); } catch { /* plain text or already escaped */ }
+      value = decodeHtml(value).trim();
+      if (value && value.length > 2 && value.toLowerCase() !== ((pinterestData && pinterestData.title) || '').toLowerCase()) return value;
+    }
+    return '';
+  })();
+  const description = (pinterestData && pinterestData.description) || pinterestDescription || meta(html, ['og:description', 'twitter:description', 'description']);
   let image = '';
   // Gebruik bij openbare Instagram-posts de Open Graph-thumbnail als preview.
   // De officiële embed blijft beschikbaar voor het openen van de volledige post.
