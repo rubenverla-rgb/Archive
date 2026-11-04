@@ -417,6 +417,34 @@ async function preview(req, env, user) {
       });
     }
   }
+  // Instagram often serves a login/consent shell for the canonical URL. Its public
+  // embed endpoint can expose a separate responsive image srcset; prefer the
+  // largest rendition from that response over the square og:image thumbnail.
+  if (provider === 'instagram' && !instagramImage && embedUrl) {
+    try {
+      const er = await fetch(embedUrl + (embedUrl.includes('?') ? '&' : '?') + 'cr=1&v=14&wp=1&rd=1', {
+        headers: { ...ua, referer: 'https://www.instagram.com/' }, redirect: 'follow', signal: AbortSignal.timeout(8000)
+      });
+      const embedHtml = er.ok && /html/i.test(er.headers.get('content-type') || '') ? await limitedText(er, 500000) : '';
+      const srcsets = [...embedHtml.matchAll(/(?:srcset|data-srcset)=["']([^"']+)["']/gi)];
+      const choices = [];
+      for (const match of srcsets) {
+        for (const part of match[1].split(',')) {
+          const item = part.trim().match(/^(https?:\\/\\/\\S+?)(?:\\s+(\\d+)w)?$/i);
+          if (item) choices.push({ url: decodeHtml(item[1]), width: Number(item[2] || 0) });
+        }
+      }
+      if (choices.length) {
+        choices.sort((a, b) => b.width - a.width);
+        instagramImage = choices[0].url;
+        console.log('[preview:instagram] embed srcset', { status: er.status, choices: choices.length, width: choices[0].width });
+      } else {
+        console.log('[preview:instagram] embed fallback', { status: er.status, html: !!embedHtml, srcsetCount: srcsets.length });
+      }
+    } catch (e) {
+      console.log('[preview:instagram] embed error', String(e && e.message || e));
+    }
+  }
   const im = (provider === 'instagram' && instagramImage) || (pinterestData && pinterestData.thumbnail_url) || meta(html, ['og:image', 'og:image:url', 'twitter:image']);
   if (im) {
     try {
