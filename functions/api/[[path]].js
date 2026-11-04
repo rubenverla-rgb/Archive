@@ -357,12 +357,19 @@ async function preview(req, env, user) {
     if (provider !== 'pinterest' || !html) return '';
     const candidates = [
       meta(html, ['og:description', 'twitter:description', 'description']),
-      (html.match(/data-pin-description=["']([^"']*)["']/i) || [])[1] || '',
-      (html.match(/["']description["']\\s*:\\s*["']((?:\\\\.|[^"'\\\\])*)["']/i) || [])[1] || ''
+      (html.match(/data-pin-description=["']([^"']*)["']/i) || [])[1] || ''
     ];
+    const pinId = u.pathname.match(/\\/pin\\/(\\d+)/i)?.[1];
+    const pws = html.match(/<script[^>]+id=["']__PWS_DATA__["'][^>]*>([\\s\\S]*?)<\\/script>/i);
+    if (pws && pinId) {
+      try {
+        const state = JSON.parse(pws[1]);
+        const pin = state?.props?.initialReduxState?.pins?.[pinId] || state?.props?.initialReduxState?.pins?.[Number(pinId)];
+        if (pin) candidates.push(pin.description, pin.note, pin.seo_alt_text, pin.alt_text);
+      } catch { /* Pinterest hydration data may be malformed or partial */ }
+    }
     for (let value of candidates) {
-      if (!value) continue;
-      try { value = JSON.parse('"' + value.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'); } catch { /* plain text or already escaped */ }
+      if (typeof value !== 'string' || !value.trim()) continue;
       value = decodeHtml(value).trim();
       if (value && value.length > 2 && value.toLowerCase() !== ((pinterestData && pinterestData.title) || '').toLowerCase()) return value;
     }
