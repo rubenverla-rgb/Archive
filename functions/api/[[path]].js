@@ -547,6 +547,7 @@ async function loadCols(env, user, onlyId) {
     out[r.id] = {
       id: r.id, name: r.name, desc: r.desc, cover: r.cover, ln: r.ln, rev: r.rev,
       owner: { name: r.oname, email: r.oemail },
+      role: isOwner ? 'owner' : ((members.find((x) => x.uid === user.id) || {}).role || 'editor'),
       members: (isOwner || isMember) ? members.map((x) => ({ email: x.email, name: x.name, role: x.role || 'editor' })) : [],
       invites: isOwner ? inv.filter((x) => x.cid === r.id).map((x) => ({ email: x.email, token: x.token, role: x.role || 'editor' })) : mine.map((x) => ({ email: x.email, token: x.token, role: x.role || 'editor' })),
       media: (isOwner || isMember) ? safeJson(r.media, []) : []
