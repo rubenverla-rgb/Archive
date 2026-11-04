@@ -430,7 +430,7 @@ async function preview(req, env, user) {
       const choices = [];
       for (const match of srcsets) {
         for (const part of match[1].split(',')) {
-          const item = part.trim().match(/^(https?:\\/\\/\\S+?)(?:\\s+(\\d+)w)?$/i);
+          const item = part.trim().match(/^(https?:\/\/\S+?)(?:\s+(\d+)w)?$/i);
           if (item) choices.push({ url: decodeHtml(item[1]), width: Number(item[2] || 0) });
         }
       }
