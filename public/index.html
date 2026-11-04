@@ -971,7 +971,7 @@ if(pendData||pendImg){pi.onload=function(){pv.hidden=false;document.getElementBy
 rdy();mtitle.focus();if(!pendData&&p.u)enrich(p.u)}
 window.__prefill=prefill;
 function shrink(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,800/im.width),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb({src:c.toDataURL('image/jpeg',.86),r:+(c.height/c.width).toFixed(4)})};im.src=r.result};r.readAsDataURL(file)}
-function startAdd(){if(!cards.length)return false;if(!cur)cur=cards[0];if(!m2.classList.contains('open'))openM2();return true}
+function startAdd(){var sc=cur&&cur._sid&&loadS().cols[cur._sid];if(sc&&!cur._own&&sc.role==='viewer')return false;if(!cards.length)return false;if(!cur)cur=cards[0];if(!m2.classList.contains('open'))openM2();return true}
 function addImage(file){if(!startAdd())return;shrink(file,function(d){setKind('image');fdata=d;fname=file.name||'afbeelding';mpt.textContent=fname;
 if(!mtitle.value.trim()){var nm=(file.name||'').replace(/\.[^.]+$/,'');mtitle.value=nm&&!/^(image|afbeelding)$/i.test(nm)?nm:(document.documentElement.lang==='en'?'Pasted image':'Geplakte afbeelding')}rdy();mtitle.focus();if(mtitle.select)mtitle.select()})}
 function addUrl(u,img){if(!startAdd())return;prefill({u:u,t:'',d:'',i:img||'',s:host(u)});enrich(u)}
@@ -1090,7 +1090,7 @@ var shNav=document.querySelector('nav a[data-view=gedeeld]');if(shNav)shNav.addE
 
 /* rechten */
 var dshare=document.createElement('p');dshare.className='dshare';dshare.hidden=true;ds.parentNode.insertBefore(dshare,ds.nextSibling);
-function applyPerms(){var own=!cur._sid||cur._own;document.getElementById('rename').hidden=!own;dc.hidden=!own;dshare.innerHTML='';
+function applyPerms(){var own=!cur._sid||cur._own,sc=cur._sid&&loadS().cols[cur._sid],viewer=!!(sc&&!cur._own&&sc.role==='viewer');document.getElementById('rename').hidden=!own;document.getElementById('addMedia').hidden=viewer;dc.hidden=!own;dshare.innerHTML='';
 if(cur._sid){var sc=loadS().cols[cur._sid];if(sc){if(cur._own){var n=sc.members.length;dshare.appendChild(sp('Gedeeld met'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(String(n),'cn'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(n===1?'persoon':'personen'))}
 else{dshare.appendChild(sp('Gedeeld door'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(sc.owner.name,'cn'))}}}
 dshare.hidden=!dshare.childNodes.length}
