@@ -365,6 +365,23 @@ async function preview(req, env, user) {
     // Pick the largest by pixel area instead of relying on the first display_url.
     const versionsMatch = html.match(/"image_versions2"\s*:\s*\{[\s\S]*?"candidates"\s*:\s*\[([\s\S]*?)\]/i);
     const candidates = [];
+    // Older Instagram GraphImage payloads expose the uncropped renditions as display_resources.
+    const resourcesMatch = html.match(/"display_resources"\\s*:\\s*\\[([\\s\\S]*?)\\]/i);
+    if (resourcesMatch) {
+      const resources = resourcesMatch[1].match(/\\{[^{}]*\\}/g) || [];
+      for (const resource of resources) {
+        const srcMatch = resource.match(/"src"\\s*:\\s*"((?:\\\\.|[^"\\\\])*)"/i);
+        const widthMatch = resource.match(/"config_width"\\s*:\\s*(\\d+)/i);
+        const heightMatch = resource.match(/"config_height"\\s*:\\s*(\\d+)/i);
+        if (srcMatch && widthMatch && heightMatch) {
+          const candidateUrl = srcMatch[1]
+            .replace(/\\\\u0026/gi, '&')
+            .replace(/\\\\\\//g, '/')
+            .replace(/&amp;/gi, '&');
+          candidates.push({ url: candidateUrl, area: Number(widthMatch[1]) * Number(heightMatch[1]) });
+        }
+      }
+    }
     if (versionsMatch) {
       const objects = versionsMatch[1].match(/\{[^{}]*\}/g) || [];
       for (const object of objects) {
