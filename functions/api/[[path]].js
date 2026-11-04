@@ -535,8 +535,8 @@ async function loadCols(env, user, onlyId) {
   const mem = [], inv = [];
   for (const part of chunks(ids, 80)) {
     const ph = part.map(() => '?').join(',');
-    mem.push(...((await env.DB.prepare(`SELECT m.collection_id AS cid,u.email,u.name,u.id AS uid FROM members m JOIN users u ON u.id=m.user_id WHERE m.collection_id IN (${ph}) ORDER BY m.joined_at, u.email`).bind(...part).all()).results || []));
-    inv.push(...((await env.DB.prepare(`SELECT collection_id AS cid,email,token FROM invites WHERE collection_id IN (${ph}) ORDER BY created_at, email`).bind(...part).all()).results || []));
+    mem.push(...((await env.DB.prepare(`SELECT m.collection_id AS cid,u.email,u.name,u.id AS uid,m.role FROM members m JOIN users u ON u.id=m.user_id WHERE m.collection_id IN (${ph}) ORDER BY m.joined_at, u.email`).bind(...part).all()).results || []));
+    inv.push(...((await env.DB.prepare(`SELECT collection_id AS cid,email,token,role FROM invites WHERE collection_id IN (${ph}) ORDER BY created_at, email`).bind(...part).all()).results || []));
   }
   const out = {};
   for (const r of rows) {
@@ -547,8 +547,8 @@ async function loadCols(env, user, onlyId) {
     out[r.id] = {
       id: r.id, name: r.name, desc: r.desc, cover: r.cover, ln: r.ln, rev: r.rev,
       owner: { name: r.oname, email: r.oemail },
-      members: (isOwner || isMember) ? members.map((x) => ({ email: x.email, name: x.name })) : [],
-      invites: isOwner ? inv.filter((x) => x.cid === r.id).map((x) => ({ email: x.email, token: x.token })) : mine.map((x) => ({ email: x.email, token: x.token })),
+      members: (isOwner || isMember) ? members.map((x) => ({ email: x.email, name: x.name, role: x.role || 'editor' })) : [],
+      invites: isOwner ? inv.filter((x) => x.cid === r.id).map((x) => ({ email: x.email, token: x.token, role: x.role || 'editor' })) : mine.map((x) => ({ email: x.email, token: x.token, role: x.role || 'editor' })),
       media: (isOwner || isMember) ? safeJson(r.media, []) : []
     };
   }
@@ -558,8 +558,9 @@ async function accessOf(env, user, id) {
   const row = await env.DB.prepare('SELECT * FROM shared_collections WHERE id=?').bind(id).first();
   if (!row) bad('not_found', 404);
   const isOwner = row.owner_id === user.id;
-  const isMember = isOwner || !!(await env.DB.prepare('SELECT 1 FROM members WHERE collection_id=? AND user_id=?').bind(id, user.id).first());
-  return { row, isOwner, isMember };
+  const member = isOwner ? null : await env.DB.prepare('SELECT role FROM members WHERE collection_id=? AND user_id=?').bind(id, user.id).first();
+  const isMember = isOwner || !!member;
+  return { row, isOwner, isMember, role: isOwner ? 'owner' : (member && member.role) || 'editor' };
 }
 
 async function shared(req, env, url, user, seg) {
@@ -580,6 +581,14 @@ async function shared(req, env, url, user, seg) {
     return json({ col: (await loadCols(env, user, cid))[cid] });
   }
 
+  if (seg[1] === 'join' && seg.length === 2 && m === 'POST') {
+    const b = await readJson(req), token = str(b.token, 64);
+    if (!token) bad('invalid');
+    const inv = await env.DB.prepare('SELECT * FROM invites WHERE token=?').bind(token).first();
+    if (!inv) bad('not_found', 404);
+    await env.DB.prepare('INSERT OR IGNORE INTO members(collection_id,user_id,joined_at,role) VALUES(?,?,?,?)').bind(inv.collection_id,user.id,now(),inv.role || 'editor').run();
+    return json({ col: (await loadCols(env,user,inv.collection_id))[inv.collection_id] });
+  }
   if (!id || !/^s[0-9a-f]{12}$/.test(id)) bad('not_found', 404);
 
   // accepteren / weigeren (voor wie is uitgenodigd)
@@ -587,11 +596,8 @@ async function shared(req, env, url, user, seg) {
     const b = await readJson(req);
     const inv = await env.DB.prepare('SELECT * FROM invites WHERE token=? AND collection_id=?').bind(str(b.token, 64), id).first();
     if (!inv) bad('not_found', 404);
-    if (inv.email !== user.email) bad('wrong_email', 403);
-    await env.DB.batch([
-      env.DB.prepare('INSERT OR IGNORE INTO members(collection_id,user_id,joined_at) VALUES(?,?,?)').bind(id, user.id, now()),
-      env.DB.prepare('DELETE FROM invites WHERE token=?').bind(inv.token)
-    ]);
+    if (inv.email && inv.email !== user.email) bad('wrong_email', 403);
+    await env.DB.prepare('INSERT OR IGNORE INTO members(collection_id,user_id,joined_at,role) VALUES(?,?,?,?)').bind(id,user.id,now(),inv.role || 'editor').run();
     return json({ col: (await loadCols(env, user, id))[id] });
   }
   if (seg[2] === 'decline' && m === 'POST') {
@@ -600,10 +606,11 @@ async function shared(req, env, url, user, seg) {
     return json({ ok: true });
   }
 
-  const { row, isOwner, isMember } = await accessOf(env, user, id);
+  const { row, isOwner, isMember, role } = await accessOf(env, user, id);
   if (!isMember) bad('not_found', 404);
 
   if (seg.length === 2 && m === 'PUT') { // bijwerken (met versiecontrole)
+    if (!isOwner && role !== 'editor') bad('forbidden', 403);
     const b = await readJson(req);
     if (Number(b.rev) !== row.rev) return json({ error: 'conflict', col: (await loadCols(env, user, id))[id] }, 409);
     const incoming = (Array.isArray(b.media) ? b.media : []).slice(0, 2000).map(cleanRec);
@@ -657,21 +664,13 @@ async function shared(req, env, url, user, seg) {
 
   if (seg[2] === 'invites' && seg.length === 3 && m === 'POST') {
     if (!isOwner) bad('forbidden', 403);
-    const b = await readJson(req);
-    const email = str(b.email, 200).trim().toLowerCase();
-    if (!EMAIL_RE.test(email)) bad('invalid_email');
-    if (email === user.email) bad('own_email');
-    const dupe = await env.DB.prepare('SELECT 1 FROM invites WHERE collection_id=? AND email=?').bind(id, email).first()
-      || await env.DB.prepare('SELECT 1 FROM members m JOIN users u ON u.id=m.user_id WHERE m.collection_id=? AND u.email=?').bind(id, email).first();
-    if (dupe) bad('duplicate', 409);
+    const b = await readJson(req), inviteRole = b.role === 'viewer' ? 'viewer' : b.role === 'editor' ? 'editor' : null;
+    if (!inviteRole) bad('invalid_role');
     const count = (await env.DB.prepare('SELECT COUNT(*) AS n FROM invites WHERE collection_id=?').bind(id).first()).n;
     if (count >= 50) bad('too_many', 429);
-    const token = rnd(12);
-    await env.DB.prepare('INSERT INTO invites(token,collection_id,email,created_at) VALUES(?,?,?,?)').bind(token, id, email, now()).run();
-    const origin = env.APP_ORIGIN || url.origin;
-    const text = `Hoi,\n\n${user.name} nodigt je uit om samen media toe te voegen aan de collectie "${row.name}" in Archive.\n\nOpen deze link om de uitnodiging te accepteren:\n${origin}/#invite=${token}\n\nLet op: log in of registreer met dit e-mailadres.\n`;
-    const emailed = await sendMail(env, email, `${user.name} nodigt je uit voor de collectie "${row.name}"`, text);
-    return json({ invite: { email, token }, emailed });
+    const token = rnd(24);
+    await env.DB.prepare("INSERT INTO invites(token,collection_id,email,created_at,role) VALUES(?,?, '', ?,?)").bind(token,id,now(),inviteRole).run();
+    return json({ invite: { email: '', token, role: inviteRole } });
   }
   if (seg[2] === 'invites' && seg.length === 4 && m === 'DELETE') {
     if (!isOwner) bad('forbidden', 403);
