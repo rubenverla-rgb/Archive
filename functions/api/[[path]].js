@@ -361,13 +361,33 @@ async function preview(req, env, user) {
     ];
     const pinId = u.pathname.match(/\/pin\/(\d+)/i)?.[1];
     const pws = html.match(/<script[^>]+id=["']__PWS_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
-    if (pws && pinId) {
+    const scriptIds = [...html.matchAll(/<script[^>]+id=["']([^"']+)["']/gi)].map(m => m[1]).slice(0, 20);
+    let pin = null;
+    let stateKeys = [];
+    if (pws) {
       try {
         const state = JSON.parse(pws[1]);
-        const pin = state?.props?.initialReduxState?.pins?.[pinId] || state?.props?.initialReduxState?.pins?.[Number(pinId)];
-        if (pin) candidates.push(pin.description, pin.note, pin.seo_alt_text, pin.alt_text);
+        const redux = state?.props?.initialReduxState;
+        stateKeys = Object.keys(redux || {});
+        const pins = redux?.pins;
+        pin = pins?.[pinId] || pins?.[Number(pinId)] || null;
+        if (!pin && pins && typeof pins === 'object') {
+          pin = Object.values(pins).find(item => String(item?.id || item?.pin_id || '') === String(pinId)) || null;
+        }
+        if (pin) candidates.push(pin.description, pin.note, pin.seo_alt_text, pin.alt_text, pin.title);
       } catch { /* Pinterest hydration data may be malformed or partial */ }
     }
+    console.log('[preview:pinterest] description diagnostics', {
+      htmlBytes: html.length,
+      pwsFound: !!pws,
+      pinIdFound: !!pinId,
+      scriptIds,
+      stateKeys,
+      pinFound: !!pin,
+      pinKeys: pin ? Object.keys(pin).slice(0, 40) : [],
+      metadataDescription: !!candidates[0],
+      dataPinDescription: !!candidates[1]
+    });
     for (let value of candidates) {
       if (typeof value !== 'string' || !value.trim()) continue;
       value = decodeHtml(value).trim();
