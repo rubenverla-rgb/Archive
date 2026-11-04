@@ -1318,7 +1318,7 @@ catch(x){msg('aMsg',x.message==='exists'?'Dit e-mailadres is al in gebruik.':err
 document.getElementById('aPw').addEventListener('click',async function(){var p0=document.getElementById('aP0').value,p1=document.getElementById('aP1').value,p2=document.getElementById('aP2').value;
 if(!p0||!p1||!p2){msg('aPwMsg','Vul alle velden in.');return}if(p1.length<8){msg('aPwMsg','Het wachtwoord moet minstens 8 tekens bevatten.');return}if(p1!==p2){msg('aPwMsg','De wachtwoorden komen niet overeen.');return}
 try{await api('POST','/api/me/password',{current:p0,next:p1});['aP0','aP1','aP2'].forEach(function(i){document.getElementById(i).value=''});msg('aPwMsg','Wachtwoord gewijzigd.',true)}
-catch(x){msg('aPwMsg',x.message==='invalid_credentials'?'Huidig wachtwoord is onjuist.':errMsg(x))}});
+catch(x){console.error('[Archive] password change failed',{message:x&&x.message,status:x&&x.status,data:x&&x.data});msg('aPwMsg',x.message==='invalid_credentials'?'Huidig wachtwoord is onjuist.':'Fout: '+(x.message||'onbekend')+' (HTTP '+(x.status||'?')+').') }});
 document.getElementById('logout').addEventListener('click',async function(){try{if(window.__data.flush)window.__data.flush();await api('POST','/api/auth/logout')}catch(x){}window.__data.stop();lock()});
 document.getElementById('seedBtn').addEventListener('click',async function(){try{await window.__data.loadSeed();msg('seedMsg','Voorbeeldgegevens geladen.',true)}catch(x){msg('seedMsg',errMsg(x))}});
 var delT;document.getElementById('aDel').addEventListener('click',async function(){var b=this,pw=document.getElementById('aDelPw').value;
