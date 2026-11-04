@@ -359,8 +359,8 @@ async function preview(req, env, user) {
       meta(html, ['og:description', 'twitter:description', 'description']),
       (html.match(/data-pin-description=["']([^"']*)["']/i) || [])[1] || ''
     ];
-    const pinId = u.pathname.match(/\\/pin\\/(\\d+)/i)?.[1];
-    const pws = html.match(/<script[^>]+id=["']__PWS_DATA__["'][^>]*>([\\s\\S]*?)<\\/script>/i);
+    const pinId = u.pathname.match(/\/pin\/(\d+)/i)?.[1];
+    const pws = html.match(/<script[^>]+id=["']__PWS_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
     if (pws && pinId) {
       try {
         const state = JSON.parse(pws[1]);
