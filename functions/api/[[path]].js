@@ -361,12 +361,11 @@ async function preview(req, env, user) {
   // original display_url embedded in the public page metadata when available.
   let instagramImage = '';
   if (provider === 'instagram' && html) {
-    // Instagram exposes several renditions in image_versions2.candidates.
-    // Pick the largest by pixel area instead of relying on the first display_url.
-    const versionsMatch = html.match(/"image_versions2"\s*:\s*\{[\s\S]*?"candidates"\s*:\s*\[([\s\S]*?)\]/i);
+    // Some Instagram responses embed the media JSON with escaped quotes.
+    // Normalize that representation before looking for the full-size renditions.
+    const instagramHtml = html.replace(/\\"/g, '"');
     const candidates = [];
-    // Older Instagram GraphImage payloads expose the uncropped renditions as display_resources.
-    const resourcesMatch = html.match(/"display_resources"\s*:\s*\[([\s\S]*?)\]/i);
+    const resourcesMatch = instagramHtml.match(/"display_resources"\s*:\s*\[([\s\S]*?)\]/i);
     if (resourcesMatch) {
       const resources = resourcesMatch[1].match(/\{[^{}]*\}/g) || [];
       for (const resource of resources) {
@@ -382,6 +381,7 @@ async function preview(req, env, user) {
         }
       }
     }
+    const versionsMatch = instagramHtml.match(/"image_versions2"\s*:\s*\{[\s\S]*?"candidates"\s*:\s*\[([\s\S]*?)\]/i);
     if (versionsMatch) {
       const objects = versionsMatch[1].match(/\{[^{}]*\}/g) || [];
       for (const object of objects) {
@@ -402,13 +402,19 @@ async function preview(req, env, user) {
       instagramImage = candidates[0].url;
       console.log('[preview:instagram] selected rendition', { candidates: candidates.length, pixels: candidates[0].area });
     } else {
-      const displayMatch = html.match(/"display_url"\s*:\s*"([^"]+)"/i);
+      const displayMatch = instagramHtml.match(/"display_url"\s*:\s*"((?:\\.|[^"\\])*)"/i);
       if (displayMatch) {
         instagramImage = displayMatch[1]
           .replace(/\\u0026/gi, '&')
           .replace(/\\\//g, '/')
           .replace(/&amp;/gi, '&');
       }
+      console.log('[preview:instagram] rendition diagnostics', {
+        imageVersions: instagramHtml.includes('"image_versions2"'),
+        displayResources: instagramHtml.includes('"display_resources"'),
+        displayUrl: instagramHtml.includes('"display_url"'),
+        selected: candidates.length ? 'candidate' : displayMatch ? 'display_url' : 'og:image'
+      });
     }
   }
   const im = (provider === 'instagram' && instagramImage) || (pinterestData && pinterestData.thumbnail_url) || meta(html, ['og:image', 'og:image:url', 'twitter:image']);
