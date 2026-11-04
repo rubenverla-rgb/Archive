@@ -569,13 +569,13 @@ body.locked .page{visibility:hidden}
 <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt8">
 <div class="dh"><h2 id="mt8">Collectie delen</h2><button class="mclose" id="mclose8" type="button" aria-label="Sluiten">&times;</button></div>
 <div class="db">
-<p class="shint">Nodig mensen uit om samen media aan deze collectie toe te voegen. Tags worden mee gedeeld.</p>
-<div id="shInvBox"><label class="fl" for="shEmail">E-mailadres</label>
-<div class="shrow"><input class="fi" id="shEmail" type="email" placeholder="naam@voorbeeld.be" autocomplete="off"><button class="addbtn" id="shGo" type="button">Uitnodigen</button></div></div>
+<p class="shint">Deel een link waarmee anderen kunnen deelnemen aan deze collectie. Iedereen met de link kan aansluiten met een Archive-account.</p>
+<div id="shInvBox"><label class="fl" for="shRole">Rechten via de link</label>
+<div class="shrow"><select class="fi" id="shRole"><option value="viewer">Viewer – alleen bekijken</option><option value="editor">Editor – media toevoegen en bewerken</option></select><button class="addbtn" id="shGo" type="button">Maak link</button></div></div>
 <p class="msg" id="shMsg" role="status"></p>
 <p class="fl">Personen met toegang</p>
 <div class="shl" id="shList"></div>
-<p class="shnote">Uitnodigingslinks werken in deze demo alleen in deze browser.</p>
+<p class="shnote">Links blijven geldig tot je ze hier intrekt.</p>
 </div>
 <div class="df"><button class="addbtn alt danger" id="shStop" type="button">Stop met delen</button><button class="addbtn alt" id="shClose" type="button">Sluiten</button></div>
 </div></div>
@@ -1084,11 +1084,7 @@ if(!shCards.length){var e1=document.createElement('p');e1.className='none';e1.te
 var mine=cards.filter(function(c){return c._sid&&c._own});mine.forEach(function(c){var sc=S.cols[c._sid],n=sc?sc.members.length:0,s=document.createElement('small');s.className='cby';s.appendChild(sp('gedeeld met'));s.appendChild(document.createTextNode(' '));s.appendChild(sp(String(n),'cn'));s.appendChild(document.createTextNode(' '));s.appendChild(sp(n===1?'persoon':'personen'));m.appendChild(mkFold(c,s))});
 if(!mine.length){var e2=document.createElement('p');e2.className='none';e2.textContent='Je hebt nog geen collecties gedeeld.';m.appendChild(e2)}}
 function banner(msg){var b=document.getElementById('shBanner');b.textContent=msg||'';b.hidden=!msg}
-async function acceptInvite(sid,token){try{var r=await api('POST','/api/shared/'+sid+'/accept',{token:token});SHC.cols[sid]=r.col;shLast[sid]=colSig(r.col);refreshShared();renderShared();banner('Je bent toegevoegd aan de collectie.')}
-catch(e){banner(e.data&&e.data.error==='wrong_email'?'Deze uitnodiging is voor een ander e-mailadres. Log in met dat adres.':'Deze uitnodiging bestaat niet meer.')}}
-async function declineInvite(sid,token){try{await api('POST','/api/shared/'+sid+'/decline',{token:token})}catch(e){}delete SHC.cols[sid];renderShared()}
-function handleInvite(token){var u=meU(),S=loadS(),f=null;Object.keys(S.cols).forEach(function(id){S.cols[id].invites.forEach(function(i){if(i.token===token)f={sc:S.cols[id],i:i}})});
-if(!f)banner('Deze uitnodiging bestaat niet meer.');else if(!u||f.i.email!==u.email)banner('Deze uitnodiging is voor een ander e-mailadres. Log in met dat adres.');else banner('');renderShared();show('gedeeld')}
+async function handleInvite(token){var u=meU();if(!u){banner('Log in of registreer om deel te nemen aan deze collectie.');return}try{var r=await api('POST','/api/shared/join',{token:token});SHC.cols[r.col.id]=r.col;shLast[r.col.id]=colSig(r.col);refreshShared();renderShared();banner('Je bent toegevoegd aan de collectie.');var card=shCards.filter(function(c){return c._sid===r.col.id})[0];if(card)openDetail(card)}catch(e){banner('Deze deellink is ongeldig of ingetrokken.')}}
 window.__sh={init:function(tok){refreshShared();if(tok)handleInvite(tok)}};
 var shNav=document.querySelector('nav a[data-view=gedeeld]');if(shNav)shNav.addEventListener('click',function(){refreshShared();renderShared()});
 
@@ -1098,38 +1094,28 @@ function applyPerms(){var own=!cur._sid||cur._own;document.getElementById('renam
 if(cur._sid){var sc=loadS().cols[cur._sid];if(sc){if(cur._own){var n=sc.members.length;dshare.appendChild(sp('Gedeeld met'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(String(n),'cn'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(n===1?'persoon':'personen'))}
 else{dshare.appendChild(sp('Gedeeld door'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(sc.owner.name,'cn'))}}}
 dshare.hidden=!dshare.childNodes.length}
-function applyMPerms(){var u=meU(),ok=!cur._sid||cur._own||!!(curM&&curM.by&&u&&curM.by.email===u.email);document.getElementById('mEdit').hidden=!ok;document.getElementById('mDel').hidden=!ok}
+function applyMPerms(){var u=meU(),sc=cur._sid&&loadS().cols[cur._sid],viewer=!!(sc&&!cur._own&&sc.role==='viewer'),ok=!viewer&&(!cur._sid||cur._own||!!(curM&&curM.by&&u&&curM.by.email===u.email));document.getElementById('mEdit').hidden=!ok;document.getElementById('mDel').hidden=!ok}
 /* deelvenster */
-var m8=document.getElementById('modal8'),shEmail=document.getElementById('shEmail'),shMsg=document.getElementById('shMsg'),shList=document.getElementById('shList'),shStop=document.getElementById('shStop'),stopT;
+var m8=document.getElementById('modal8'),shRole=document.getElementById('shRole'),shMsg=document.getElementById('shMsg'),shList=document.getElementById('shList'),shStop=document.getElementById('shStop'),stopT;
 function shSay(m,ok){shMsg.textContent=m||'';shMsg.className='msg'+(m?(ok?' ok':' err'):'')}
 function inviteLink(tok){return location.href.split('#')[0]+'#invite='+tok}
-function mailFor(sc,inv){var en=document.documentElement.lang==='en',lk=inviteLink(inv.token),o=sc.owner.name;
-var sub=en?o+' invites you to the collection "'+sc.name+'"':o+' nodigt je uit voor de collectie "'+sc.name+'"';
-var body=en?'Hi,\n\n'+o+' invites you to add media together to the collection "'+sc.name+'" in Archive.\n\nOpen this link to accept the invitation:\n'+lk+'\n\nNote: log in or sign up with this email address.\n':'Hoi,\n\n'+o+' nodigt je uit om samen media toe te voegen aan de collectie "'+sc.name+'" in Archive.\n\nOpen deze link om de uitnodiging te accepteren:\n'+lk+'\n\nLet op: log in of registreer met dit e-mailadres.\n';
-return 'mailto:'+encodeURIComponent(inv.email).replace('%40','@')+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body)}
-function row(name,email,role,acts){var r=document.createElement('div');r.className='shr';var av=document.createElement('span');av.className='shav';av.textContent=initials2(name||email);var tx=document.createElement('div');tx.className='shtx';
-var b=document.createElement('b');b.className='cn';b.textContent=name||email;tx.appendChild(b);if(name&&email){var s=document.createElement('small');s.className='cn';s.textContent=email;tx.appendChild(s)}
-r.appendChild(av);r.appendChild(tx);r.appendChild(sp(role,'shrole'));(acts||[]).forEach(function(a){r.appendChild(a)});return r}
+function row(name,email,role,acts){var r=document.createElement('div');r.className='shr';var av=document.createElement('span');av.className='shav';av.textContent=initials2(name||email||'L');var tx=document.createElement('div');tx.className='shtx';var b=document.createElement('b');b.className='cn';b.textContent=name||email||'Deellink';tx.appendChild(b);if(name&&email){var s=document.createElement('small');s.className='cn';s.textContent=email;tx.appendChild(s)}r.appendChild(av);r.appendChild(tx);r.appendChild(sp(role,'shrole'));(acts||[]).forEach(function(x){r.appendChild(x)});return r}
 function actBtn(txt,fn,cls){var b=document.createElement('button');b.type='button';b.className='addbtn alt shb'+(cls?' '+cls:'');b.textContent=txt;b.addEventListener('click',fn);return b}
-function renderShare(){var u=meU(),sc=cur._sid?loadS().cols[cur._sid]:null,own=!cur._sid||cur._own;shList.innerHTML='';
-document.getElementById('shInvBox').hidden=!own;shStop.hidden=!(cur._sid);shStop.textContent=own?'Stop met delen':'Collectie verlaten';shStop.classList.remove('confirm');
-var ow=sc?sc.owner:u;shList.appendChild(row(ow.name,ow.email,'Eigenaar'));
-if(sc){sc.members.forEach(function(m){var acts=own?[actBtn('\u00d7',function(){api('DELETE','/api/shared/'+cur._sid+'/members/'+encodeURIComponent(m.email)).then(function(){var s=loadS().cols[cur._sid];if(s)s.members=s.members.filter(function(x){return x.email!==m.email});renderShare();applyPerms()}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x')]:[];shList.appendChild(row(m.name,m.email,'Lid',acts))});
-if(own)sc.invites.forEach(function(i){var a=document.createElement('a');a.className='addbtn alt shb';a.href=mailFor(sc,i);a.target='_blank';a.rel='noopener';a.textContent='E-mail';
-var acts=[actBtn('Kopieer link',function(){var l=inviteLink(i.token),ok=function(){shSay('Link gekopieerd',true)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(l).then(ok,function(){window.prompt('',l)})}else window.prompt('',l)}),a,
-actBtn('\u00d7',function(){api('DELETE','/api/shared/'+cur._sid+'/invites/'+i.token).then(function(){var s=loadS().cols[cur._sid];if(s)s.invites=s.invites.filter(function(x){return x.token!==i.token});renderShare()}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x')];shList.appendChild(row('',i.email,'Uitgenodigd',acts))})}}
-function openShare(){if(!cur)return;m8Op=document.activeElement;shEmail.value='';shSay('');renderShare();m8.classList.add('open');m8.setAttribute('aria-hidden','false');setTimeout(function(){(document.getElementById('shInvBox').hidden?shList:shEmail).focus&&(document.getElementById('shInvBox').hidden?shClose:shEmail).focus()},60)}
+function copyShareLink(token){var link=inviteLink(token);if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(link).then(function(){shSay('Deellink gekopieerd.',true)},function(){window.prompt('Kopieer deze link',link)});else window.prompt('Kopieer deze link',link)}
+function renderShare(){var sc=cur._sid?loadS().cols[cur._sid]:null,own=!cur._sid||cur._own;shList.innerHTML='';document.getElementById('shInvBox').hidden=!own;shStop.hidden=!cur._sid;shStop.textContent=own?'Stop met delen':'Collectie verlaten';shStop.classList.remove('confirm');
+var ow=sc?sc.owner:meU();shList.appendChild(row(ow.name,ow.email,'Eigenaar'));
+if(sc){sc.members.forEach(function(m){var acts=own?[actBtn('Verwijder',function(){api('DELETE','/api/shared/'+cur._sid+'/members/'+encodeURIComponent(m.email)).then(function(){var s=loadS().cols[cur._sid];if(s)s.members=s.members.filter(function(x){return x.email!==m.email});renderShare();applyPerms()}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x')]:[];shList.appendChild(row(m.name,m.email,m.role==='viewer'?'Viewer':'Editor',acts))});
+if(own)sc.invites.forEach(function(i){var acts=[actBtn('Kopieer link',function(){copyShareLink(i.token)}),actBtn('Intrekken',function(){api('DELETE','/api/shared/'+cur._sid+'/invites/'+i.token).then(function(){var s=loadS().cols[cur._sid];if(s)s.invites=s.invites.filter(function(x){return x.token!==i.token});renderShare();shSay('Deellink ingetrokken.',true)}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x')];shList.appendChild(row('Iedereen met de link','',i.role==='viewer'?'Link · Viewer':'Link · Editor',acts))})}}
+function openShare(){if(!cur)return;m8Op=document.activeElement;shSay('');renderShare();m8.classList.add('open');m8.setAttribute('aria-hidden','false');setTimeout(function(){(document.getElementById('shInvBox').hidden?shList:shRole).focus()},60)}
 var shClose=document.getElementById('shClose');
 function closeShare(){m8.classList.remove('open');m8.setAttribute('aria-hidden','true');if(m8Op&&m8Op.focus)m8Op.focus();applyPerms();upSub();q.dispatchEvent(new Event('input'));if(views.gedeeld.classList.contains('open'))renderShared()}
 ['mclose8','scrim8','shClose'].forEach(function(i){document.getElementById(i).addEventListener('click',closeShare)});
-document.addEventListener('keydown',function(e){if(!m8.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeShare()}else if(e.key==='Enter'&&e.target===shEmail){e.preventDefault();document.getElementById('shGo').click()}},true);
-document.getElementById('shGo').addEventListener('click',async function(){var em=shEmail.value.trim().toLowerCase(),u=meU();shSay('');
-if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){shSay('Vul een geldig e-mailadres in.');return}if(u&&em===u.email){shSay('Dit is je eigen e-mailadres.');return}
-var go=document.getElementById('shGo');go.disabled=true;
+document.addEventListener('keydown',function(e){if(!m8.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeShare()}},true);
+document.getElementById('shGo').addEventListener('click',async function(){shSay('');var go=document.getElementById('shGo');go.disabled=true;
 try{if(!cur._sid){if(!makeShared(cur)){shSay('Er ging iets mis. Probeer opnieuw.');return}clearTimeout(shT);await pushShared();if(!SHC.cols[cur._sid]||SHC.cols[cur._sid].rev==null){shSay('Er ging iets mis. Probeer opnieuw.');return}}
-var sid=cur._sid,r=await api('POST','/api/shared/'+sid+'/invites',{email:em}),sc=SHC.cols[sid];if(sc){sc.invites=sc.invites||[];sc.invites.push(r.invite)}
-shEmail.value='';shSay(r.emailed?'Uitnodiging verzonden.':'',!!r.emailed);renderShare();upSub();setCnt(cur);applyPerms()}
-catch(e){shSay(e.status===409?'Dit e-mailadres is al uitgenodigd.':(e.data&&e.data.error==='invalid_email'?'Vul een geldig e-mailadres in.':'Er ging iets mis. Probeer opnieuw.'))}finally{go.disabled=false}});
+var sid=cur._sid,r=await api('POST','/api/shared/'+sid+'/invites',{role:shRole.value}),sc=SHC.cols[sid];if(sc){sc.invites=sc.invites||[];sc.invites.push(r.invite)}
+shSay('Deellink aangemaakt. Kopieer de link uit de lijst.',true);renderShare();upSub();setCnt(cur);applyPerms()}
+catch(e){shSay('Er ging iets mis. Probeer opnieuw.')}finally{go.disabled=false}});
 shStop.addEventListener('click',async function(){if(!shStop.classList.contains('confirm')){shStop.classList.add('confirm');var o=shStop.textContent;shStop.textContent='Zeker stoppen?';clearTimeout(stopT);stopT=setTimeout(function(){shStop.classList.remove('confirm');shStop.textContent=o},3000);return}
 clearTimeout(stopT);
 try{if(cur._own){dropShared(cur)}else{var sid=cur._sid;await api('POST','/api/shared/'+sid+'/leave');delete SHC.cols[sid];refreshShared();show('gedeeld');renderShared()}}catch(e){shSay('Er ging iets mis. Probeer opnieuw.');return}
