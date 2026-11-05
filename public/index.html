@@ -1329,7 +1329,7 @@ document.querySelectorAll('#langAuth .sb,#langAcc .sb').forEach(function(b){b.ad
 /* start */
 setLang(ld('archive.lang','nl'));applyBg(ld('archive.bg','iso'));setMode('login');
 (async function(){try{var r=await api('GET','/api/me');if(r.user){await enter(r.user,false)}else{document.body.classList.add('locked');setTimeout(function(){eE.focus()},120)}}
-catch(x){document.body.classList.add('locked');err(errMsg(x))}})();
+catch(x){console.error('[Archive] session check failed',{message:x&&x.message,status:x&&x.status,data:x&&x.data});document.body.classList.add('locked');err('Sessiecontrole mislukt (HTTP '+(x&&x.status||'netwerk')+': '+(x&&x.message||'onbekende fout')+').')} })();
 })();
 </script>
 </body></html>
