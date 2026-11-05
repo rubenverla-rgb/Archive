@@ -607,6 +607,18 @@ async function shared(req, env, url, user, seg) {
     return json({ ok: true });
   }
 
+  // Een lid kan zichzelf verlaten; ook een nog openstaande uitnodiging kan de gebruiker zelf intrekken.
+  if (seg[2] === 'leave' && m === 'POST') {
+    const owner = await env.DB.prepare('SELECT owner_id FROM shared_collections WHERE id=?').bind(id).first();
+    if (!owner) bad('not_found', 404);
+    if (owner.owner_id === user.id) bad('forbidden', 403);
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM members WHERE collection_id=? AND user_id=?').bind(id, user.id),
+      env.DB.prepare("DELETE FROM invites WHERE collection_id=? AND email=?").bind(id, user.email)
+    ]);
+    return json({ ok: true });
+  }
+
   const { row, isOwner, isMember, role } = await accessOf(env, user, id);
   if (!isMember) bad('not_found', 404);
 
@@ -657,12 +669,6 @@ async function shared(req, env, url, user, seg) {
     ]);
     return json({ ok: true });
   }
-  if (seg[2] === 'leave' && m === 'POST') {
-    if (isOwner) bad('forbidden', 403);
-    await env.DB.prepare('DELETE FROM members WHERE collection_id=? AND user_id=?').bind(id, user.id).run();
-    return json({ ok: true });
-  }
-
   if (seg[2] === 'invites' && seg.length === 3 && m === 'POST') {
     if (!isOwner) bad('forbidden', 403);
     const b = await readJson(req), inviteRole = b.role === 'viewer' ? 'viewer' : b.role === 'editor' ? 'editor' : null;
