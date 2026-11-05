@@ -661,11 +661,13 @@ async function shared(req, env, url, user, seg) {
   }
 
   if (seg.length === 2 && m === 'DELETE') { // eigenaar: stop met delen
-    if (!isOwner) bad('forbidden', 403);
+    const owner = await env.DB.prepare('SELECT owner_id FROM shared_collections WHERE id=?').bind(id).first();
+    if (!owner) bad('not_found', 404);
+    if (owner.owner_id !== user.id) bad('forbidden', 403);
     await env.DB.batch([
       env.DB.prepare('DELETE FROM invites WHERE collection_id=?').bind(id),
       env.DB.prepare('DELETE FROM members WHERE collection_id=?').bind(id),
-      env.DB.prepare('DELETE FROM shared_collections WHERE id=?').bind(id)
+      env.DB.prepare('DELETE FROM shared_collections WHERE id=? AND owner_id=?').bind(id, user.id)
     ]);
     return json({ ok: true });
   }
