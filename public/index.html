@@ -1119,8 +1119,8 @@ shSay('Deellink aangemaakt. Kopieer de link uit de lijst.',true);renderShare();u
 catch(e){shSay('Er ging iets mis. Probeer opnieuw.')}finally{go.disabled=false}});
 shStop.addEventListener('click',async function(){if(!shStop.classList.contains('confirm')){shStop.classList.add('confirm');var o=shStop.textContent;shStop.textContent='Zeker stoppen?';clearTimeout(stopT);stopT=setTimeout(function(){shStop.classList.remove('confirm');shStop.textContent=o},3000);return}
 clearTimeout(stopT);
-try{if(cur._own){dropShared(cur)}else{var sid=cur._sid;await api('POST','/api/shared/'+sid+'/leave');delete SHC.cols[sid];refreshShared();show('gedeeld');renderShared()}}catch(e){shSay('Er ging iets mis. Probeer opnieuw.');return}
-closeShare();if(views.detail.classList.contains('open')&&!cur._sid&&!cur._own&&shCards.indexOf(cur)<0&&allT().indexOf(cur)<0)show('collecties')});
+try{var sid=cur._sid;if(cur._own){await api('DELETE','/api/shared/'+sid)}else{await api('POST','/api/shared/'+sid+'/leave')}delete SHC.cols[sid];delete shLast[sid];if(cur._own){unlinkShared(cur)}else{var leaving=cur;unlinkShared(leaving);shCards=shCards.filter(function(x){return x!==leaving})}refreshShared();show(cur._own?'collecties':'gedeeld');renderShared();shSay('')}catch(e){shSay(e&&e.status===403?'Je hebt geen rechten om deze actie uit te voeren.':'Actie mislukt ('+(e&&e.status||'netwerk')+'). Probeer opnieuw.');return}
+closeShare();if(views.detail.classList.contains('open')&&cur&&!cur._sid&&!cur._own&&shCards.indexOf(cur)<0&&allT().indexOf(cur)<0)show('collecties')});
 /* ---------- opslaan op de server (Cloudflare D1 + R2) ---------- */
 var active=false,wsRev=0,lastJSON='',saveT=null,uiT=null,saving=false,pollT=null,shLast={},shT=null,shBusy=false,upl={},statT=null;
 function api(){return window.__api.apply(null,arguments)}
