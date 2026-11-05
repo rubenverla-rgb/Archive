@@ -32,7 +32,7 @@ function cookie(req, name) {
   const m = (req.headers.get('cookie') || '').split(/;\s*/).find((c) => c.startsWith(name + '='));
   return m ? m.slice(name.length + 1) : null;
 }
-const setCookie = (token, maxAge, url) => `sid=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${url.protocol === 'https:' ? '; Secure' : ''}`;
+const setCookie = (token, maxAge, url) => `sid=${token}; Path=/; HttpOnly; SameSite=Lax${maxAge == null ? '' : `; Max-Age=${maxAge}`}${url.protocol === 'https:' ? '; Secure' : ''}`;
 
 async function readJson(req) {
   const t = await req.text();
@@ -61,13 +61,13 @@ async function throttleHit(env, key, windowMs) {
   else await env.DB.prepare('INSERT INTO throttle(key,n,reset_at) VALUES(?,1,?) ON CONFLICT(key) DO UPDATE SET n=1,reset_at=excluded.reset_at').bind(key, now() + windowMs).run();
 }
 
-async function startSession(env, userId, url) {
+async function startSession(env, userId, url, remember = true) {
   const token = rnd(32);
   await env.DB.batch([
     env.DB.prepare('DELETE FROM sessions WHERE expires_at<?').bind(now()),
     env.DB.prepare('INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)').bind(await sha256(token), userId, now() + SESSION_MS)
   ]);
-  return setCookie(token, SESSION_MS / 1000, url);
+  return setCookie(token, remember ? SESSION_MS / 1000 : null, url);
 }
 
 // ---------- validatie van gedeelde media ----------
@@ -153,7 +153,7 @@ async function route(req, env, url, path, seg) {
     const ok = u ? same(await pbkdf2(pw, u.salt), u.hash) : (await pbkdf2(pw, '00'.repeat(16)), false);
     if (!ok) { await throttleHit(env, 'l:' + email, 900000); bad('invalid_credentials', 401); }
     await env.DB.prepare('DELETE FROM throttle WHERE key=?').bind('l:' + email).run();
-    const c = await startSession(env, u.id, url);
+    const c = await startSession(env, u.id, url, b.remember !== false);
     return json({ user: pub(u) }, 200, { 'set-cookie': c });
   }
   if (m === 'POST' && path === 'auth/logout') {
