@@ -1199,8 +1199,8 @@ SHC={cols:r.cols};Object.keys(r.cols).forEach(function(id){shLast[id]=colSig(r.c
 if(views.gedeeld.classList.contains('open'))renderShared();
 if(views.detail.classList.contains('open')&&cur&&cur._sid&&pullShared(cur)!==false){figs=cur._m.map(fig);layout();applyPerms()}}catch(e){}}
 /* starten en stoppen */
-async function startData(){var w=await api('GET','/api/workspace');wsRev=w.rev;restore(w.data||{});lastJSON=JSON.stringify(snapshot());
-var s=await api('GET','/api/shared');SHC={cols:s.cols||{}};shLast={};Object.keys(SHC.cols).forEach(function(id){shLast[id]=colSig(SHC.cols[id])});refreshShared();
+async function startData(){var results=await Promise.all([api('GET','/api/workspace'),api('GET','/api/shared')]),w=results[0],s=results[1];wsRev=w.rev;restore(w.data||{});lastJSON=JSON.stringify(snapshot());
+SHC={cols:s.cols||{}};shLast={};Object.keys(SHC.cols).forEach(function(id){shLast[id]=colSig(SHC.cols[id])});refreshShared();
 active=true;clearInterval(pollT);pollT=setInterval(pollShared,15000);updateUI()}
 function stopData(){active=false;clearTimeout(saveT);clearTimeout(shT);shT=null;clearInterval(pollT);SHC={cols:{}};shLast={};restore({});wsRev=0;lastJSON='';setStatus('')}
 async function loadSeed(){var r=await fetch('seed.json');if(!r.ok)throw new Error('seed');restore(await r.json());dirty()}
