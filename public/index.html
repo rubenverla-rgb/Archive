@@ -284,6 +284,7 @@ h1 b{font-weight:700}
 .item:hover .ib,.item .ib:focus-visible{opacity:.85}
 .item .chk{border-color:rgba(255,255,255,.55)}
 body.locked .page{visibility:hidden}
+.remember-row{display:flex;align-items:center;gap:9px;margin:12px 0 16px;font-size:13px;color:var(--muted);cursor:pointer}.remember-row input{width:16px;height:16px;accent-color:var(--ink)}
 .auth{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:84px 20px 28px;overflow-y:auto;transition:opacity .45s ease,visibility 0s linear 0s}
 .auth.out{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .45s ease,visibility 0s linear .45s}
 .alang{position:fixed;top:calc(env(safe-area-inset-top,0px) + 22px);right:28px;z-index:61;gap:2px;margin:0;padding:5px;border-radius:999px;background:var(--glass);backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.2)}
@@ -532,7 +533,7 @@ body.locked .page{visibility:hidden}
 <div class="seg atabs"><button class="sb on" id="tabLogin" type="button">Inloggen</button><button class="sb" id="tabReg" type="button">Registreren</button></div>
 <div id="fName" hidden><label class="fl" for="rName">Naam</label><input class="fi" id="rName" autocomplete="name"></div>
 <label class="fl" for="rEmail">E-mailadres</label><input class="fi" id="rEmail" type="email" autocomplete="email">
-<label class="fl" for="rPass">Wachtwoord</label><input class="fi" id="rPass" type="password" autocomplete="current-password">
+<label class="fl" for="rPass">Wachtwoord</label><input class="fi" id="rPass" type="password" autocomplete="current-password"><label class="remember-row"><input id="rememberLogin" type="checkbox"> <span>Ingelogd blijven</span></label>
 <p class="amsg" id="aerr" role="alert" hidden></p>
 <button class="addbtn asubmit" id="aGo" type="button">Inloggen</button>
 </div></div>
@@ -1272,8 +1273,9 @@ document.querySelectorAll('.bgb').forEach(function(x){x.setAttribute('aria-press
 var auth=document.getElementById('auth'),circle=document.querySelector('.account');
 async function enter(a,manual){cur=a;a.prefs=a.prefs||{};applyBg(a.prefs.bg||ld('archive.bg','iso'));
 if(!manual&&a.prefs.lang&&a.prefs.lang!==L)setLang(a.prefs.lang);
-try{await window.__data.start()}catch(x){cur=null;throw x}
-document.body.classList.remove('locked');auth.classList.add('out');circle.textContent=initials(a);circle.setAttribute('aria-label','Account');
+// Toon de startpagina meteen; laad de collectiegegevens parallel op de achtergrond.
+document.body.classList.remove('locked');auth.classList.add('out');circle.textContent=initials(a);
+try{await window.__data.start()}catch(x){cur=null;document.body.classList.add('locked');auth.classList.remove('out');throw x}circle.setAttribute('aria-label','Account');
 var tk=pend;pend=null;if(tk){try{history.replaceState(null,'',location.href.split('#')[0])}catch(x){}}if(window.__sh)window.__sh.init(tk);
 if(manual&&(a.prefs.lang!==L||!a.prefs.bg)){a.prefs.lang=L;a.prefs.bg=a.prefs.bg||ld('archive.bg','iso');api('PATCH','/api/me',{prefs:{lang:L,bg:a.prefs.bg}}).catch(function(){})}}
 function lock(){cur=null;window.__show('home');var g=document.getElementById('gs');if(g)g.classList.remove('open');
@@ -1290,7 +1292,7 @@ var EM=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 go.addEventListener('click',async function(){err('');var n=eN.value.trim(),e=eE.value.trim(),p=eP.value;
 if(!e||!p||(mode==='reg'&&!n)){err('Vul alle velden in.');return}if(!EM.test(e)){err('Ongeldig e-mailadres.');return}
 if(mode==='reg'&&p.length<8){err('Het wachtwoord moet minstens 8 tekens bevatten.');return}
-go.disabled=true;try{var r=await api('POST',mode==='reg'?'/api/auth/register':'/api/auth/login',mode==='reg'?{name:n,email:e,password:p}:{email:e,password:p});eP.value='';await enter(r.user,true)}
+go.disabled=true;try{var r=await api('POST',mode==='reg'?'/api/auth/register':'/api/auth/login',mode==='reg'?{name:n,email:e,password:p}:{email:e,password:p,remember:document.getElementById('rememberLogin').checked});eP.value='';await enter(r.user,true)}
 catch(x){err(errMsg(x))}finally{go.disabled=false}});
 [eN,eE,eP].forEach(function(i){i.addEventListener('keydown',function(e){if(e.key==='Enter')go.click()})});
 /* account instellingen */
