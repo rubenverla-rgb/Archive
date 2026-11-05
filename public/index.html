@@ -1296,7 +1296,7 @@ go.addEventListener('click',async function(){err('');var n=eN.value.trim(),e=eE.
 if(!e||!p||(mode==='reg'&&!n)){err('Vul alle velden in.');return}if(!EM.test(e)){err('Ongeldig e-mailadres.');return}
 if(mode==='reg'&&p.length<8){err('Het wachtwoord moet minstens 8 tekens bevatten.');return}
 go.disabled=true;try{var r=await api('POST',mode==='reg'?'/api/auth/register':'/api/auth/login',mode==='reg'?{name:n,email:e,password:p}:{email:e,password:p,remember:document.getElementById('rememberLogin').checked});eP.value='';await enter(r.user,true)}
-catch(x){err(errMsg(x))}finally{go.disabled=false}});
+catch(x){console.error('[Archive] login flow failed',{message:x&&x.message,status:x&&x.status,data:x&&x.data});err('Inloggen mislukt (HTTP '+(x&&x.status||'netwerk')+': '+(x&&x.message||'onbekende fout')+').')}finally{go.disabled=false}});
 [eN,eE,eP].forEach(function(i){i.addEventListener('keydown',function(e){if(e.key==='Enter')go.click()})});
 /* account instellingen */
 var vA=document.getElementById('view-account'),aN=document.getElementById('aN'),aE=document.getElementById('aE');
