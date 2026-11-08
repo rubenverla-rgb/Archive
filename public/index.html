@@ -104,6 +104,15 @@ h1 b{font-weight:700}
 .nchip{background:rgba(255,255,255,.22);padding:3px 9px;border-radius:7px;font-size:12px}
 .nd{font-size:12px;opacity:.7;margin-top:10px}
 .ncard .qedit,.ncard .qdel{top:8px}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,260px));gap:14px;align-items:stretch}
+.wcard{position:relative;display:flex;flex-direction:column;gap:8px;padding:16px 18px;border-radius:18px;background:rgba(255,255,255,.12);min-width:0}
+.wcard[hidden]{display:none}.wt{font-weight:600;font-size:14px;line-height:1.35;padding-right:58px}
+.wurl{font-size:12px;opacity:.75;overflow-wrap:anywhere;text-decoration:underline;color:#fff}
+.wx{font-size:13px;line-height:1.5;opacity:.88}
+.wtags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:8px}
+.wchip{background:rgba(255,255,255,.22);padding:3px 9px;border-radius:7px;font-size:12px}
+.wcard .qedit,.wcard .qdel{position:absolute;top:8px}.wcard .qedit{right:42px}.wcard .qdel{right:8px}
+@media(max-width:900px){.wgrid{grid-template-columns:1fr}}
 .ncard .qedit{right:42px}
 .ncard .qdel{right:8px}
 @media(max-width:900px){.ngrid{grid-template-columns:1fr}}
@@ -367,7 +376,7 @@ body.locked .page{visibility:hidden}
 </style></head><body class="locked">
 <div class="page">
 <div class="logo">A.</div>
-<nav><a class="on" href="#home" data-view="home">Home</a><a href="#collecties" data-view="collecties">Collecties</a><a href="#leeslijst" data-view="leeslijst">Leeslijst</a><a href="#gedeeld" data-view="gedeeld">Gedeeld met mij</a><a href="#notities" data-view="notities">Notities</a><a href="#quotes" data-view="quotes">Quotes</a><button class="navsearch" id="navsearch" type="button" aria-label="Zoeken"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></nav>
+<nav><a class="on" href="#home" data-view="home">Home</a><a href="#collecties" data-view="collecties">Collecties</a><a href="#leeslijst" data-view="leeslijst">Leeslijst</a><a href="#gedeeld" data-view="gedeeld">Gedeeld met mij</a><a href="#notities" data-view="notities">Notities</a><a href="#quotes" data-view="quotes">Quotes</a><a href="#weblinks" data-view="weblinks">Weblinks</a><button class="navsearch" id="navsearch" type="button" aria-label="Zoeken"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></nav>
 <button class="account" aria-label="Account">AB</button>
 <div class="stat" id="stat">ITEMS: <b>0</b></div>
 <div class="brand">ARCHIVE</div>
@@ -402,6 +411,10 @@ body.locked .page{visibility:hidden}
 </div>
 <div class="fgrid"></div>
 <p class="grp sp">Losse notities</p><div class="ngrid" id="ngrid"></div><p class="none" id="nnone" hidden></p></section></main>
+<main class="view" id="view-weblinks" aria-label="Weblinks"><section class="panel">
+<div class="bar"><h2>Weblinks <span>(<span id="wcount">0</span>)</span></h2><button class="addbtn" id="addW" type="button">+ Weblink toevoegen</button><button class="addbtn alt" type="button">+ Nieuwe groep</button><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
+<div class="qtools"><label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ws" type="search" placeholder="Weblinks zoeken..." autocomplete="off"></label></div>
+<div class="fgrid"></div><p class="grp sp">Losse weblinks</p><div class="wgrid" id="wgrid"></div><p class="none" id="wnone" hidden></p></section></main>
 <div class="modal" id="modal" aria-hidden="true"><div class="scrim" id="scrim"></div>
 <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt">
 <div class="dh"><h2 id="mt">Nieuwe collectie</h2><button class="mclose" id="mclose" type="button" aria-label="Sluiten">&times;</button></div>
@@ -570,6 +583,13 @@ body.locked .page{visibility:hidden}
 <p class="grp">Gedeeld door anderen</p><div class="fgrid" id="shOthers"></div>
 <p class="grp sp">Door mij gedeeld</p><div class="fgrid" id="shMine"></div>
 </section></main>
+<div class="modal" id="modal9" aria-hidden="true"><div class="scrim" id="scrim9"></div><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt9"><div class="dh"><h2 id="mt9">Weblink toevoegen</h2><button class="mclose" id="mclose9" type="button" aria-label="Sluiten">&times;</button></div><div class="db">
+<label class="fl" for="wUrl">URL <span>*</span></label><input class="fi" id="wUrl" placeholder="https://..." autocomplete="url" inputmode="url">
+<label class="fl" for="wTitle">Naam <span>*</span></label><input class="fi" id="wTitle" placeholder="Naam van de weblink" autocomplete="off">
+<label class="fl" for="wDesc">Beschrijving</label><textarea class="fi ta" id="wDesc" placeholder="Waar gaat deze link over?"></textarea>
+<label class="fl" for="wTag">Tags</label><div class="tags mtags" id="wTags"><input class="taginput" id="wTag" placeholder="Tag toevoegen..." autocomplete="off"></div>
+<label class="fl" for="wCollection">Collectie</label><select class="fi" id="wCollection"><option value="">Niet toevoegen aan collectie</option></select></div>
+<div class="df"><button class="addbtn alt" id="mcancel9" type="button">Annuleren</button><button class="addbtn" id="madd9" type="button" disabled>Toevoegen</button></div></div></div>
 <div class="modal" id="modal8" aria-hidden="true"><div class="scrim" id="scrim8"></div>
 <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt8">
 <div class="dh"><h2 id="mt8">Collectie delen</h2><button class="mclose" id="mclose8" type="button" aria-label="Sluiten">&times;</button></div>
@@ -587,7 +607,7 @@ body.locked .page{visibility:hidden}
 <script>window.__archiveBootError=null;window.addEventListener('error',function(e){if(!window.__data&&!window.__archiveBootError)window.__archiveBootError=(e.message||'script error')+' ('+(e.filename||'')+':'+(e.lineno||'?')+')'});</script>
 <script>
 (function(){
-var views={collecties:document.getElementById('view-collecties'),leeslijst:document.getElementById('view-leeslijst'),quotes:document.getElementById('view-quotes'),notities:document.getElementById('view-notities'),detail:document.getElementById('view-detail'),media:document.getElementById('view-media'),account:document.getElementById('view-account'),gedeeld:document.getElementById('view-gedeeld')};
+var views={collecties:document.getElementById('view-collecties'),weblinks:document.getElementById('view-weblinks'),leeslijst:document.getElementById('view-leeslijst'),quotes:document.getElementById('view-quotes'),notities:document.getElementById('view-notities'),detail:document.getElementById('view-detail'),media:document.getElementById('view-media'),account:document.getElementById('view-account'),gedeeld:document.getElementById('view-gedeeld')};
 var links=document.querySelectorAll('nav a');
 function show(n){Object.keys(views).forEach(function(k){views[k].classList.toggle('open',k===n)});
 links.forEach(function(a){a.classList.toggle('on',a.dataset.view===n||((n==='detail'||n==='media')&&a.dataset.view==='collecties'))})}
@@ -644,6 +664,7 @@ all.forEach(function(c){var ok=c.textContent.toLowerCase().indexOf(s)>-1;c.hidde
 qn.hidden=n>0;qn.textContent=n?'':(all.length?'Geen quotes gevonden voor \u201c'+qs.value.trim()+'\u201d.':'Nog geen quotes. Voeg er een toe.')});
 /* notities */
 var nv=document.getElementById('view-notities'),ng=document.getElementById('ngrid'),nsr=document.getElementById('ns'),nn=document.getElementById('nnone'),nb=document.getElementById('editN');
+var wv=document.getElementById('view-weblinks'),wg=document.getElementById('wgrid'),wsr=document.getElementById('ws'),wn=document.getElementById('wnone');
 var notes=[];
 function ned(a,on){a.querySelectorAll('.nt,.nx').forEach(function(e){e.contentEditable=on?'true':'false'})}
 function ncard(d){var a=document.createElement('article');a.className='ncard';
@@ -729,7 +750,7 @@ var cap=document.createElement('figcaption');cap.innerHTML='<b></b><span></span>
 f.appendChild(v);f.appendChild(cap);
 return f}
 function textEntry(type,title,body,meta){var f=document.createElement('article');f.className='mi colltext';f.dataset.kind=type;f.dataset.s=(title+' '+body+' '+meta).toLowerCase();f._r=.82;var k=document.createElement('b');k.textContent=type==='note'?'Notitie':'Quote';var t=document.createElement('strong');t.textContent=title;f.appendChild(k);f.appendChild(t);if(body){var p=document.createElement('span');p.textContent=body;f.appendChild(p)}if(meta){var s=document.createElement('small');s.textContent=meta;f.appendChild(s)}return f}
-function render(){if(cur._sid)syncShared(cur);figs=cur._m.map(fig);if(showCollectionText){itemsOf('notities').filter(function(a){return a._cid===cur._cid}).forEach(function(a){figs.push(textEntry('note',a.querySelector('.nt').textContent,a.querySelector('.nx').textContent,''))});itemsOf('quotes').filter(function(a){return a._cid===cur._cid}).forEach(function(a){figs.push(textEntry('quote',a.querySelector('.qt').textContent,a.querySelector('.au').textContent+' · '+a.querySelector('.wk').textContent,''))})}ms.value='';mn.hidden=!!figs.length;mn.textContent=figs.length?'':'Nog geen media in deze collectie.';layout();var tb=document.getElementById('detailViewToggle');tb.querySelector('[data-view="with-text"]').classList.toggle('active',showCollectionText);tb.querySelector('[data-view="images"]').classList.toggle('active',!showCollectionText)}
+function render(){if(cur._sid)syncShared(cur);figs=cur._m.map(fig);if(showCollectionText){itemsOf('notities').filter(function(a){return a._cid===cur._cid}).forEach(function(a){figs.push(textEntry('note',a.querySelector('.nt').textContent,a.querySelector('.nx').textContent,''))});itemsOf('weblinks').filter(function(a){return a._cid===cur._cid}).forEach(function(a){figs.push(textEntry('weblink',a.querySelector('.wt').textContent,a._d,a._u))});itemsOf('quotes').filter(function(a){return a._cid===cur._cid}).forEach(function(a){figs.push(textEntry('quote',a.querySelector('.qt').textContent,a.querySelector('.au').textContent+' · '+a.querySelector('.wk').textContent,''))})}ms.value='';mn.hidden=!!figs.length;mn.textContent=figs.length?'':'Nog geen media in deze collectie.';layout();var tb=document.getElementById('detailViewToggle');tb.querySelector('[data-view="with-text"]').classList.toggle('active',showCollectionText);tb.querySelector('[data-view="images"]').classList.toggle('active',!showCollectionText)}
 function openDetail(c){cur=c;if(!c._m)c._m=(mediaByName[c.dataset.n]||[]).slice();dt.textContent=c.dataset.n;if(c._sid&&pullShared(c)===false)return;upSub();applyPerms();show('detail');render()}
 document.getElementById('grid').addEventListener('click',function(e){var c=e.target.closest('.card');if(c){e.preventDefault();openDetail(c)}});
 document.getElementById('back').addEventListener('click',function(){show('collecties')});
@@ -885,13 +906,13 @@ else if(e.key==='Enter'&&e.target===gq){var f=gres.querySelector('.gr');if(f)f.c
 /* groepen + meerdere collecties */
 function setCnt(c){c.querySelector('p').textContent=((c._b||0)+ens(c).length)+' ITEMS'+(c._sid&&c._own?' \u00b7 GEDEELD':'')}
 
-var VL={leeslijst:'Leeslijst',notities:'Notities',quotes:'Quotes'},GL={leeslijst:'Zonder groep',notities:'Losse notities',quotes:'Losse quotes'},BL={leeslijst:'Alle items',notities:'Alle notities',quotes:'Alle quotes'};
-var G={leeslijst:[],notities:[],quotes:[]},A={leeslijst:null,notities:null,quotes:null},FG={},GH={},GP={},GE={},gseq=0;
+var VL={leeslijst:'Leeslijst',notities:'Notities',quotes:'Quotes',weblinks:'Weblinks'},GL={leeslijst:'Zonder groep',notities:'Losse notities',quotes:'Losse quotes',weblinks:'Losse weblinks'},BL={leeslijst:'Alle items',notities:'Alle notities',quotes:'Alle quotes',weblinks:'Alle weblinks'};
+var G={leeslijst:[],notities:[],quotes:[],weblinks:[]},A={leeslijst:null,notities:null,quotes:null,weblinks:null},FG={},GH={},GP={},GE={},gseq=0;
 var ARW='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
 var FOLDER='<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="opacity:.85"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
-function typeOf(el){return el.classList.contains('item')?'leeslijst':el.classList.contains('ncard')?'notities':'quotes'}
+function typeOf(el){return el.classList.contains('item')?'leeslijst':el.classList.contains('ncard')?'notities':el.classList.contains('wcard')?'weblinks':'quotes'}
 function gOf(el){return el._g||(el._g=[])}
-function itemsOf(ty){return [].slice.call((ty==='leeslijst'?list:ty==='notities'?ng:qg).querySelectorAll(ty==='leeslijst'?'.item':ty==='notities'?'.ncard':'.qcard'))}
+function itemsOf(ty){var root=ty==='leeslijst'?list:ty==='notities'?ng:ty==='quotes'?qg:wg,sel=ty==='leeslijst'?'.item':ty==='notities'?'.ncard':ty==='quotes'?'.qcard':'.wcard';return [].slice.call(root.querySelectorAll(sel))}
 function gname(ty,id){var g=G[ty].filter(function(x){return x.id===id})[0];return g?g.name:''}
 function gmUpdate(el){if(!G)return;var b=el.querySelector('.gm');if(!b)return;var ty=typeOf(el),n=gOf(el).map(function(id){return gname(ty,id)}).filter(Boolean);
 b.textContent=!n.length?'Zonder groep':(n.length===1?n[0]:n.length+' groepen');b.title=n.join(', ')}
@@ -905,14 +926,14 @@ FG[ty].hidden=!!a;GH[ty].hidden=!a;GP[ty].textContent=a?'In deze groep':GL[ty];G
 function setActive(ty,id){A[ty]=id||null;applyView(ty)}
 function inherit(el){var ty=typeOf(el);if(A[ty])gOf(el).push(A[ty]);gmUpdate(el);applyView(ty)}
 /* init structuur per widget */
-var VW={leeslijst:document.getElementById('view-leeslijst'),notities:nv,quotes:qv};
+var VW={leeslijst:document.getElementById('view-leeslijst'),notities:nv,quotes:qv,weblinks:wv};
 Object.keys(VW).forEach(function(ty){var v=VW[ty],gp=v.querySelector('.grp'),fg=ty==='notities'?v.querySelector('.fgrid'):document.createElement('div');
 if(ty==='notities'){fg.innerHTML=''}
 else{fg.className='fgrid';gp.parentNode.insertBefore(fg,gp)}
 fg.id='fg-'+ty;FG[ty]=fg;GP[ty]=gp;
 var gh=document.createElement('div');gh.className='ghd';gh.hidden=true;gh.innerHTML='<button class="back" type="button">'+ARW+'<span></span></button><h3 class="ghn"></h3><button class="addbtn alt gren" type="button">Groep bewerken</button><button class="addbtn alt danger gdel" type="button">Groep verwijderen</button>';
 gh.querySelector('.back span').textContent=BL[ty];fg.parentNode.insertBefore(gh,fg);GH[ty]=gh;
-var cont=ty==='leeslijst'?list:ty==='notities'?ng:qg,ge=document.createElement('p');ge.className='none gempty';ge.hidden=true;ge.textContent='Nog niets in deze groep. Voeg een item toe of kies bij een bestaand item deze groep.';cont.parentNode.insertBefore(ge,cont.nextSibling);GE[ty]=ge;
+var cont=ty==='leeslijst'?list:ty==='notities'?ng:ty==='quotes'?qg:wg,ge=document.createElement('p');ge.className='none gempty';ge.hidden=true;ge.textContent='Nog niets in deze groep. Voeg een item toe of kies bij een bestaand item deze groep.';cont.parentNode.insertBefore(ge,cont.nextSibling);GE[ty]=ge;
 gh.querySelector('.back').addEventListener('click',function(){setActive(ty,null)});
 gh.querySelector('.gren').addEventListener('click',function(){openG5(ty,A[ty])});
 var dl=gh.querySelector('.gdel'),dtm2;dl.addEventListener('click',function(){if(!dl.classList.contains('confirm')){dl.classList.add('confirm');dl.textContent='Zeker verwijderen?';clearTimeout(dtm2);dtm2=setTimeout(function(){dl.classList.remove('confirm');dl.textContent='Groep verwijderen'},3000);return}
@@ -1063,6 +1084,20 @@ var txt=qTx.value.trim().replace(/^["\u201c\u201e\u00ab]+|["\u201d\u00bb]+$/g,''
 qs.value='';qs.dispatchEvent(new Event('input'));qg.insertBefore(a,qg.firstChild);inherit(a)});
 function openQuote(){fillTextCollections(qCollection);QM7.open(function(){qTx.value=qAu.value=qBr.value='';qTf.reset();qCollection.value=''})}
 
+/* Weblinks */
+var wUrl=document.getElementById('wUrl'),wTitle=document.getElementById('wTitle'),wDesc=document.getElementById('wDesc'),wTags=tagField(document.getElementById('wTags'),document.getElementById('wTag')),wCollection=document.getElementById('wCollection'),wModal=document.getElementById('modal9'),wSave=document.getElementById('madd9'),wTarget=null;
+function wcard(d){var a=document.createElement('article');a.className='wcard';a.innerHTML='<h3 class="wt"></h3><a class="wurl" target="_blank" rel="noopener"></a><p class="wx"></p><div class="wtags"></div><button class="gm" type="button" aria-label="Groepen"></button><button class="ib qedit" type="button" aria-label="Weblink bewerken">'+PE+'</button><button class="ib qdel" type="button" aria-label="Weblink verwijderen">'+TR+'</button>';a.querySelector('.wt').textContent=d.t||'';var u=a.querySelector('.wurl');u.href=d.u||'#';u.textContent=(d.u||'').replace(/^https?:\/\//,'');a.querySelector('.wx').textContent=d.d||'';(d.tags||[]).forEach(function(t){var z=document.createElement('span');z.className='wchip';z.textContent=t;a.querySelector('.wtags').appendChild(z)});a._u=d.u||'';a._d=d.d||'';a._t=(d.tags||[]).slice();a._g=(d.g||[]).slice();a._cid=d.c||'';gmUpdate(a);return a}
+function fillWCollections(){wCollection.innerHTML='<option value="">Niet toevoegen aan collectie</option>';allT().forEach(function(c){var o=document.createElement('option');o.value=c._cid||c.dataset.n;o.textContent=c.dataset.n;wCollection.appendChild(o)})}
+function openW(card){wTarget=card||null;fillWCollections();wUrl.value=card?card._u:'';wTitle.value=card?card.querySelector('.wt').textContent:'';wDesc.value=card?card._d:'';wTags.reset();(card?card._t:[]).forEach(function(t){wTagsBoxInsert(t)});wCollection.value=card?card._cid||'':'';document.getElementById('mt9').textContent=card?'Weblink bewerken':'Weblink toevoegen';wSave.textContent=card?'Opslaan':'Toevoegen';wSave.disabled=!(wUrl.value.trim()&&wTitle.value.trim());wModal.classList.add('open');wModal.setAttribute('aria-hidden','false');setTimeout(function(){wUrl.focus()},60)}
+function wTagsBoxInsert(t){var box=document.getElementById('wTags'),inp=document.getElementById('wTag');box.insertBefore(chip(t),inp)}
+function closeW(){wModal.classList.remove('open');wModal.setAttribute('aria-hidden','true');wTarget=null}
+[wUrl,wTitle].forEach(function(x){x.addEventListener('input',function(){wSave.disabled=!(wUrl.value.trim()&&wTitle.value.trim())})});
+document.getElementById('addW').addEventListener('click',function(){openW(null)});['mclose9','mcancel9','scrim9'].forEach(function(id){document.getElementById(id).addEventListener('click',closeW)});
+wsr.addEventListener('input',function(){var s=wsr.value.trim().toLowerCase(),n=0;wv.querySelectorAll('.fold,.wcard').forEach(function(c){var ok=c.textContent.toLowerCase().indexOf(s)>-1;c.hidden=!ok;if(ok)n++});wn.hidden=n>0;wn.textContent=n?'':'Geen weblinks gevonden voor “'+wsr.value.trim()+'”.'});
+wg.addEventListener('click',function(e){var ed=e.target.closest('.qedit'),del=e.target.closest('.qdel');if(ed){openW(ed.closest('.wcard'));return}if(del){del.closest('.wcard').remove();wsr.dispatchEvent(new Event('input'));updateUI()}});
+wSave.addEventListener('click',function(){if(wSave.disabled)return;var u=wUrl.value.trim();if(!/^https?:\/\//i.test(u))u='https://'+u;try{new URL(u)}catch(e){wUrl.focus();return}var d={u:u,t:wTitle.value.trim(),d:wDesc.value.trim(),tags:wTags.get(),g:wTarget?gOf(wTarget).slice():[],c:wCollection.value||''};if(wTarget){wTarget._u=d.u;wTarget._d=d.d;wTarget._t=d.tags;wTarget._cid=d.c;wTarget.querySelector('.wt').textContent=d.t;var a=wTarget.querySelector('.wurl');a.href=d.u;a.textContent=d.u.replace(/^https?:\/\//,'');wTarget.querySelector('.wx').textContent=d.d;var box=wTarget.querySelector('.wtags');box.innerHTML='';d.tags.forEach(function(t){var z=document.createElement('span');z.className='wchip';z.textContent=t;box.appendChild(z)});gmUpdate(wTarget)}else{var a=wcard(d);wg.insertBefore(a,wg.firstChild);inherit(a)}closeW();wsr.dispatchEvent(new Event('input'));updateUI()});
+document.addEventListener('keydown',function(e){if(!wModal.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeW()}else if(e.key==='Enter'&&e.target===wTitle&&!wSave.disabled)wSave.click()},true);
+
 /* ---------- gedeelde collecties (demo: opslag in deze browser) ---------- */
 var shCards=[],stash=[],SKEY='archive.shared',memS=null,shRoot=null,m8Op=null;
 function allT(){return cards.concat(shCards)}
@@ -1180,26 +1215,28 @@ var notes=itemsOf('notities').map(function(a){return{t:a.querySelector('.nt').te
 var quotes=itemsOf('quotes').map(function(a){var t=a.querySelector('.qt').textContent;if(t.length>1&&t.charAt(0)==='"'&&t.slice(-1)==='"')t=t.slice(1,-1);return{t:t,au:a.querySelector('.au').textContent,wk:a.querySelector('.wk').textContent,tags:(a._t||[]).slice(),g:gOf(a).slice(),c:a._cid||''}});
 var reading=itemsOf('leeslijst').map(function(a){var s=a.querySelector('.sub');return{t:a.querySelector('.ttl').textContent,sub:s?s.textContent:'',tags:[].slice.call(a.querySelectorAll('.chip')).map(function(c){return c.firstChild.textContent}),done:a.classList.contains('done')?1:0,g:gOf(a).slice()}});
 var groups={};['leeslijst','notities','quotes'].forEach(function(ty){groups[ty]=G[ty].map(function(g){return{id:g.id,name:g.name,cover:g.cover||'',base:g.base||0}})});
-return{v:1,collections:cols,media:media,notes:notes,quotes:quotes,reading:reading,groups:groups}}
-function clearAll(){cards.splice(0);stash.length=0;shCards.length=0;document.getElementById('grid').innerHTML='';list.innerHTML='';ng.innerHTML='';qg.innerHTML='';G.leeslijst=[];G.notities=[];G.quotes=[];A.leeslijst=A.notities=A.quotes=null;gseq=0}
+var weblinks=itemsOf('weblinks').map(function(a){return{u:a._u,t:a.querySelector('.wt').textContent,d:a._d||'',tags:(a._t||[]).slice(),g:gOf(a).slice(),c:a._cid||''}});groups.weblinks=G.weblinks.map(function(g){return{id:g.id,name:g.name,cover:g.cover||'',base:g.base||0}});return{v:1,collections:cols,media:media,notes:notes,quotes:quotes,reading:reading,weblinks:weblinks,groups:groups}}
+function clearAll(){cards.splice(0);stash.length=0;shCards.length=0;document.getElementById('grid').innerHTML='';list.innerHTML='';ng.innerHTML='';qg.innerHTML='';G.leeslijst=[];G.notities=[];G.quotes=[];G.weblinks=[];A.leeslijst=A.notities=A.quotes=A.weblinks=null;gseq=0}
 function restore(d){clearAll();d=d||{};var mm={};(d.media||[]).forEach(function(r){var m={_mid:r.id};FLD.forEach(function(k){if(r[k]!==undefined)m[k]=r[k]});m.tags=(r.tags||[]).slice();mm[r.id]=m});
 var grid=document.getElementById('grid');(d.collections||[]).forEach(function(o){var c=mkColCard(o);if(o.sid){c._sid=o.sid;c._own=true;c._known=[]}else c._m=(o.m||[]).map(function(id){return mm[id]}).filter(Boolean);cards.push(c);grid.appendChild(c);setCnt(c)});
-var g=d.groups||{};['leeslijst','notities','quotes'].forEach(function(ty){G[ty]=(g[ty]||[]).map(function(x){var n=parseInt(String(x.id).replace(/\D/g,''),10)||0;if(n>gseq)gseq=n;return{id:x.id,name:x.name,cover:x.cover||'',base:x.base||0}})});
+var g=d.groups||{};['leeslijst','notities','quotes','weblinks'].forEach(function(ty){G[ty]=(g[ty]||[]).map(function(x){var n=parseInt(String(x.id).replace(/\D/g,''),10)||0;if(n>gseq)gseq=n;return{id:x.id,name:x.name,cover:x.cover||'',base:x.base||0}})});
 (d.notes||[]).forEach(function(n){var a=ncard([n.t,n.x,n.tags||[],n.d||'']);a._cid=n.c||'';a._g=(n.g||[]).slice();gmUpdate(a);ng.appendChild(a)});
+(d.weblinks||[]).forEach(function(w){wg.appendChild(wcard(w))});
 (d.quotes||[]).forEach(function(x){var a=qcard([x.t,x.au,x.wk,x.tags||[]]);a._cid=x.c||'';a._g=(x.g||[]).slice();gmUpdate(a);qg.appendChild(a)});
 (d.reading||[]).forEach(function(r){var a=item([r.t,r.sub||'',r.tags||[],r.done]);a._g=(r.g||[]).slice();gmUpdate(a);list.appendChild(a)});
-count();['leeslijst','notities','quotes'].forEach(applyView);q.dispatchEvent(new Event('input'));updateUI()}
-function isEmpty(){return !cards.length&&!itemsOf('leeslijst').length&&!itemsOf('notities').length&&!itemsOf('quotes').length&&!G.leeslijst.length&&!G.notities.length&&!G.quotes.length}
+count();['leeslijst','notities','quotes','weblinks'].forEach(applyView);q.dispatchEvent(new Event('input'));wsr.dispatchEvent(new Event('input'));updateUI()}
+function isEmpty(){return !cards.length&&!itemsOf('leeslijst').length&&!itemsOf('notities').length&&!itemsOf('quotes').length&&!itemsOf('weblinks').length&&!G.leeslijst.length&&!G.notities.length&&!G.quotes.length&&!G.weblinks.length}
 /* lege toestanden en teller */
 var HINT={};function mkHint(after,txt){var p=document.createElement('p');p.className='none ehint';p.textContent=txt;p.hidden=true;after.parentNode.insertBefore(p,after.nextSibling);return p}
 HINT.col=mkHint(document.getElementById('grid'),'Nog geen collecties. Maak er een met "+ Nieuwe collectie".');
 HINT.leeslijst=mkHint(GE.leeslijst,'Je leeslijst is leeg. Voeg een item toe met "+ Toevoegen".');
 HINT.notities=mkHint(GE.notities,'Nog geen notities. Maak er een met "+ Notitie toevoegen".');
 HINT.quotes=mkHint(GE.quotes,'Nog geen quotes. Voeg er een toe met "+ Quote toevoegen".');
+HINT.weblinks=mkHint(GE.weblinks,'Nog geen weblinks. Voeg er een toe met "+ Weblink toevoegen".');
 function updateUI(){var set=new Set();cards.forEach(function(c){ens(c).forEach(function(m){set.add(m)})});
-var n=set.size+itemsOf('leeslijst').length+itemsOf('notities').length+itemsOf('quotes').length,b=document.querySelector('#stat b');if(b)b.textContent=n;
+var n=set.size+itemsOf('leeslijst').length+itemsOf('notities').length+itemsOf('quotes').length+itemsOf('weblinks').length,b=document.querySelector('#stat b');if(b)b.textContent=n;
 HINT.col.hidden=cards.length>0;
-['leeslijst','notities','quotes'].forEach(function(ty){HINT[ty].hidden=!(itemsOf(ty).length===0&&G[ty].length===0&&!A[ty])});
+['leeslijst','notities','quotes','weblinks'].forEach(function(ty){HINT[ty].hidden=!(itemsOf(ty).length===0&&G[ty].length===0&&!A[ty])});
 var sb=document.getElementById('seedBtn');if(sb)sb.hidden=!isEmpty()}
 /* opslaan */
 function dirty(){if(!active)return;clearTimeout(saveT);saveT=setTimeout(doSave,900);clearTimeout(uiT);uiT=setTimeout(updateUI,200)}
