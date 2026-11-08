@@ -84,8 +84,9 @@ h1 b{font-weight:700}
 .qcard[hidden]{display:none}
 .qt{font-size:13.5px;line-height:1.5}
 .src{font-size:12px;opacity:.75;margin-top:10px}
-.qdel{position:absolute;top:10px;right:10px;display:none}
-.editing .qdel{display:grid}
+.qedit,.qdel{position:absolute;top:10px;display:grid;place-items:center}
+.qedit{right:10px}
+.qdel{right:44px}
 .editing [contenteditable=true]{outline:0;box-shadow:0 0 0 2px rgba(255,255,255,.45);border-radius:4px}
 @media(max-width:900px){.qgrid{grid-template-columns:1fr}}
 .fgrid{display:flex;flex-wrap:wrap;gap:22px}
@@ -102,7 +103,9 @@ h1 b{font-weight:700}
 .ntags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:12px}
 .nchip{background:rgba(255,255,255,.22);padding:3px 9px;border-radius:7px;font-size:12px}
 .nd{font-size:12px;opacity:.7;margin-top:10px}
-.ncard .qdel{top:8px;right:8px}
+.ncard .qedit,.ncard .qdel{top:8px}
+.ncard .qedit{right:8px}
+.ncard .qdel{right:42px}
 @media(max-width:900px){.ngrid{grid-template-columns:1fr}}
 .modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;visibility:hidden;opacity:0;transition:opacity .3s ease,visibility 0s linear .3s}
 .modal.open{visibility:visible;opacity:1;transition-delay:0s}
