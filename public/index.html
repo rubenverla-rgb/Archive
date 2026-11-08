@@ -84,8 +84,9 @@ h1 b{font-weight:700}
 .qcard[hidden]{display:none}
 .qt{font-size:13.5px;line-height:1.5}
 .src{font-size:12px;opacity:.75;margin-top:10px}
-.qdel{position:absolute;top:10px;right:10px;display:none}
-.editing .qdel{display:grid}
+.qedit,.qdel{position:absolute;top:10px;display:grid;place-items:center}
+.qdel{right:10px}
+.qedit{right:44px}
 .editing [contenteditable=true]{outline:0;box-shadow:0 0 0 2px rgba(255,255,255,.45);border-radius:4px}
 @media(max-width:900px){.qgrid{grid-template-columns:1fr}}
 .fgrid{display:flex;flex-wrap:wrap;gap:22px}
@@ -102,7 +103,9 @@ h1 b{font-weight:700}
 .ntags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:12px}
 .nchip{background:rgba(255,255,255,.22);padding:3px 9px;border-radius:7px;font-size:12px}
 .nd{font-size:12px;opacity:.7;margin-top:10px}
-.ncard .qdel{top:8px;right:8px}
+.ncard .qedit,.ncard .qdel{top:8px}
+.ncard .qedit{right:42px}
+.ncard .qdel{right:8px}
 @media(max-width:900px){.ngrid{grid-template-columns:1fr}}
 .modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;visibility:hidden;opacity:0;transition:opacity .3s ease,visibility 0s linear .3s}
 .modal.open{visibility:visible;opacity:1;transition-delay:0s}
@@ -390,13 +393,13 @@ body.locked .page{visibility:hidden}
 <div class="bar"><h2>Quotes</h2>
 <button class="addbtn" id="addQ" type="button">+ Quote toevoegen</button><button class="addbtn alt" type="button">+ Nieuwe groep</button><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
 <div class="qtools"><label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="qs" type="search" placeholder="Quotes zoeken..." autocomplete="off"></label>
-<button class="addbtn alt" id="editQ" type="button">Bewerken</button></div>
+</div>
 <p class="grp">Losse quotes</p><div class="qgrid" id="qgrid"></div><p class="none" id="qnone" hidden></p></section></main>
 <main class="view" id="view-notities" aria-label="Notities"><section class="panel">
 <div class="bar"><h2>Notities</h2>
 <button class="addbtn" id="addN" type="button">+ Notitie toevoegen</button><button class="addbtn alt" type="button">+ Nieuwe groep</button><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
 <div class="qtools"><label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ns" type="search" placeholder="Notities zoeken..." autocomplete="off"></label>
-<button class="addbtn alt" id="editN" type="button">Bewerken</button></div>
+</div>
 <div class="fgrid"></div>
 <p class="grp sp">Losse notities</p><div class="ngrid" id="ngrid"></div><p class="none" id="nnone" hidden></p></section></main>
 <div class="modal" id="modal" aria-hidden="true"><div class="scrim" id="scrim"></div>
@@ -617,7 +620,7 @@ if(el.classList.contains('lnk'))e.preventDefault();
 if(el.classList.contains('chk'))it.classList.toggle('done');
 if(el.classList.contains('del')){it.remove();count()}
 if(el.classList.contains('tx'))el.parentNode.remove();
-if(el.classList.contains('edit')){var t=it.querySelector('.ttl');t.contentEditable='true';t.focus()}});
+if(el.classList.contains('edit'))openTextEdit('list',it)});
 list.addEventListener('focusout',function(e){if(e.target.classList.contains('ttl'))e.target.contentEditable='false'});
 list.addEventListener('keydown',function(e){var t=e.target;
 if(t.classList.contains('taginput')&&e.key==='Enter'&&t.value.trim()){t.parentNode.insertBefore(chip(t.value.trim()),t);t.value='';e.preventDefault()}
@@ -628,13 +631,13 @@ var qv=document.getElementById('view-quotes'),qg=document.getElementById('qgrid'
 var quotes=[];
 function editable(a,on){a.querySelectorAll('.qt,.au,.wk').forEach(function(e){e.contentEditable=on?'true':'false'})}
 function qcard(d){var a=document.createElement('article');a.className='qcard';
-a.innerHTML='<blockquote class="qt"></blockquote><p class="src"><span class="au"></span> \u2014 <em class="wk"></em></p><div class="ntags"></div><button class="gm" type="button" aria-label="Groepen"></button><button class="ib qdel" type="button" aria-label="Quote verwijderen">'+TR+'</button>';
+a.innerHTML='<blockquote class="qt"></blockquote><p class="src"><span class="au"></span> \u2014 <em class="wk"></em></p><div class="ntags"></div><button class="gm" type="button" aria-label="Groepen"></button><button class="ib qedit" type="button" aria-label="Quote bewerken"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/></svg></button><button class="ib qdel" type="button" aria-label="Quote verwijderen">'+TR+'</button>';
 a.querySelector('.qt').textContent='"'+d[0]+'"';a.querySelector('.au').textContent=d[1];a.querySelector('.wk').textContent=d[2];
 a._t=(d[3]||[]).slice();renderTags(a,qv.classList.contains('editing'));a._g=[];gmUpdate(a);editable(a,qv.classList.contains('editing'));return a}
 quotes.forEach(function(d){qg.appendChild(qcard(d))});
 function setEdit(on){qv.classList.toggle('editing',on);eb.textContent=on?'Klaar':'Bewerken';qg.querySelectorAll('.qcard').forEach(function(a){editable(a,on);renderTags(a,on)})}
-eb.addEventListener('click',function(){setEdit(!qv.classList.contains('editing'))});
-qg.addEventListener('click',function(e){var b=e.target.closest('.qdel');if(b){b.parentNode.remove();qs.dispatchEvent(new Event('input'))}});
+
+qg.addEventListener('click',function(e){var ed=e.target.closest('.qedit'),b=e.target.closest('.qdel');if(ed){openTextEdit('quote',ed.closest('.qcard'));return}if(b){b.parentNode.remove();qs.dispatchEvent(new Event('input'))}});
 document.getElementById('addQ').addEventListener('click',openQuote);
 qs.addEventListener('input',function(){var s=qs.value.trim().toLowerCase(),n=0,all=qg.querySelectorAll('.qcard');
 all.forEach(function(c){var ok=c.textContent.toLowerCase().indexOf(s)>-1;c.hidden=!ok;if(ok)n++});
@@ -644,18 +647,46 @@ var nv=document.getElementById('view-notities'),ng=document.getElementById('ngri
 var notes=[];
 function ned(a,on){a.querySelectorAll('.nt,.nx').forEach(function(e){e.contentEditable=on?'true':'false'})}
 function ncard(d){var a=document.createElement('article');a.className='ncard';
-a.innerHTML='<h3 class="nt"></h3><p class="nx"></p><div class="ntags"></div><button class="gm" type="button" aria-label="Groepen"></button><p class="nd"></p><button class="ib qdel" type="button" aria-label="Notitie verwijderen">'+TR+'</button>';
+a.innerHTML='<h3 class="nt"></h3><p class="nx"></p><div class="ntags"></div><button class="gm" type="button" aria-label="Groepen"></button><p class="nd"></p><button class="ib qedit" type="button" aria-label="Notitie bewerken"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/></svg></button><button class="ib qdel" type="button" aria-label="Notitie verwijderen">'+TR+'</button>';
 a.querySelector('.nt').textContent=d[0];a.querySelector('.nx').textContent=d[1];a.querySelector('.nd').textContent=d[3];
 a._t=d[2].slice();renderTags(a,nv.classList.contains('editing'));a._g=[];gmUpdate(a);
 ned(a,nv.classList.contains('editing'));return a}
 notes.forEach(function(d){ng.appendChild(ncard(d))});
 function nEdit(on){nv.classList.toggle('editing',on);nb.textContent=on?'Klaar':'Bewerken';ng.querySelectorAll('.ncard').forEach(function(a){ned(a,on);renderTags(a,on)})}
-nb.addEventListener('click',function(){nEdit(!nv.classList.contains('editing'))});
-ng.addEventListener('click',function(e){var b=e.target.closest('.qdel');if(b){b.parentNode.remove();nsr.dispatchEvent(new Event('input'))}});
+
+ng.addEventListener('click',function(e){var ed=e.target.closest('.qedit'),b=e.target.closest('.qdel');if(ed){openTextEdit('note',ed.closest('.ncard'));return}if(b){b.parentNode.remove();nsr.dispatchEvent(new Event('input'))}});
 document.getElementById('addN').addEventListener('click',openNote);
 nsr.addEventListener('input',function(){var s=nsr.value.trim().toLowerCase(),n=0,all=nv.querySelectorAll('.fold,.ncard');
 all.forEach(function(c){var ok=c.textContent.toLowerCase().indexOf(s)>-1;c.hidden=!ok;if(ok)n++});
 nn.hidden=n>0;nn.textContent=n?'':'Geen notities gevonden voor \u201c'+nsr.value.trim()+'\u201d.'});
+/* popup bewerken voor leeslijst, quotes en notities */
+var textEditModal=document.createElement('div');textEditModal.className='modal';textEditModal.id='textEditModal';textEditModal.setAttribute('aria-hidden','true');
+textEditModal.innerHTML='<div class="scrim" data-close></div><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="textEditTitle"><div class="dh"><h2 id="textEditTitle">Item bewerken</h2><button class="mclose" type="button" data-close aria-label="Sluiten">&times;</button></div><div class="db" id="textEditFields"></div><div class="df"><button class="addbtn alt" type="button" data-close>Annuleren</button><button class="addbtn" type="button" id="textEditSave">Opslaan</button></div></div>';
+document.body.appendChild(textEditModal);
+var textEditTarget=null,textEditKind='';
+function textField(id,label,area){return '<label class="fl" for="'+id+'">'+label+'</label>'+(area?'<textarea class="fi ta" id="'+id+'"></textarea>':'<input class="fi" id="'+id+'" autocomplete="off">')}
+function openTextEdit(kind,card){
+ textEditKind=kind;textEditTarget=card;
+ var f=document.getElementById('textEditFields'),title=document.getElementById('textEditTitle');
+ var a=kind==='list'?card.querySelector('.ttl').textContent:kind==='quote'?card.querySelector('.qt').textContent.replace(/^["“„«]|["”»]$/g,''):card.querySelector('.nt').textContent;
+ var b=kind==='list'?(card.querySelector('.sub')?card.querySelector('.sub').textContent:''):kind==='quote'?card.querySelector('.au').textContent:card.querySelector('.nx').textContent;
+ var d=kind==='list'?(card.querySelector('.lnk').getAttribute('href')||''):kind==='quote'?card.querySelector('.wk').textContent:'';
+ var tags=kind==='list'?Array.from(card.querySelectorAll('.chip')).map(x=>x.firstChild.textContent):((card._t)||[]);
+ title.textContent=kind==='list'?'Leeslijst-item bewerken':kind==='quote'?'Quote bewerken':'Notitie bewerken';
+ f.innerHTML=textField('teA',kind==='list'?'Titel':kind==='quote'?'Quote':'Titel',kind==='quote')+textField('teB',kind==='list'?'Beschrijving':kind==='quote'?'Auteur':'Inhoud',kind==='note')+(kind==='list'?textField('teD','Link',false):kind==='quote'?textField('teD','Bron',false):'')+textField('teTags','Tags (scheid met komma’s)',false);
+ document.getElementById('teA').value=a;document.getElementById('teB').value=b;var dd=document.getElementById('teD');if(dd)dd.value=d;document.getElementById('teTags').value=tags.join(', ');
+ textEditModal.classList.add('open');textEditModal.setAttribute('aria-hidden','false');setTimeout(function(){document.getElementById('teA').focus()},50);
+}
+function closeTextEdit(){textEditModal.classList.remove('open');textEditModal.setAttribute('aria-hidden','true');textEditTarget=null}
+textEditModal.addEventListener('click',function(e){if(e.target.closest('[data-close]'))closeTextEdit()});
+document.getElementById('textEditSave').addEventListener('click',function(){
+ if(!textEditTarget)return;var a=textEditTarget,A=document.getElementById('teA').value.trim(),B=document.getElementById('teB').value.trim(),D=document.getElementById('teD'),T=document.getElementById('teTags').value.split(',').map(x=>x.trim()).filter(Boolean);if(!A)return;
+ if(textEditKind==='list'){a.querySelector('.ttl').textContent=A;var sub=a.querySelector('.sub');if(B){if(!sub){sub=document.createElement('p');sub.className='sub';a.querySelector('.main').insertBefore(sub,a.querySelector('.lnk'))}sub.textContent=B}else if(sub)sub.remove();var link=a.querySelector('.lnk'),url=D?D.value.trim():'';if(url&&!/^https?:\/\//i.test(url))url='https://'+url;link.href=url||'#';var box=a.querySelector('.tags');box.querySelectorAll('.chip').forEach(x=>x.remove());T.forEach(x=>box.insertBefore(chip(x),box.querySelector('.taginput')))}
+ else if(textEditKind==='quote'){a.querySelector('.qt').textContent='"'+A+'"';a.querySelector('.au').textContent=B||'Auteur';a.querySelector('.wk').textContent=(D&&D.value.trim())||'Bron';a._t=T;renderTags(a,false)}
+ else{a.querySelector('.nt').textContent=A;a.querySelector('.nx').textContent=B;a._t=T;renderTags(a,false)}
+ closeTextEdit();
+});
+document.addEventListener('keydown',function(e){if(textEditModal.classList.contains('open')&&e.key==='Escape')closeTextEdit()});
 /* nieuwe collectie */
 var md=document.getElementById('modal'),cn=document.getElementById('cn'),cd=document.getElementById('cd'),cu=document.getElementById('cu'),cf=document.getElementById('cf'),pick=document.getElementById('pick'),pickTxt=document.getElementById('pickTxt'),mc=document.getElementById('mcreate'),sbU=document.getElementById('sbUrl'),sbP=document.getElementById('sbUp'),opener=null,mode='url',upData='';
 function mode_(m){mode=m;sbU.classList.toggle('on',m==='url');sbP.classList.toggle('on',m==='up');cu.hidden=m!=='url';pick.hidden=m!=='up'}
