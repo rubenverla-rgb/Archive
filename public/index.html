@@ -995,8 +995,8 @@ function mItem(o,on){return{key:o.m,title:o.m.t,sub:'in '+o.cols.join(', '),thum
 function buildCex(){var pre=preSel;preSel=[];cexP=picker(document.getElementById('cex'),allMedia().map(function(o){return mItem(o,pre.indexOf(o.m)>-1)}),{empty:'Er is nog geen media om te kiezen.'})}
 function buildExisting(){exP=picker(document.getElementById('mex'),(function(){var T=ens(tgt());return allMedia().filter(function(o){return T.indexOf(o.m)<0})})().map(function(o){return mItem(o,false)}),{onChange:rdy,empty:'Alle bestaande media staat al in deze collectie.'});rdy()}
 function addExisting(){var T=tgt(),A=ens(T);exP.selected().forEach(function(m){if(A.indexOf(m)<0)A.push(m)});setCnt(T);if(T===cur)render();else if(T._sid)syncShared(T);closeM2()}
-function itTitle(el,ty){var q=ty==='leeslijst'?'.ttl':ty==='notities'?'.nt':'.qt';return el.querySelector(q).textContent}
-function itSub(el,ty){var s=ty==='leeslijst'?el.querySelector('.sub'):ty==='notities'?el.querySelector('.nx'):el.querySelector('.au');return s?s.textContent:''}
+function itTitle(el,ty){var q=ty==='leeslijst'?'.ttl':ty==='notities'?'.nt':ty==='weblinks'?'.wt':'.qt';return el.querySelector(q).textContent}
+function itSub(el,ty){var s=ty==='leeslijst'?el.querySelector('.sub'):ty==='notities'?el.querySelector('.nx'):ty==='weblinks'?el.querySelector('.wx'):el.querySelector('.au');return s?s.textContent:''}
 function buildGP(ty,gid){gP=picker(document.getElementById('gex'),itemsOf(ty).map(function(el){return{key:el,title:itTitle(el,ty),sub:itSub(el,ty),badge:'',on:!!gid&&gOf(el).indexOf(gid)>-1}}),{empty:'Er zijn nog geen items om te kiezen.'})}
 function applySel(ty,gid,editing){if(!gP||!gid)return;var ch=gP.selected();itemsOf(ty).forEach(function(el){var g=gOf(el),has=g.indexOf(gid)>-1,want=ch.indexOf(el)>-1;if(want&&!has)g.push(gid);if(!want&&has&&editing)g.splice(g.indexOf(gid),1)})}
 /* cover voor groepen */
