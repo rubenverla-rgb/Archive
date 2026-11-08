@@ -361,6 +361,44 @@ body.locked .page{visibility:hidden}
 #savestat.err{background:#b3372c}
 .ehint{margin:6px 0 0}
 .ehint[hidden]{display:none}
+/* ===== Verfijnd glas: ontwerplaag (alleen CSS, de logica blijft ongewijzigd) ===== */
+:root{--g-panel:rgba(32,42,35,.84);--g-panel-soft:rgba(32,42,35,.66);--g-line:rgba(255,255,255,.14);--g-fill:rgba(255,255,255,.1);--g-fill-hi:rgba(255,255,255,.18);--g-text-2:rgba(255,255,255,.84);--g-text-3:rgba(255,255,255,.72);--g-ease:cubic-bezier(.22,.9,.24,1);--glass:var(--g-panel-soft)}
+body::before{background:linear-gradient(180deg,rgba(24,32,26,.5),rgba(24,32,26,.12) 22%,rgba(24,32,26,.14) 68%,rgba(24,32,26,.55))}
+.logo{font-size:32px;letter-spacing:-.04em}
+nav{gap:4px;padding:8px;border:1px solid var(--g-line);box-shadow:0 12px 32px rgba(10,16,12,.28)}
+nav a{padding:9px 16px;border-radius:999px;border-bottom:0;font-size:14.5px;font-weight:500;letter-spacing:.01em;opacity:.88;transition:background .2s,opacity .2s}
+nav a:hover{opacity:1;background:var(--g-fill)}
+nav a.on{opacity:1;font-weight:600;background:var(--g-fill-hi);border-bottom:0}
+.navsearch{padding:0 12px 0 16px;margin-left:2px}
+.account{border:1px solid var(--g-line);font-weight:600;transition:background .2s}
+.account:hover{background:var(--g-panel)}
+.stat{padding:11px 18px;border-radius:999px;background:var(--g-panel-soft);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--g-line);text-shadow:none;font-weight:500;letter-spacing:.12em}
+.brand{padding:11px 0;font-weight:600;letter-spacing:.2em;opacity:.9}
+.view{bottom:calc(env(safe-area-inset-bottom,0px) + 88px)}
+.panel{background:var(--g-panel);border:1px solid var(--g-line);backdrop-filter:blur(26px) saturate(1.15);-webkit-backdrop-filter:blur(26px) saturate(1.15);box-shadow:0 28px 64px rgba(10,16,12,.34);padding:28px 32px 32px}
+.bar{gap:12px;margin-bottom:22px}
+.bar h2{font-size:24px;letter-spacing:-.02em}
+.bar h2 span{font-size:15px;font-weight:500;opacity:1;color:var(--g-text-3);margin-left:2px}
+.addbtn{border:1px solid rgba(255,255,255,.12);padding:11px 18px;font-weight:600;transition:background .2s,transform .12s}
+.addbtn:hover{background:#2b302d}
+.addbtn:active{transform:translateY(1px)}
+.addbtn.alt{background:var(--g-fill-hi)}
+.addbtn.alt:hover{background:rgba(255,255,255,.26)}
+.close{background:var(--g-fill-hi);transition:background .2s}
+.close:hover{background:rgba(255,255,255,.28)}
+.search{height:46px;background:var(--g-fill);border:1px solid var(--g-line);margin-bottom:28px;transition:background .2s,box-shadow .2s}
+.search:hover{background:var(--g-fill-hi)}
+.search input::placeholder{color:var(--g-text-3)}
+@media(min-width:901px){.grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:32px 24px}}
+.card .thumb{border-radius:14px;box-shadow:0 8px 20px rgba(10,16,12,.3);transition:transform .25s var(--g-ease),box-shadow .25s}
+.card:hover .thumb{transform:translateY(-2px);box-shadow:0 14px 28px rgba(10,16,12,.34)}
+.card:hover .thumb img{transform:scale(1.03)}
+.card h3{font-size:15px;font-weight:600;margin:12px 0 4px}
+.card p{font-size:12px;letter-spacing:.08em;opacity:1;color:var(--g-text-3)}
+.thumb.empty{background:var(--g-fill)}
+.none{text-align:center;padding:56px 0;font-size:15px;opacity:1;color:var(--g-text-2)}
+.dlg{background:rgba(32,42,35,.92);border:1px solid var(--g-line)}
+@media(prefers-reduced-motion:reduce){nav a,.addbtn,.card .thumb{transition:none}.card:hover .thumb{transform:none}}
 </style></head><body class="locked">
 <div class="page">
 <div class="logo">A.</div>
