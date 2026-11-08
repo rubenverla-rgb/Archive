@@ -1,10 +1,9 @@
-// Archive API — Cloudflare Pages Functions (D1 + R2)
-// Alle routes onder /api/*. Bindings: DB (D1) en FILES (R2). Optioneel: RESEND_API_KEY, MAIL_FROM, APP_ORIGIN.
+// Shared Archive API logic. Runtime database and private file storage are injected by the Vercel entrypoint.
 
 const enc = new TextEncoder();
 const SESSION_MS = 30 * 24 * 3600 * 1000;
 const MAX_JSON = 2_000_000;
-const MAX_FILE = 6_000_000;
+const MAX_FILE = 4_000_000;
 const FILE_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'application/pdf': 'pdf' };
 const KINDS = ['collections', 'media', 'notes', 'quotes', 'reading', 'groups'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,7 +32,7 @@ function cookie(req, name) {
   const m = (req.headers.get('cookie') || '').split(/;\s*/).find((c) => c.startsWith(name + '='));
   return m ? m.slice(name.length + 1) : null;
 }
-const setCookie = (token, maxAge, url) => `sid=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${url.protocol === 'https:' ? '; Secure' : ''}`;
+const setCookie = (token, maxAge, url) => `sid=${token}; Path=/; HttpOnly; SameSite=Lax${maxAge == null ? '' : `; Max-Age=${maxAge}`}${url.protocol === 'https:' ? '; Secure' : ''}`;
 
 async function readJson(req) {
   const t = await req.text();
@@ -62,13 +61,13 @@ async function throttleHit(env, key, windowMs) {
   else await env.DB.prepare('INSERT INTO throttle(key,n,reset_at) VALUES(?,1,?) ON CONFLICT(key) DO UPDATE SET n=1,reset_at=excluded.reset_at').bind(key, now() + windowMs).run();
 }
 
-async function startSession(env, userId, url) {
+async function startSession(env, userId, url, remember = true) {
   const token = rnd(32);
   await env.DB.batch([
     env.DB.prepare('DELETE FROM sessions WHERE expires_at<?').bind(now()),
     env.DB.prepare('INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)').bind(await sha256(token), userId, now() + SESSION_MS)
   ]);
-  return setCookie(token, SESSION_MS / 1000, url);
+  return setCookie(token, remember ? SESSION_MS / 1000 : null, url);
 }
 
 // ---------- validatie van gedeelde media ----------
@@ -84,6 +83,9 @@ function cleanRec(r) {
   const k = ['pdf', 'image', 'link', 'social'].includes(r.k) ? r.k : 'link';
   const ratio = Number(r.r); 
   const o = { id, t: str(r.t, 300), k, r: ratio > 0.05 && ratio < 20 ? ratio : 0.75, src, img, u, f: str(r.f, 300), d: str(r.d, 5000), at: str(r.at, 30), ll: str(r.ll, 40), lb: str(r.lb, 120), tags: cleanTags(r.tags), _u: Number(r._u) || 0 };
+  const embed = str(r.embed, 1000);
+  if (/^https:\/\/(?:www\.instagram\.com\/(?:p|reel|tv)\/[^/]+\/embed\/|assets\.pinterest\.com\/ext\/embed\.html\?id=\d+)$/i.test(embed)) o.embed = embed;
+  if (['instagram', 'pinterest'].includes(r.provider)) o.provider = r.provider;
   if (r.by && typeof r.by === 'object') o.by = { name: str(r.by.name, 80), email: str(r.by.email, 200).toLowerCase() };
   return o;
 }
@@ -105,14 +107,17 @@ async function sendMail(env, to, subject, text) {
 export async function onRequest({ request: req, env }) {
   const url = new URL(req.url);
   try {
-    if (!env.DB || !env.FILES) return json({ error: 'not_configured' }, 503);
+    const db = env.DB || null;
+    if (!db || !env.FILES) return json({ error: 'not_configured' }, 503);
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       const o = req.headers.get('origin');
       if (o && new URL(o).host !== url.host) bad('forbidden', 403);
       if (req.headers.get('x-requested-with') !== 'archive') bad('forbidden', 403);
     }
+    const runtimeEnv = Object.create(env);
+    runtimeEnv.DB = db;
     const path = url.pathname.replace(/^\/api\/?/, '').replace(/\/+$/, '');
-    return await route(req, env, url, path, path.split('/'));
+    return await route(req, runtimeEnv, url, path, path.split('/'));
   } catch (e) {
     if (e instanceof HttpError) return json({ error: e.code }, e.status);
     console.error(e);
@@ -125,7 +130,7 @@ async function route(req, env, url, path, seg) {
 
   // ----- auth -----
   if (m === 'POST' && path === 'auth/register') {
-    const ip = req.headers.get('cf-connecting-ip') || 'x';
+    const ip = (req.headers.get('x-forwarded-for') || 'x').split(',')[0].trim();
     await throttle(env, 'r:' + ip, 20, 3600000);
     const b = await readJson(req);
     const name = str(b.name, 80).trim(), email = str(b.email, 200).trim().toLowerCase(), pw = str(b.password, 200);
@@ -148,7 +153,7 @@ async function route(req, env, url, path, seg) {
     const ok = u ? same(await pbkdf2(pw, u.salt), u.hash) : (await pbkdf2(pw, '00'.repeat(16)), false);
     if (!ok) { await throttleHit(env, 'l:' + email, 900000); bad('invalid_credentials', 401); }
     await env.DB.prepare('DELETE FROM throttle WHERE key=?').bind('l:' + email).run();
-    const c = await startSession(env, u.id, url);
+    const c = await startSession(env, u.id, url, b.remember !== false);
     return json({ user: pub(u) }, 200, { 'set-cookie': c });
   }
   if (m === 'POST' && path === 'auth/logout') {
@@ -307,36 +312,217 @@ async function preview(req, env, user) {
   let u;
   try { u = new URL(str(b.url, 2000)); } catch { return bad('invalid_url'); }
   if (!/^https?:$/.test(u.protocol) || privateHost(u.hostname)) bad('invalid_url');
+
+  const host = u.hostname.toLowerCase().replace(/^www\./, '');
+  let provider = '', embedUrl = '';
+  if (host === 'pinterest.com' || host.endsWith('.pinterest.com')) {
+    provider = 'pinterest';
+    const pin = u.pathname.match(/\/pin\/(\d+)/i);
+    if (pin) embedUrl = 'https://assets.pinterest.com/ext/embed.html?id=' + pin[1];
+  } else if (host === 'instagram.com' || host.endsWith('.instagram.com')) {
+    provider = 'instagram';
+    const post = u.pathname.match(/\/(p|reel|tv)\/([A-Za-z0-9_-]+)/i);
+    if (post) embedUrl = 'https://www.instagram.com/' + post[1].toLowerCase() + '/' + post[2] + '/embed/';
+  }
+  const empty = () => json({ title: '', description: '', image: '', site: host, provider, embedUrl });
+  // Pinterest blocks or omits Open Graph metadata for many Pin URLs.
+  // Its public oEmbed endpoint provides a reliable thumbnail for public Pins.
+  let pinterestData = null;
+  if (provider === 'pinterest') {
+    try {
+      const endpoint = new URL('https://www.pinterest.com/oembed.json');
+      // Pinterest oEmbed accepts canonical www.pinterest.com URLs; regional hosts such as nl.pinterest.com may be rejected.
+      const pinUrl = new URL(u.href);
+      pinUrl.protocol = 'https:';
+      pinUrl.hostname = 'www.pinterest.com';
+      endpoint.searchParams.set('url', pinUrl.href);
+      const pr = await fetch(endpoint.href, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; ArchiveBot/1.0)', accept: 'application/json' }, redirect: 'follow', signal: AbortSignal.timeout(7000) });
+      console.log('[preview:pinterest] oembed', { status: pr.status, contentType: pr.headers.get('content-type') || '' });
+      if (pr.ok && /json/i.test(pr.headers.get('content-type') || '')) {
+        pinterestData = await pr.json();
+        console.log('[preview:pinterest] oembed fields', { title: !!pinterestData.title, description: !!pinterestData.description, thumbnail: !!pinterestData.thumbnail_url, thumbnailHost: pinterestData.thumbnail_url ? (() => { try { return new URL(pinterestData.thumbnail_url).hostname; } catch { return 'invalid'; } })() : '', type: pinterestData.type || '' });
+      }
+    } catch { /* probeer daarna de gewone Open Graph-preview */ }
+  }
   const ua = { 'user-agent': 'Mozilla/5.0 (compatible; ArchiveBot/1.0; +link-preview)', accept: 'text/html,application/xhtml+xml' };
   let html = '';
   try {
     const res = await fetch(u.href, { headers: ua, redirect: 'follow', signal: AbortSignal.timeout(7000) });
-    if (!res.ok || !/html/i.test(res.headers.get('content-type') || '')) return json({ title: '', description: '', image: '', site: u.hostname.replace(/^www\./, '') });
-    html = await limitedText(res, 300000);
-  } catch { return json({ title: '', description: '', image: '', site: u.hostname.replace(/^www\./, '') }); }
-  const title = meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').trim();
-  const description = meta(html, ['og:description', 'twitter:description', 'description']);
+    console.log('[preview:pinterest] page', { status: res.status, contentType: res.headers.get('content-type') || '' });
+    if (res.ok && /html/i.test(res.headers.get('content-type') || '')) html = await limitedText(res, 300000);
+  } catch { /* Pinterest oEmbed kan nog steeds bruikbare gegevens bevatten */ }
+
+  const title = (pinterestData && pinterestData.title) || meta(html, ['og:title', 'twitter:title']) || decodeHtml((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').trim();
+  const pinterestDescription = (() => {
+    if (provider !== 'pinterest' || !html) return '';
+    const candidates = [
+      meta(html, ['og:description', 'twitter:description', 'description']),
+      (html.match(/data-pin-description=["']([^"']*)["']/i) || [])[1] || ''
+    ];
+    const pinId = u.pathname.match(/\/pin\/(\d+)/i)?.[1];
+    const pws = html.match(/<script[^>]+id=["']__PWS_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
+    const scriptIds = [...html.matchAll(/<script[^>]+id=["']([^"']+)["']/gi)].map(m => m[1]).slice(0, 20);
+    let pin = null;
+    let stateKeys = [];
+    if (pws) {
+      try {
+        const state = JSON.parse(pws[1]);
+        const redux = state?.props?.initialReduxState;
+        stateKeys = Object.keys(redux || {});
+        const pins = redux?.pins;
+        pin = pins?.[pinId] || pins?.[Number(pinId)] || null;
+        if (!pin && pins && typeof pins === 'object') {
+          pin = Object.values(pins).find(item => String(item?.id || item?.pin_id || '') === String(pinId)) || null;
+        }
+        if (pin) candidates.push(pin.description, pin.note, pin.seo_alt_text, pin.alt_text, pin.title);
+      } catch { /* Pinterest hydration data may be malformed or partial */ }
+    }
+    console.log('[preview:pinterest] description diagnostics', {
+      htmlBytes: html.length,
+      pwsFound: !!pws,
+      pinIdFound: !!pinId,
+      scriptIds,
+      stateKeys,
+      pinFound: !!pin,
+      pinKeys: pin ? Object.keys(pin).slice(0, 40) : [],
+      metadataDescription: !!candidates[0],
+      dataPinDescription: !!candidates[1]
+    });
+    for (let value of candidates) {
+      if (typeof value !== 'string' || !value.trim()) continue;
+      value = decodeHtml(value).trim();
+      if (value && value.length > 2 && value.toLowerCase() !== ((pinterestData && pinterestData.title) || '').toLowerCase()) return value;
+    }
+    return '';
+  })();
+  const description = (pinterestData && pinterestData.description) || pinterestDescription || meta(html, ['og:description', 'twitter:description', 'description']);
   let image = '';
-  const im = meta(html, ['og:image', 'og:image:url', 'twitter:image']);
+  // Gebruik bij openbare Instagram-posts de Open Graph-thumbnail als preview.
+  // De officiële embed blijft beschikbaar voor het openen van de volledige post.
+  // Instagram's og:image is often a square social thumbnail. Prefer the
+  // original display_url embedded in the public page metadata when available.
+  let instagramImage = '';
+  if (provider === 'instagram' && html) {
+    // Some Instagram responses embed the media JSON with escaped quotes.
+    // Normalize that representation before looking for the full-size renditions.
+    const instagramHtml = html.replace(/\\"/g, '"');
+    const candidates = [];
+    const resourcesMatch = instagramHtml.match(/"display_resources"\s*:\s*\[([\s\S]*?)\]/i);
+    if (resourcesMatch) {
+      const resources = resourcesMatch[1].match(/\{[^{}]*\}/g) || [];
+      for (const resource of resources) {
+        const srcMatch = resource.match(/"src"\s*:\s*"((?:\\.|[^"\\])*)"/i);
+        const widthMatch = resource.match(/"config_width"\s*:\s*(\d+)/i);
+        const heightMatch = resource.match(/"config_height"\s*:\s*(\d+)/i);
+        if (srcMatch && widthMatch && heightMatch) {
+          const candidateUrl = srcMatch[1]
+            .replace(/\\u0026/gi, '&')
+            .replace(/\\\//g, '/')
+            .replace(/&amp;/gi, '&');
+          candidates.push({ url: candidateUrl, area: Number(widthMatch[1]) * Number(heightMatch[1]) });
+        }
+      }
+    }
+    const versionsMatch = instagramHtml.match(/"image_versions2"\s*:\s*\{[\s\S]*?"candidates"\s*:\s*\[([\s\S]*?)\]/i);
+    if (versionsMatch) {
+      const objects = versionsMatch[1].match(/\{[^{}]*\}/g) || [];
+      for (const object of objects) {
+        const urlMatch = object.match(/"url"\s*:\s*"((?:\\.|[^"\\])*)"/i);
+        const widthMatch = object.match(/"width"\s*:\s*(\d+)/i);
+        const heightMatch = object.match(/"height"\s*:\s*(\d+)/i);
+        if (urlMatch && widthMatch && heightMatch) {
+          const candidateUrl = urlMatch[1]
+            .replace(/\\u0026/gi, '&')
+            .replace(/\\\//g, '/')
+            .replace(/&amp;/gi, '&');
+          candidates.push({ url: candidateUrl, area: Number(widthMatch[1]) * Number(heightMatch[1]) });
+        }
+      }
+    }
+    if (candidates.length) {
+      candidates.sort((a, b) => b.area - a.area);
+      instagramImage = candidates[0].url;
+      console.log('[preview:instagram] selected rendition', { candidates: candidates.length, pixels: candidates[0].area });
+    } else {
+      const displayMatch = instagramHtml.match(/"display_url"\s*:\s*"((?:\\.|[^"\\])*)"/i);
+      if (displayMatch) {
+        instagramImage = displayMatch[1]
+          .replace(/\\u0026/gi, '&')
+          .replace(/\\\//g, '/')
+          .replace(/&amp;/gi, '&');
+      }
+      console.log('[preview:instagram] rendition diagnostics', {
+        imageVersions: instagramHtml.includes('"image_versions2"'),
+        displayResources: instagramHtml.includes('"display_resources"'),
+        displayUrl: instagramHtml.includes('"display_url"'),
+        selected: candidates.length ? 'candidate' : displayMatch ? 'display_url' : 'og:image'
+      });
+    }
+  }
+  // Instagram often serves a login/consent shell for the canonical URL. Its public
+  // embed endpoint can expose a separate responsive image srcset; prefer the
+  // largest rendition from that response over the square og:image thumbnail.
+  if (provider === 'instagram' && !instagramImage && embedUrl) {
+    try {
+      const er = await fetch(embedUrl + (embedUrl.includes('?') ? '&' : '?') + 'cr=1&v=14&wp=1&rd=1', {
+        headers: { ...ua, referer: 'https://www.instagram.com/' }, redirect: 'follow', signal: AbortSignal.timeout(8000)
+      });
+      const embedHtml = er.ok && /html/i.test(er.headers.get('content-type') || '') ? await limitedText(er, 500000) : '';
+      const srcsets = [...embedHtml.matchAll(/(?:srcset|data-srcset)=["']([^"']+)["']/gi)];
+      const choices = [];
+      for (const match of srcsets) {
+        for (const part of match[1].split(',')) {
+          const item = part.trim().match(/^(https?:\/\/\S+?)(?:\s+(\d+)w)?$/i);
+          if (item) choices.push({ url: decodeHtml(item[1]), width: Number(item[2] || 0) });
+        }
+      }
+      if (choices.length) {
+        choices.sort((a, b) => b.width - a.width);
+        instagramImage = choices[0].url;
+        console.log('[preview:instagram] embed srcset', { status: er.status, choices: choices.length, width: choices[0].width });
+      } else {
+        console.log('[preview:instagram] embed fallback', { status: er.status, html: !!embedHtml, srcsetCount: srcsets.length });
+      }
+    } catch (e) {
+      console.log('[preview:instagram] embed error', String(e && e.message || e));
+    }
+  }
+  const im = (provider === 'instagram' && instagramImage) || (pinterestData && pinterestData.thumbnail_url) || meta(html, ['og:image', 'og:image:url', 'twitter:image']);
   if (im) {
     try {
       const iu = new URL(im, u.href);
       if (/^https?:$/.test(iu.protocol) && !privateHost(iu.hostname)) {
-        const r = await fetch(iu.href, { headers: { 'user-agent': ua['user-agent'], accept: 'image/*' }, redirect: 'follow', signal: AbortSignal.timeout(8000) });
-        const ct = (r.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
-        const ext = FILE_TYPES[ct];
-        if (r.ok && ext && ext !== 'pdf') {
-          const buf = await r.arrayBuffer();
-          if (buf.byteLength > 0 && buf.byteLength <= MAX_FILE) {
-            const name = rnd(16) + '.' + ext;
-            await env.FILES.put(`u/${user.id}/${name}`, buf, { httpMetadata: { contentType: ct } });
-            image = `/api/file/${user.id}/${name}`;
+        // Pinterest oEmbed often returns a tiny 236px thumbnail. Request its
+        // optimized 736px CDN rendition for sharper previews without using the
+        // potentially very large original file.
+        const originalImageUrl = iu.href;
+        if (provider === 'pinterest') {
+          iu.pathname = iu.pathname.replace(/\/(?:\d+x(?:\d+)?|originals)\//, '/736x/');
+        }
+        image = iu.href;
+        try {
+          const r = await fetch(iu.href, { headers: { 'user-agent': ua['user-agent'], accept: 'image/*' }, redirect: 'follow', signal: AbortSignal.timeout(8000) });
+          const ct = (r.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+          if (provider === 'pinterest') console.log('[preview:pinterest] image fetch', { status: r.status, contentType: ct, bytes: Number(r.headers.get('content-length') || 0), finalHost: (() => { try { return new URL(r.url).hostname; } catch { return ''; } })() });
+          if (!r.ok && provider === 'pinterest') image = originalImageUrl;
+          const ext = FILE_TYPES[ct];
+          if (r.ok && ext && ext !== 'pdf') {
+            const buf = await r.arrayBuffer();
+            if (buf.byteLength > 0 && buf.byteLength <= MAX_FILE) {
+              const name = rnd(16) + '.' + ext;
+              await env.FILES.put(`u/${user.id}/${name}`, buf, { httpMetadata: { contentType: ct } });
+              // Keep the CDN URL for browser rendering; the private API path
+              // has caused broken image elements in the deployed frontend.
+            }
           }
+        } catch {
+          image = originalImageUrl;
         }
       }
-    } catch { /* geen afbeelding */ }
+    } catch { /* geen afbeelding beschikbaar */ }
   }
-  return json({ title: title.slice(0, 300), description: description.slice(0, 1000), image, site: u.hostname.replace(/^www\./, '') });
+  if (provider) console.log('[preview:' + provider + '] result', { title: !!title, description: !!description, image: !!image, imageHost: image ? (() => { try { return new URL(image, u.href).hostname; } catch { return 'invalid'; } })() : '' });
+  return json({ title: title.slice(0, 300), description: description.slice(0, 1000), image, site: host, provider, embedUrl });
 }
 
 // ---------- gedeelde collecties ----------
@@ -349,8 +535,8 @@ async function loadCols(env, user, onlyId) {
   const mem = [], inv = [];
   for (const part of chunks(ids, 80)) {
     const ph = part.map(() => '?').join(',');
-    mem.push(...((await env.DB.prepare(`SELECT m.collection_id AS cid,u.email,u.name,u.id AS uid FROM members m JOIN users u ON u.id=m.user_id WHERE m.collection_id IN (${ph}) ORDER BY m.joined_at, u.email`).bind(...part).all()).results || []));
-    inv.push(...((await env.DB.prepare(`SELECT collection_id AS cid,email,token FROM invites WHERE collection_id IN (${ph}) ORDER BY created_at, email`).bind(...part).all()).results || []));
+    mem.push(...((await env.DB.prepare(`SELECT m.collection_id AS cid,u.email,u.name,u.id AS uid,m.role FROM members m JOIN users u ON u.id=m.user_id WHERE m.collection_id IN (${ph}) ORDER BY m.joined_at, u.email`).bind(...part).all()).results || []));
+    inv.push(...((await env.DB.prepare(`SELECT collection_id AS cid,email,token,role FROM invites WHERE collection_id IN (${ph}) ORDER BY created_at, email`).bind(...part).all()).results || []));
   }
   const out = {};
   for (const r of rows) {
@@ -361,8 +547,9 @@ async function loadCols(env, user, onlyId) {
     out[r.id] = {
       id: r.id, name: r.name, desc: r.desc, cover: r.cover, ln: r.ln, rev: r.rev,
       owner: { name: r.oname, email: r.oemail },
-      members: (isOwner || isMember) ? members.map((x) => ({ email: x.email, name: x.name })) : [],
-      invites: isOwner ? inv.filter((x) => x.cid === r.id).map((x) => ({ email: x.email, token: x.token })) : mine.map((x) => ({ email: x.email, token: x.token })),
+      role: isOwner ? 'owner' : ((members.find((x) => x.uid === user.id) || {}).role || 'editor'),
+      members: (isOwner || isMember) ? members.map((x) => ({ email: x.email, name: x.name, role: x.role || 'editor' })) : [],
+      invites: isOwner ? inv.filter((x) => x.cid === r.id).map((x) => ({ email: x.email, token: x.token, role: x.role || 'editor' })) : mine.map((x) => ({ email: x.email, token: x.token, role: x.role || 'editor' })),
       media: (isOwner || isMember) ? safeJson(r.media, []) : []
     };
   }
@@ -372,8 +559,9 @@ async function accessOf(env, user, id) {
   const row = await env.DB.prepare('SELECT * FROM shared_collections WHERE id=?').bind(id).first();
   if (!row) bad('not_found', 404);
   const isOwner = row.owner_id === user.id;
-  const isMember = isOwner || !!(await env.DB.prepare('SELECT 1 FROM members WHERE collection_id=? AND user_id=?').bind(id, user.id).first());
-  return { row, isOwner, isMember };
+  const member = isOwner ? null : await env.DB.prepare('SELECT role FROM members WHERE collection_id=? AND user_id=?').bind(id, user.id).first();
+  const isMember = isOwner || !!member;
+  return { row, isOwner, isMember, role: isOwner ? 'owner' : (member && member.role) || 'editor' };
 }
 
 async function shared(req, env, url, user, seg) {
@@ -394,6 +582,14 @@ async function shared(req, env, url, user, seg) {
     return json({ col: (await loadCols(env, user, cid))[cid] });
   }
 
+  if (seg[1] === 'join' && seg.length === 2 && m === 'POST') {
+    const b = await readJson(req), token = str(b.token, 64);
+    if (!token) bad('invalid');
+    const inv = await env.DB.prepare('SELECT * FROM invites WHERE token=?').bind(token).first();
+    if (!inv) bad('not_found', 404);
+    await env.DB.prepare('INSERT OR IGNORE INTO members(collection_id,user_id,joined_at,role) VALUES(?,?,?,?)').bind(inv.collection_id,user.id,now(),inv.role || 'editor').run();
+    return json({ col: (await loadCols(env,user,inv.collection_id))[inv.collection_id] });
+  }
   if (!id || !/^s[0-9a-f]{12}$/.test(id)) bad('not_found', 404);
 
   // accepteren / weigeren (voor wie is uitgenodigd)
@@ -401,11 +597,8 @@ async function shared(req, env, url, user, seg) {
     const b = await readJson(req);
     const inv = await env.DB.prepare('SELECT * FROM invites WHERE token=? AND collection_id=?').bind(str(b.token, 64), id).first();
     if (!inv) bad('not_found', 404);
-    if (inv.email !== user.email) bad('wrong_email', 403);
-    await env.DB.batch([
-      env.DB.prepare('INSERT OR IGNORE INTO members(collection_id,user_id,joined_at) VALUES(?,?,?)').bind(id, user.id, now()),
-      env.DB.prepare('DELETE FROM invites WHERE token=?').bind(inv.token)
-    ]);
+    if (inv.email && inv.email !== user.email) bad('wrong_email', 403);
+    await env.DB.prepare('INSERT OR IGNORE INTO members(collection_id,user_id,joined_at,role) VALUES(?,?,?,?)').bind(id,user.id,now(),inv.role || 'editor').run();
     return json({ col: (await loadCols(env, user, id))[id] });
   }
   if (seg[2] === 'decline' && m === 'POST') {
@@ -414,10 +607,23 @@ async function shared(req, env, url, user, seg) {
     return json({ ok: true });
   }
 
-  const { row, isOwner, isMember } = await accessOf(env, user, id);
+  // Een lid kan zichzelf verlaten; ook een nog openstaande uitnodiging kan de gebruiker zelf intrekken.
+  if (seg[2] === 'leave' && m === 'POST') {
+    const owner = await env.DB.prepare('SELECT owner_id FROM shared_collections WHERE id=?').bind(id).first();
+    if (!owner) bad('not_found', 404);
+    if (owner.owner_id === user.id) bad('forbidden', 403);
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM members WHERE collection_id=? AND user_id=?').bind(id, user.id),
+      env.DB.prepare("DELETE FROM invites WHERE collection_id=? AND email=?").bind(id, user.email)
+    ]);
+    return json({ ok: true });
+  }
+
+  const { row, isOwner, isMember, role } = await accessOf(env, user, id);
   if (!isMember) bad('not_found', 404);
 
   if (seg.length === 2 && m === 'PUT') { // bijwerken (met versiecontrole)
+    if (!isOwner && role !== 'editor') bad('forbidden', 403);
     const b = await readJson(req);
     if (Number(b.rev) !== row.rev) return json({ error: 'conflict', col: (await loadCols(env, user, id))[id] }, 409);
     const incoming = (Array.isArray(b.media) ? b.media : []).slice(0, 2000).map(cleanRec);
@@ -455,37 +661,25 @@ async function shared(req, env, url, user, seg) {
   }
 
   if (seg.length === 2 && m === 'DELETE') { // eigenaar: stop met delen
-    if (!isOwner) bad('forbidden', 403);
+    const owner = await env.DB.prepare('SELECT owner_id FROM shared_collections WHERE id=?').bind(id).first();
+    if (!owner) bad('not_found', 404);
+    if (owner.owner_id !== user.id) bad('forbidden', 403);
     await env.DB.batch([
       env.DB.prepare('DELETE FROM invites WHERE collection_id=?').bind(id),
       env.DB.prepare('DELETE FROM members WHERE collection_id=?').bind(id),
-      env.DB.prepare('DELETE FROM shared_collections WHERE id=?').bind(id)
+      env.DB.prepare('DELETE FROM shared_collections WHERE id=? AND owner_id=?').bind(id, user.id)
     ]);
     return json({ ok: true });
   }
-  if (seg[2] === 'leave' && m === 'POST') {
-    if (isOwner) bad('forbidden', 403);
-    await env.DB.prepare('DELETE FROM members WHERE collection_id=? AND user_id=?').bind(id, user.id).run();
-    return json({ ok: true });
-  }
-
   if (seg[2] === 'invites' && seg.length === 3 && m === 'POST') {
     if (!isOwner) bad('forbidden', 403);
-    const b = await readJson(req);
-    const email = str(b.email, 200).trim().toLowerCase();
-    if (!EMAIL_RE.test(email)) bad('invalid_email');
-    if (email === user.email) bad('own_email');
-    const dupe = await env.DB.prepare('SELECT 1 FROM invites WHERE collection_id=? AND email=?').bind(id, email).first()
-      || await env.DB.prepare('SELECT 1 FROM members m JOIN users u ON u.id=m.user_id WHERE m.collection_id=? AND u.email=?').bind(id, email).first();
-    if (dupe) bad('duplicate', 409);
+    const b = await readJson(req), inviteRole = b.role === 'viewer' ? 'viewer' : b.role === 'editor' ? 'editor' : null;
+    if (!inviteRole) bad('invalid_role');
     const count = (await env.DB.prepare('SELECT COUNT(*) AS n FROM invites WHERE collection_id=?').bind(id).first()).n;
     if (count >= 50) bad('too_many', 429);
-    const token = rnd(12);
-    await env.DB.prepare('INSERT INTO invites(token,collection_id,email,created_at) VALUES(?,?,?,?)').bind(token, id, email, now()).run();
-    const origin = env.APP_ORIGIN || url.origin;
-    const text = `Hoi,\n\n${user.name} nodigt je uit om samen media toe te voegen aan de collectie "${row.name}" in Archive.\n\nOpen deze link om de uitnodiging te accepteren:\n${origin}/#invite=${token}\n\nLet op: log in of registreer met dit e-mailadres.\n`;
-    const emailed = await sendMail(env, email, `${user.name} nodigt je uit voor de collectie "${row.name}"`, text);
-    return json({ invite: { email, token }, emailed });
+    const token = rnd(24);
+    await env.DB.prepare("INSERT INTO invites(token,collection_id,email,created_at,role) VALUES(?,?, '', ?,?)").bind(token,id,now(),inviteRole).run();
+    return json({ invite: { email: '', token, role: inviteRole } });
   }
   if (seg[2] === 'invites' && seg.length === 4 && m === 'DELETE') {
     if (!isOwner) bad('forbidden', 403);

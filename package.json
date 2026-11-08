@@ -2,14 +2,14 @@
   "name": "archive",
   "version": "1.0.0",
   "private": true,
-  "description": "Archive: privé referentie-archief voor architecten (Cloudflare Pages + D1 + R2)",
+  "description": "Archive: privé referentie-archief voor architecten (Vercel Functions + Turso + Vercel Blob)",
   "scripts": {
-    "dev": "wrangler pages dev public --port 8788",
-    "db:local": "wrangler d1 migrations apply archive-db --local",
-    "db:remote": "wrangler d1 migrations apply archive-db --remote",
+    "dev": "vercel dev",
     "test": "node tests/api.test.mjs"
   },
-  "devDependencies": {
-    "wrangler": "^4.0.0"
-  }
+  "dependencies": {
+    "@libsql/client": "^0.15.15",
+    "@vercel/blob": "^2.8.2"
+  },
+  "type": "module"
 }

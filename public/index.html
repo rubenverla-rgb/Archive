@@ -135,13 +135,15 @@ h1 b{font-weight:700}
 .dact{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dact .addbtn{display:inline-flex;align-items:center;gap:8px}
 .ib2{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer}
-.ib2.danger{color:#ffa79d}
+.ib2.danger{color:#ffa79d}.view-toggle{height:40px;padding:3px;border:1px solid rgba(255,255,255,.35);border-radius:22px;background:rgba(255,255,255,.12);display:flex;align-items:center;gap:2px}.view-toggle button{width:42px;height:32px;padding:6px;border:0;border-radius:17px;background:transparent;color:#fff;display:grid;place-items:center;cursor:pointer}.view-toggle button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.view-toggle button.active{background:rgba(255,255,255,.28);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}.view-toggle button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .ib2.confirm{width:auto;padding:0 16px;background:#b3372c;color:#fff;font:500 14px inherit;font-family:inherit}
 .mas{display:flex;gap:16px;align-items:flex-start}
 .mcol{flex:0 1 180px;min-width:0;display:flex;flex-direction:column;gap:20px}
-.mi{margin:0}
+.mi{margin:0}.colltext{min-height:150px;padding:18px;border-radius:16px;background:rgba(255,255,255,.13);box-shadow:0 10px 20px rgba(0,0,0,.16);display:flex;flex-direction:column;justify-content:center;gap:10px;cursor:default}.colltext b{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}.colltext strong{font-size:15px;line-height:1.4}.colltext small{font-size:12px;opacity:.7}
 .mi[hidden]{display:none}
-.mi img{display:block;width:100%;object-fit:cover;border-radius:16px;box-shadow:0 10px 20px rgba(0,0,0,.22)}
+.mi img{display:block;width:100%;object-fit:contain;border-radius:16px;box-shadow:0 10px 20px rgba(0,0,0,.22)}
+.mi.instagram img{height:auto!important;aspect-ratio:auto!important;object-fit:contain}
+
 .mi figcaption{display:flex;gap:6px;align-items:baseline;margin-top:9px;font-size:12px;line-height:1.3}
 .mi figcaption b{font-size:15px;font-weight:700}
 .card{cursor:pointer}
@@ -159,7 +161,7 @@ h1 b{font-weight:700}
 .mi:focus-visible{outline:3px solid #fff;outline-offset:4px;border-radius:16px}
 .mp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);grid-template-rows:minmax(0,1fr);gap:32px;padding:20px;overflow:hidden}
 .mimg{position:relative;border-radius:22px;overflow:hidden;background:rgba(255,255,255,.12);min-height:240px}
-.mimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .mimg .tile{position:absolute;inset:0;aspect-ratio:auto;border-radius:0;box-shadow:none;padding:24px}
 .minfo{display:flex;flex-direction:column;min-height:0;overflow-y:auto;padding:4px 8px 4px 0}
 .mtop{display:flex;align-items:center}
@@ -178,8 +180,8 @@ h1 b{font-weight:700}
 .fl[hidden]{display:none}
 @media(max-width:900px){.mp{grid-template-columns:1fr;grid-template-rows:auto;overflow-y:auto}.mimg{height:320px}.minfo{overflow:visible}}
 .mp.land{grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr)}
-.mp.land .mimg{display:grid;place-items:center;padding:22px;min-height:0;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
-.mp.land .mimg img{position:static;inset:auto;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.3);object-fit:cover}
+.mp .mimg{display:flex;align-items:center;justify-content:center;padding:0;min-height:0;background:transparent;box-shadow:none;border:0;border-radius:0;overflow:visible}
+.mp .mimg img{position:static;inset:auto;width:auto;height:auto;max-width:100%;max-height:100%;border-radius:14px;box-shadow:none;object-fit:contain}
 .mp.land .mtitle{font-size:clamp(22px,2.3vw,32px)}
 @media(max-width:900px){.mp.land{grid-template-columns:1fr}.mp.land .mimg{height:260px;padding:14px}}
 .navsearch{background:none;border:0;color:#fff;opacity:.85;cursor:pointer;display:grid;place-items:center;margin-left:4px;padding:0 0 0 24px;border-left:1px solid rgba(255,255,255,.28)}
@@ -282,6 +284,7 @@ h1 b{font-weight:700}
 .item:hover .ib,.item .ib:focus-visible{opacity:.85}
 .item .chk{border-color:rgba(255,255,255,.55)}
 body.locked .page{visibility:hidden}
+.remember-row{display:flex;align-items:center;gap:9px;margin:12px 0 16px;font-size:13px;color:var(--muted);cursor:pointer}.remember-row input{width:16px;height:16px;accent-color:var(--ink)}
 .auth{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:84px 20px 28px;overflow-y:auto;transition:opacity .45s ease,visibility 0s linear 0s}
 .auth.out{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .45s ease,visibility 0s linear .45s}
 .alang{position:fixed;top:calc(env(safe-area-inset-top,0px) + 22px);right:28px;z-index:61;gap:2px;margin:0;padding:5px;border-radius:999px;background:var(--glass);backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.2)}
@@ -337,6 +340,7 @@ body.locked .page{visibility:hidden}
 .shbanner[hidden]{display:none}
 .shr{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.1);margin-bottom:10px}
 .shr .shtx{flex:1;min-width:140px}
+.shlink-input{order:5;flex:1 0 100%;min-width:0;width:100%;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(0,0,0,.18);color:#fff;padding:11px 13px;font:400 12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;cursor:text}.shlink-input:focus{outline:2px solid #fff;outline-offset:2px}
 .shr b{display:block;font-weight:500;font-size:15px}
 .shr small{display:block;font-size:12.5px;opacity:.72;margin-top:2px}
 .shav{flex:none;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:13px;font-weight:500}
@@ -410,7 +414,7 @@ body.locked .page{visibility:hidden}
 </div></div>
 <main class="view" id="view-detail" aria-label="Collectie"><section class="panel">
 <div class="bar"><button class="back" id="back" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Alle collecties</button><span style="flex:1"></span><button class="close" type="button" aria-label="Sluiten">&times;</button></div>
-<div class="dbar"><h2 id="dt"></h2><div class="dact"><button class="addbtn alt" id="share" type="button">Delen</button><button class="ib2" id="rename" type="button" aria-label="Naam bewerken"></button><button class="ib2 danger" id="delColl" type="button" aria-label="Collectie verwijderen"></button><button class="addbtn" id="addMedia" type="button">+ Media toevoegen</button></div></div>
+<div class="dbar"><h2 id="dt"></h2><div class="dact"><button class="addbtn alt" id="share" type="button">Delen</button><button class="ib2" id="rename" type="button" aria-label="Naam bewerken"></button><button class="ib2 danger" id="delColl" type="button" aria-label="Collectie verwijderen"></button><div class="view-toggle" id="detailViewToggle" role="group" aria-label="Collectieweergave"><button type="button" data-view="with-text" aria-label="Afbeeldingen en tekst tonen" title="Afbeeldingen en tekst"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="3" width="8" height="7" rx="1"/><path d="M13 4h8M13 7h8M2.5 13h8v7h-8zM13 14h8M13 17h8"/></svg></button><button type="button" data-view="images" aria-label="Enkel afbeeldingen tonen" title="Enkel afbeeldingen"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m4 18 5-5 3 3 3-4 5 6"/></svg></button></div><button class="addbtn" id="addMedia" type="button">+ Media toevoegen</button></div></div>
 <label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ms" type="search" placeholder="Media zoeken..." autocomplete="off"></label>
 <div class="mas" id="mas"></div><p class="none" id="mnone" hidden></p><input type="file" id="mf" accept="image/*" multiple hidden>
 </section></main>
@@ -529,7 +533,7 @@ body.locked .page{visibility:hidden}
 <div class="seg atabs"><button class="sb on" id="tabLogin" type="button">Inloggen</button><button class="sb" id="tabReg" type="button">Registreren</button></div>
 <div id="fName" hidden><label class="fl" for="rName">Naam</label><input class="fi" id="rName" autocomplete="name"></div>
 <label class="fl" for="rEmail">E-mailadres</label><input class="fi" id="rEmail" type="email" autocomplete="email">
-<label class="fl" for="rPass">Wachtwoord</label><input class="fi" id="rPass" type="password" autocomplete="current-password">
+<label class="fl" for="rPass">Wachtwoord</label><input class="fi" id="rPass" type="password" autocomplete="current-password"><label class="remember-row"><input id="rememberLogin" type="checkbox"> <span>Ingelogd blijven</span></label>
 <p class="amsg" id="aerr" role="alert" hidden></p>
 <button class="addbtn asubmit" id="aGo" type="button">Inloggen</button>
 </div></div>
@@ -540,7 +544,7 @@ body.locked .page{visibility:hidden}
 <label class="fl" for="nT">Titel <span>*</span></label><input class="fi" id="nT" placeholder="bv. Materiaalonderzoek baksteen" autocomplete="off">
 <label class="fl" for="nC">Inhoud</label><textarea class="fi ta" id="nC" placeholder="Schrijf je notitie..."></textarea>
 <label class="fl" for="nTag">Tags</label>
-<div class="tags mtags" id="nTags"><input class="taginput" id="nTag" placeholder="Tag toevoegen..." autocomplete="off"></div>
+<div class="tags mtags" id="nTags"><input class="taginput" id="nTag" placeholder="Tag toevoegen..." autocomplete="off"></div><label class="fl" for="nCollection">Toevoegen aan collectie</label><select class="fi sel" id="nCollection"><option value="">Niet toevoegen aan collectie</option></select>
 </div>
 <div class="df"><button class="addbtn alt" id="mcancel6" type="button">Annuleren</button><button class="addbtn" id="madd6" type="button" disabled>Toevoegen</button></div>
 </div></div>
@@ -552,7 +556,7 @@ body.locked .page{visibility:hidden}
 <label class="fl" for="qA">Auteur</label><input class="fi" id="qA" placeholder="bv. Peter Zumthor" autocomplete="off">
 <label class="fl" for="qB">Bron</label><input class="fi" id="qB" placeholder="bv. Thinking Architecture" autocomplete="off">
 <label class="fl" for="qTag">Tags</label>
-<div class="tags mtags" id="qTags"><input class="taginput" id="qTag" placeholder="Tag toevoegen..." autocomplete="off"></div>
+<div class="tags mtags" id="qTags"><input class="taginput" id="qTag" placeholder="Tag toevoegen..." autocomplete="off"></div><label class="fl" for="qCollection">Toevoegen aan collectie</label><select class="fi sel" id="qCollection"><option value="">Niet toevoegen aan collectie</option></select>
 </div>
 <div class="df"><button class="addbtn alt" id="mcancel7" type="button">Annuleren</button><button class="addbtn" id="madd7" type="button" disabled>Toevoegen</button></div>
 </div></div>
@@ -567,16 +571,17 @@ body.locked .page{visibility:hidden}
 <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt8">
 <div class="dh"><h2 id="mt8">Collectie delen</h2><button class="mclose" id="mclose8" type="button" aria-label="Sluiten">&times;</button></div>
 <div class="db">
-<p class="shint">Nodig mensen uit om samen media aan deze collectie toe te voegen. Tags worden mee gedeeld.</p>
-<div id="shInvBox"><label class="fl" for="shEmail">E-mailadres</label>
-<div class="shrow"><input class="fi" id="shEmail" type="email" placeholder="naam@voorbeeld.be" autocomplete="off"><button class="addbtn" id="shGo" type="button">Uitnodigen</button></div></div>
+<p class="shint">Deel een link waarmee anderen kunnen deelnemen aan deze collectie. Iedereen met de link kan aansluiten met een Archive-account.</p>
+<div id="shInvBox"><label class="fl" for="shRole">Rechten via de link</label>
+<div class="shrow"><select class="fi" id="shRole"><option value="viewer">Viewer – alleen bekijken</option><option value="editor">Editor – media toevoegen en bewerken</option></select><button class="addbtn" id="shGo" type="button">Maak link</button></div></div>
 <p class="msg" id="shMsg" role="status"></p>
 <p class="fl">Personen met toegang</p>
 <div class="shl" id="shList"></div>
-<p class="shnote">Uitnodigingslinks werken in deze demo alleen in deze browser.</p>
+<p class="shnote">Links blijven geldig tot je ze hier intrekt.</p>
 </div>
 <div class="df"><button class="addbtn alt danger" id="shStop" type="button">Stop met delen</button><button class="addbtn alt" id="shClose" type="button">Sluiten</button></div>
 </div></div>
+<script>window.__archiveBootError=null;window.addEventListener('error',function(e){if(!window.__data&&!window.__archiveBootError)window.__archiveBootError=(e.message||'script error')+' ('+(e.filename||'')+':'+(e.lineno||'?')+')'});</script>
 <script>
 (function(){
 var views={collecties:document.getElementById('view-collecties'),leeslijst:document.getElementById('view-leeslijst'),quotes:document.getElementById('view-quotes'),notities:document.getElementById('view-notities'),detail:document.getElementById('view-detail'),media:document.getElementById('view-media'),account:document.getElementById('view-account'),gedeeld:document.getElementById('view-gedeeld')};
@@ -672,10 +677,10 @@ var th=document.createElement('div');th.className='thumb empty';
 if(src){var im=document.createElement('img');im.alt='';im.onerror=function(){im.remove()};im.onload=function(){th.classList.remove('empty')};im.src=src;th.appendChild(im)}
 var h=document.createElement('h3');h.textContent=name;var pp=document.createElement('p');pp.textContent='0 ITEMS';
 a.appendChild(th);a.appendChild(h);a.appendChild(pp);a.addEventListener('click',function(e){e.preventDefault()});
-document.getElementById('grid').appendChild(a);cards.push(a);a._m=cexP?cexP.selected():[];a._b=0;setCnt(a);if(!src&&a._m.length){var first=a._m.filter(function(x){return x.src})[0];if(first){var ci=document.createElement('img');ci.alt='';ci.src=first.src;th.appendChild(ci);th.classList.remove('empty')}}if(curM)fillCols();q.value='';q.dispatchEvent(new Event('input'));closeM();a.scrollIntoView({block:'nearest'})});
+document.getElementById('grid').appendChild(a);cards.push(a);a._m=cexP?cexP.selected():[];a._cid='c'+uidS(6);a._b=0;setCnt(a);if(!src&&a._m.length){var first=a._m.filter(function(x){return x.src})[0];if(first){var ci=document.createElement('img');ci.alt='';ci.src=first.src;th.appendChild(ci);th.classList.remove('empty')}}if(curM)fillCols();q.value='';q.dispatchEvent(new Event('input'));closeM();a.scrollIntoView({block:'nearest'})});
 /* collectie detail */
 var mediaByName={};
-var mas=document.getElementById('mas'),dt=document.getElementById('dt'),ms=document.getElementById('ms'),mn=document.getElementById('mnone'),mf=document.getElementById('mf'),dc=document.getElementById('delColl'),cur=null,figs=[];
+var mas=document.getElementById('mas'),dt=document.getElementById('dt'),ms=document.getElementById('ms'),mn=document.getElementById('mnone'),mf=document.getElementById('mf'),dc=document.getElementById('delColl'),cur=null,figs=[],showCollectionText=false;
 var SH='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>';
 var shareB=document.getElementById('share');shareB.innerHTML=SH+'<span>Delen</span>';
 document.getElementById('rename').innerHTML=PE;dc.innerHTML=TR;
@@ -685,15 +690,15 @@ figs.forEach(function(f){if(f.hidden)return;var k=hs.indexOf(Math.min.apply(null
 var KL={pdf:'PDF',image:'Afbeelding',link:'Weblink',social:'Social'};
 function host(u){try{return new URL(u).hostname.replace(/^www\./,'')}catch(x){return u}}
 function tileFor(m){var v=document.createElement(m.u?'a':'div');v.className='tile';if(m.u){v.href=m.u;v.target='_blank';v.rel='noopener'}v.innerHTML='<span class="kd"></span><span class="ku"></span>';v.querySelector('.kd').textContent=KL[m.k]||'Weblink';v.querySelector('.ku').textContent=m.u?host(m.u):(m.f||'');return v}
-function fig(m,i){var f=document.createElement('figure');f.className='mi';f._r=m.r;f._i=i;f.tabIndex=0;f.setAttribute('role','button');f.dataset.s=[m.t,m.d,(m.tags||[]).join(' ')].join(' ').toLowerCase();if(m.d)f.title=m.d;var v;
-if(m.src){v=document.createElement('img');v.alt='';v.src=m.src;v.style.aspectRatio='1/'+m.r}
-else if(m.img){v=document.createElement('img');v.alt='';v.style.aspectRatio='1/'+m.r;v.onerror=function(){var tt=tileFor(m);if(v.parentNode)v.parentNode.replaceChild(tt,v);v=tt};v.src=m.img}
+function fig(m,i){var f=document.createElement('figure');f.className='mi'+(m.provider==='instagram'?' instagram':'');f._r=m.r||1;f._i=i;f.tabIndex=0;f.setAttribute('role','button');f.dataset.s=[m.t,m.d,(m.tags||[]).join(' ')].join(' ').toLowerCase();if(m.d)f.title=m.d;var v;
+if(m.src){v=document.createElement('img');v.alt='';v.src=m.src;v.style.aspectRatio='auto'}
+else if(m.img){v=document.createElement('img');v.alt='';v.style.aspectRatio='auto';v.onerror=function(){var tt=tileFor(m);if(v.parentNode)v.parentNode.replaceChild(tt,v);v=tt};v.src=m.img}
 else{v=tileFor(m)}
 var cap=document.createElement('figcaption');cap.innerHTML='<b></b><span></span>';cap.querySelector('b').textContent=(i+1)+'.';cap.querySelector('span').textContent=m.t;
 f.appendChild(v);f.appendChild(cap);
-
 return f}
-function render(){if(cur._sid)syncShared(cur);figs=cur._m.map(fig);ms.value='';mn.hidden=!!figs.length;mn.textContent=figs.length?'':'Nog geen media in deze collectie.';layout()}
+function textEntry(type,title,body,meta){var f=document.createElement('article');f.className='mi colltext';f.dataset.kind=type;f.dataset.s=(title+' '+body+' '+meta).toLowerCase();f._r=.82;var k=document.createElement('b');k.textContent=type==='note'?'Notitie':'Quote';var t=document.createElement('strong');t.textContent=title;f.appendChild(k);f.appendChild(t);if(body){var p=document.createElement('span');p.textContent=body;f.appendChild(p)}if(meta){var s=document.createElement('small');s.textContent=meta;f.appendChild(s)}return f}
+function render(){if(cur._sid)syncShared(cur);figs=cur._m.map(fig);if(showCollectionText){itemsOf('notities').filter(function(a){return a._cid===cur._cid}).forEach(function(a){figs.push(textEntry('note',a.querySelector('.nt').textContent,a.querySelector('.nx').textContent,''))});itemsOf('quotes').filter(function(a){return a._cid===cur._cid}).forEach(function(a){figs.push(textEntry('quote',a.querySelector('.qt').textContent,a.querySelector('.au').textContent+' · '+a.querySelector('.wk').textContent,''))})}ms.value='';mn.hidden=!!figs.length;mn.textContent=figs.length?'':'Nog geen media in deze collectie.';layout();var tb=document.getElementById('detailViewToggle');tb.querySelector('[data-view="with-text"]').classList.toggle('active',showCollectionText);tb.querySelector('[data-view="images"]').classList.toggle('active',!showCollectionText)}
 function openDetail(c){cur=c;if(!c._m)c._m=(mediaByName[c.dataset.n]||[]).slice();dt.textContent=c.dataset.n;if(c._sid&&pullShared(c)===false)return;upSub();applyPerms();show('detail');render()}
 document.getElementById('grid').addEventListener('click',function(e){var c=e.target.closest('.card');if(c){e.preventDefault();openDetail(c)}});
 document.getElementById('back').addEventListener('click',function(){show('collecties')});
@@ -717,7 +722,7 @@ var m2=document.getElementById('modal2'),mu=document.getElementById('mu'),mpick=
 function setKind(k){kind=k;document.querySelector('#modal2 .db').classList.toggle('ex',k==='existing');if(k==='existing')buildExisting();tbtn.forEach(function(b){b.classList.toggle('on',b.dataset.k===k)});var u=k==='link'||k==='social';mu.hidden=!u;mpick.hidden=u;
 slb.textContent=u?'URL':(k==='pdf'?'PDF-bestand':'Afbeelding');slb.htmlFor=u?'mu':'mfile';mfile.accept=k==='pdf'?'application/pdf':'image/*';mfile.value='';fdata=null;fname='';mpt.textContent=k==='pdf'?'Kies een PDF':'Kies een afbeelding'}
 function rdy(){madd.disabled=kind==='existing'?!(exP&&exP.count()):!mtitle.value.trim()}
-function openM2(){op2=document.activeElement;if(!cur&&cards.length)cur=cards[0];fillCols2();pendImg='';pendData='';pendR=0;pvHide();document.getElementById('mt2').textContent='Media toevoegen';mu.value=mtitle.value=mdesc.value=mti.value='';
+function openM2(){op2=document.activeElement;if(!cur&&cards.length)cur=cards[0];fillCols2();pendImg='';pendData='';pendR=0;pendEmbed='';pendProvider='';pvHide();document.getElementById('mt2').textContent='Media toevoegen';mu.value=mtitle.value=mdesc.value=mti.value='';
 mtags.querySelectorAll('.chip').forEach(function(c){c.remove()});setKind('link');rdy();m2.classList.add('open');m2.setAttribute('aria-hidden','false');setTimeout(function(){(mu.hidden?mtitle:mu).focus()},60)}
 function closeM2(){m2.classList.remove('open');m2.setAttribute('aria-hidden','true');if(op2&&op2.focus)op2.focus()}
 document.getElementById('mclose2').addEventListener('click',closeM2);document.getElementById('mcancel2').addEventListener('click',closeM2);document.getElementById('scrim2').addEventListener('click',closeM2);
@@ -733,7 +738,7 @@ var tg=[].slice.call(mtags.querySelectorAll('.chip')).map(function(c){return c.f
 var u=mu.value.trim();if((kind==='link'||kind==='social')&&u&&!/^https?:\/\//i.test(u))u='https://'+u;
 var nd=new Date(),it={t:title,k:kind,d:mdesc.value.trim(),tags:tg,r:.75,at:nd.getDate()+'-'+(nd.getMonth()+1)+'-'+nd.getFullYear()};
 if(kind==='link'||kind==='social')it.u=u;else{it.f=fname;if(kind==='image'&&fdata){it.src=fdata.src;it.r=fdata.r}}
-if(pendData&&(kind==='link'||kind==='social')){it.src=pendData;it.r=pendR||.75}else if(pendImg&&(kind==='link'||kind==='social'))it.img=pendImg;var T=tgt();ens(T).push(it);setCnt(T);if(T===cur)render();else if(T._sid)syncShared(T);closeM2()});
+if(pendData&&(kind==='link'||kind==='social')){it.src=pendData;it.r=pendR||.75}else if(pendImg&&(kind==='link'||kind==='social'))it.img=pendImg;if(pendEmbed){it.embed=pendEmbed;it.provider=pendProvider}var T=tgt();ens(T).push(it);setCnt(T);if(T===cur)render();else if(T._sid)syncShared(T);closeM2()});
 /* collectie bewerken */
 var m3=document.getElementById('modal3'),en=document.getElementById('en'),ed=document.getElementById('ed'),eu=document.getElementById('eu'),ef=document.getElementById('ef'),epick=document.getElementById('epick'),ept=document.getElementById('epickTxt'),el=document.getElementById('el'),ell=document.getElementById('ell'),elh=document.getElementById('elHint'),sv=document.getElementById('msave3'),s3u=document.getElementById('sbUrl3'),s3p=document.getElementById('sbUp3'),emode='url',edata='',op3=null;
 var ds=document.createElement('p');ds.className='dsub';ds.hidden=true;ms.parentNode.parentNode.insertBefore(ds,ms.parentNode);
@@ -763,11 +768,12 @@ mloc.innerHTML=PIN+'<span></span>';mloc.querySelector('span').textContent=m.lb||
 var sl=document.getElementById('msrc');if(m.u&&m.src){sl.href=m.u;sl.querySelector('small').textContent=host(m.u);sl.hidden=false}else sl.hidden=true;mdp.textContent=m.d||'';mdp.classList.toggle('empty',!m.d);if(!m.d)mdp.textContent='Geen beschrijving';
 mimg.innerHTML='';if(m.src){var im=document.createElement('img');im.alt=m.t;im.src=m.src;mimg.appendChild(im)}
 else if(m.img){var im2=document.createElement('img');im2.alt=m.t;im2.onerror=function(){var tt=tileFor(m);if(im2.parentNode)im2.parentNode.replaceChild(tt,im2)};im2.src=m.img;mimg.appendChild(im2)}
-else{var v=document.createElement(m.u?'a':'div');v.className='tile';if(m.u){v.href=m.u;v.target='_blank';v.rel='noopener'}v.innerHTML='<span class="kd"></span><span class="ku"></span>';v.querySelector('.kd').textContent=KL[m.k]||'Weblink';v.querySelector('.ku').textContent=m.u?host(m.u):(m.f||'');mimg.appendChild(v)}
+else if(m.embed){var frame=document.createElement('iframe');frame.src=m.embed;frame.title=(m.provider||'Social media')+' embed';frame.loading='lazy';frame.referrerPolicy='strict-origin-when-cross-origin';frame.sandbox='allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox';frame.style.cssText='width:100%;min-height:420px;border:0;border-radius:12px';mimg.appendChild(frame)}else{var v=document.createElement(m.u?'a':'div');v.className='tile';if(m.u){v.href=m.u;v.target='_blank';v.rel='noopener'}v.innerHTML='<span class="kd"></span><span class="ku"></span>';v.querySelector('.kd').textContent=KL[m.k]||'Weblink';v.querySelector('.ku').textContent=m.u?host(m.u):(m.f||'');mimg.appendChild(v)}
 mtg2.querySelectorAll('.chip').forEach(function(c){c.remove()});(m.tags||[]).forEach(function(s){mtg2.insertBefore(chip(s),mtgi)});
-var d=document.getElementById('mdate');d.textContent=m.at?'Toegevoegd: '+m.at+(m.by&&cur._sid?' \u00b7 door '+m.by.name:''):'';d.hidden=!m.at;var land=!!(m.src&&m.r<1);mpan.classList.toggle('land',land);minf.classList.toggle('land',land);fillCols();applyMPerms();fitImg()}
+var d=document.getElementById('mdate');d.textContent=m.at?'Toegevoegd: '+m.at+(m.by&&cur._sid?' \u00b7 door '+m.by.name:''):'';d.hidden=!m.at;var land=!!(m.src&&m.r<1&&!(m.provider==='instagram'&&m.embed));mpan.classList.toggle('land',land);minf.classList.toggle('land',land);fillCols();applyMPerms();fitImg()}
 function openMedia(i){curI=i;curM=cur._m[i];fillMedia();mdl.classList.remove('confirm');mdl.innerHTML=TR+'<span>Verwijderen</span>';show('media');fitImg();requestAnimationFrame(fitImg)}
-mas.addEventListener('click',function(e){var f=e.target.closest('.mi');if(f){e.preventDefault();openMedia(f._i)}});
+mas.addEventListener('click',function(e){var f=e.target.closest('.mi');if(f&&f.dataset.kind!=='note'&&f.dataset.kind!=='quote'){e.preventDefault();openMedia(f._i)}});
+document.getElementById('detailViewToggle').addEventListener('click',function(e){var b=e.target.closest('button[data-view]');if(!b)return;showCollectionText=b.dataset.view==='with-text';render()});
 mas.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.classList.contains('mi'))openMedia(e.target._i)});
 document.getElementById('mback').addEventListener('click',function(){show('detail')});
 function syncTags(){curM.tags=[].slice.call(mtg2.querySelectorAll('.chip')).map(function(c){return c.firstChild.textContent});if(figs[curI])figs[curI].dataset.s=[curM.t,curM.d,curM.tags.join(' ')].join(' ').toLowerCase();if(cur&&cur._sid)syncShared(cur)}
@@ -955,7 +961,7 @@ if(gmode==='up'&&gUp){g.cover=gUp}
 else if(gmode==='url'&&gu.value.trim()&&gu.value.trim()!==g.cover){var src=gu.value.trim(),im=new Image();im.onload=function(){g.cover=src;renderFolders(ty)};im.src=src}
 else if(gRem){g.cover=''}}
 /* browserknop: klembord -> voorgevuld formulier */
-var pendImg='',pendData='',pendR=0,mcol=document.getElementById('mcol');
+var pendImg='',pendData='',pendR=0,pendEmbed='',pendProvider='',mcol=document.getElementById('mcol');
 function tgt(){return allT()[+mcol.value]||cur}
 function fillCols2(){mcol.innerHTML='';var A=allT();A.forEach(function(c,i){var o=document.createElement('option');o.value=i;o.textContent=c.dataset.n;mcol.appendChild(o)});var i=A.indexOf(cur);mcol.value=i<0?0:i}
 mcol.addEventListener('change',function(){if(kind==='existing')buildExisting()});
@@ -965,12 +971,12 @@ function prefill(p){if(!cards.length)return;if(!cur)cur=cards[0];if(!m2.classLis
 var site=(p.s||host(p.u||'')||'').replace(/^www\./,''),soc=/pinterest|instagram/i.test(site);setKind(soc?'social':'link');
 mu.value=p.u||'';mtitle.value=(p.t||'').trim();mdesc.value=(p.d||'').trim();mtags.querySelectorAll('.chip').forEach(function(c){c.remove()});
 var parts=site.split('.'),tag=/pinterest/i.test(site)?'pinterest':/instagram/i.test(site)?'instagram':(parts.length>1?parts[parts.length-2]:site);if(tag)mtags.insertBefore(chip(tag),mti);
-pendImg=p.i||'';pendData=p.b||'';pendR=p.r||0;var pv=document.getElementById('mpv'),pi=document.getElementById('mpvImg');pv.hidden=true;
+pendImg=p.i||'';pendData=p.b||'';pendR=p.r||0;pendEmbed=p.embed||'';pendProvider=p.provider||'';var pv=document.getElementById('mpv'),pi=document.getElementById('mpvImg');pv.hidden=true;
 if(pendData||pendImg){pi.onload=function(){pv.hidden=false;document.getElementById('mpvTxt').textContent=site};pi.onerror=function(){pv.hidden=true};pi.src=pendData||pendImg}
 rdy();mtitle.focus();if(!pendData&&p.u)enrich(p.u)}
 window.__prefill=prefill;
 function shrink(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,800/im.width),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb({src:c.toDataURL('image/jpeg',.86),r:+(c.height/c.width).toFixed(4)})};im.src=r.result};r.readAsDataURL(file)}
-function startAdd(){if(!cards.length)return false;if(!cur)cur=cards[0];if(!m2.classList.contains('open'))openM2();return true}
+function startAdd(){var sc=cur&&cur._sid&&loadS().cols[cur._sid];if(sc&&!cur._own&&sc.role==='viewer')return false;if(!cards.length)return false;if(!cur)cur=cards[0];if(!m2.classList.contains('open'))openM2();return true}
 function addImage(file){if(!startAdd())return;shrink(file,function(d){setKind('image');fdata=d;fname=file.name||'afbeelding';mpt.textContent=fname;
 if(!mtitle.value.trim()){var nm=(file.name||'').replace(/\.[^.]+$/,'');mtitle.value=nm&&!/^(image|afbeelding)$/i.test(nm)?nm:(document.documentElement.lang==='en'?'Pasted image':'Geplakte afbeelding')}rdy();mtitle.focus();if(mtitle.select)mtitle.select()})}
 function addUrl(u,img){if(!startAdd())return;prefill({u:u,t:'',d:'',i:img||'',s:host(u)});enrich(u)}
@@ -1014,16 +1020,17 @@ reqEl.addEventListener('input',ok);
 document.addEventListener('keydown',function(e){if(!m.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();close()}else if(e.key==='Enter'&&e.target===focusEl&&focusEl.tagName==='INPUT'&&!btn.disabled){btn.click()}},true);
 btn.addEventListener('click',function(){if(btn.disabled)return;onSave();close()});
 return{open:open,close:close}}
-var nTit=document.getElementById('nT'),nCon=document.getElementById('nC'),nTf=tagField(document.getElementById('nTags'),document.getElementById('nTag'));
+var nTit=document.getElementById('nT'),nCon=document.getElementById('nC'),nTf=tagField(document.getElementById('nTags'),document.getElementById('nTag')),nCollection=document.getElementById('nCollection');
 var NM6=simpleModal('modal6',nTit,nTit,document.getElementById('madd6'),function(){
-var d=new Date().toLocaleDateString('nl-BE',{day:'numeric',month:'short'}).replace('.',''),a=ncard([nTit.value.trim(),nCon.value.trim(),nTf.get(),d]);
+var d=new Date().toLocaleDateString('nl-BE',{day:'numeric',month:'short'}).replace('.',''),a=ncard([nTit.value.trim(),nCon.value.trim(),nTf.get(),d]);a._cid=nCollection.value||'';
 nsr.value='';nsr.dispatchEvent(new Event('input'));ng.insertBefore(a,ng.firstChild);inherit(a)});
-function openNote(){NM6.open(function(){nTit.value=nCon.value='';nTf.reset()})}
-var qTx=document.getElementById('qT'),qAu=document.getElementById('qA'),qBr=document.getElementById('qB'),qTf=tagField(document.getElementById('qTags'),document.getElementById('qTag'));
+function fillTextCollections(sel){sel.innerHTML='<option value="">Niet toevoegen aan collectie</option>';allT().forEach(function(c){var o=document.createElement('option');o.value=c._cid||c.dataset.n;o.textContent=c.dataset.n;sel.appendChild(o)})}
+function openNote(){fillTextCollections(nCollection);NM6.open(function(){nTit.value=nCon.value='';nTf.reset();nCollection.value=''})}
+var qTx=document.getElementById('qT'),qAu=document.getElementById('qA'),qBr=document.getElementById('qB'),qTf=tagField(document.getElementById('qTags'),document.getElementById('qTag')),qCollection=document.getElementById('qCollection');
 var QM7=simpleModal('modal7',qTx,qTx,document.getElementById('madd7'),function(){
-var txt=qTx.value.trim().replace(/^["\u201c\u201e\u00ab]+|["\u201d\u00bb]+$/g,'').trim(),a=qcard([txt,qAu.value.trim()||'Auteur',qBr.value.trim()||'Bron',qTf.get()]);
+var txt=qTx.value.trim().replace(/^["\u201c\u201e\u00ab]+|["\u201d\u00bb]+$/g,'').trim(),a=qcard([txt,qAu.value.trim()||'Auteur',qBr.value.trim()||'Bron',qTf.get()]);a._cid=qCollection.value||'';
 qs.value='';qs.dispatchEvent(new Event('input'));qg.insertBefore(a,qg.firstChild);inherit(a)});
-function openQuote(){QM7.open(function(){qTx.value=qAu.value=qBr.value='';qTf.reset()})}
+function openQuote(){fillTextCollections(qCollection);QM7.open(function(){qTx.value=qAu.value=qBr.value='';qTf.reset();qCollection.value=''})}
 
 /* ---------- gedeelde collecties (demo: opslag in deze browser) ---------- */
 var shCards=[],stash=[],SKEY='archive.shared',memS=null,shRoot=null,m8Op=null;
@@ -1083,56 +1090,42 @@ if(!shCards.length){var e1=document.createElement('p');e1.className='none';e1.te
 var mine=cards.filter(function(c){return c._sid&&c._own});mine.forEach(function(c){var sc=S.cols[c._sid],n=sc?sc.members.length:0,s=document.createElement('small');s.className='cby';s.appendChild(sp('gedeeld met'));s.appendChild(document.createTextNode(' '));s.appendChild(sp(String(n),'cn'));s.appendChild(document.createTextNode(' '));s.appendChild(sp(n===1?'persoon':'personen'));m.appendChild(mkFold(c,s))});
 if(!mine.length){var e2=document.createElement('p');e2.className='none';e2.textContent='Je hebt nog geen collecties gedeeld.';m.appendChild(e2)}}
 function banner(msg){var b=document.getElementById('shBanner');b.textContent=msg||'';b.hidden=!msg}
-async function acceptInvite(sid,token){try{var r=await api('POST','/api/shared/'+sid+'/accept',{token:token});SHC.cols[sid]=r.col;shLast[sid]=colSig(r.col);refreshShared();renderShared();banner('Je bent toegevoegd aan de collectie.')}
-catch(e){banner(e.data&&e.data.error==='wrong_email'?'Deze uitnodiging is voor een ander e-mailadres. Log in met dat adres.':'Deze uitnodiging bestaat niet meer.')}}
-async function declineInvite(sid,token){try{await api('POST','/api/shared/'+sid+'/decline',{token:token})}catch(e){}delete SHC.cols[sid];renderShared()}
-function handleInvite(token){var u=meU(),S=loadS(),f=null;Object.keys(S.cols).forEach(function(id){S.cols[id].invites.forEach(function(i){if(i.token===token)f={sc:S.cols[id],i:i}})});
-if(!f)banner('Deze uitnodiging bestaat niet meer.');else if(!u||f.i.email!==u.email)banner('Deze uitnodiging is voor een ander e-mailadres. Log in met dat adres.');else banner('');renderShared();show('gedeeld')}
+async function handleInvite(token){var u=meU();if(!u){banner('Log in of registreer om deel te nemen aan deze collectie.');return}try{var r=await api('POST','/api/shared/join',{token:token});SHC.cols[r.col.id]=r.col;shLast[r.col.id]=colSig(r.col);refreshShared();renderShared();banner('Je bent toegevoegd aan de collectie.');var card=shCards.filter(function(c){return c._sid===r.col.id})[0];if(card)openDetail(card)}catch(e){banner('Deze deellink is ongeldig of ingetrokken.')}}
 window.__sh={init:function(tok){refreshShared();if(tok)handleInvite(tok)}};
 var shNav=document.querySelector('nav a[data-view=gedeeld]');if(shNav)shNav.addEventListener('click',function(){refreshShared();renderShared()});
 
 /* rechten */
 var dshare=document.createElement('p');dshare.className='dshare';dshare.hidden=true;ds.parentNode.insertBefore(dshare,ds.nextSibling);
-function applyPerms(){var own=!cur._sid||cur._own;document.getElementById('rename').hidden=!own;dc.hidden=!own;dshare.innerHTML='';
+function applyPerms(){var own=!cur._sid||cur._own,sc=cur._sid&&loadS().cols[cur._sid],viewer=!!(sc&&!cur._own&&sc.role==='viewer');document.getElementById('rename').hidden=!own;document.getElementById('addMedia').hidden=viewer;dc.hidden=!own;dshare.innerHTML='';
 if(cur._sid){var sc=loadS().cols[cur._sid];if(sc){if(cur._own){var n=sc.members.length;dshare.appendChild(sp('Gedeeld met'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(String(n),'cn'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(n===1?'persoon':'personen'))}
 else{dshare.appendChild(sp('Gedeeld door'));dshare.appendChild(document.createTextNode(' '));dshare.appendChild(sp(sc.owner.name,'cn'))}}}
 dshare.hidden=!dshare.childNodes.length}
-function applyMPerms(){var u=meU(),ok=!cur._sid||cur._own||!!(curM&&curM.by&&u&&curM.by.email===u.email);document.getElementById('mEdit').hidden=!ok;document.getElementById('mDel').hidden=!ok}
+function applyMPerms(){var u=meU(),sc=cur._sid&&loadS().cols[cur._sid],viewer=!!(sc&&!cur._own&&sc.role==='viewer'),ok=!viewer&&(!cur._sid||cur._own||!!(curM&&curM.by&&u&&curM.by.email===u.email));document.getElementById('mEdit').hidden=!ok;document.getElementById('mDel').hidden=!ok}
 /* deelvenster */
-var m8=document.getElementById('modal8'),shEmail=document.getElementById('shEmail'),shMsg=document.getElementById('shMsg'),shList=document.getElementById('shList'),shStop=document.getElementById('shStop'),stopT;
+var m8=document.getElementById('modal8'),shRole=document.getElementById('shRole'),shMsg=document.getElementById('shMsg'),shList=document.getElementById('shList'),shStop=document.getElementById('shStop'),stopT;
 function shSay(m,ok){shMsg.textContent=m||'';shMsg.className='msg'+(m?(ok?' ok':' err'):'')}
 function inviteLink(tok){return location.href.split('#')[0]+'#invite='+tok}
-function mailFor(sc,inv){var en=document.documentElement.lang==='en',lk=inviteLink(inv.token),o=sc.owner.name;
-var sub=en?o+' invites you to the collection "'+sc.name+'"':o+' nodigt je uit voor de collectie "'+sc.name+'"';
-var body=en?'Hi,\n\n'+o+' invites you to add media together to the collection "'+sc.name+'" in Archive.\n\nOpen this link to accept the invitation:\n'+lk+'\n\nNote: log in or sign up with this email address.\n':'Hoi,\n\n'+o+' nodigt je uit om samen media toe te voegen aan de collectie "'+sc.name+'" in Archive.\n\nOpen deze link om de uitnodiging te accepteren:\n'+lk+'\n\nLet op: log in of registreer met dit e-mailadres.\n';
-return 'mailto:'+encodeURIComponent(inv.email).replace('%40','@')+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body)}
-function row(name,email,role,acts){var r=document.createElement('div');r.className='shr';var av=document.createElement('span');av.className='shav';av.textContent=initials2(name||email);var tx=document.createElement('div');tx.className='shtx';
-var b=document.createElement('b');b.className='cn';b.textContent=name||email;tx.appendChild(b);if(name&&email){var s=document.createElement('small');s.className='cn';s.textContent=email;tx.appendChild(s)}
-r.appendChild(av);r.appendChild(tx);r.appendChild(sp(role,'shrole'));(acts||[]).forEach(function(a){r.appendChild(a)});return r}
+function row(name,email,role,acts){var r=document.createElement('div');r.className='shr';var av=document.createElement('span');av.className='shav';av.textContent=initials2(name||email||'L');var tx=document.createElement('div');tx.className='shtx';var b=document.createElement('b');b.className='cn';b.textContent=name||email||'Deellink';tx.appendChild(b);if(name&&email){var s=document.createElement('small');s.className='cn';s.textContent=email;tx.appendChild(s)}r.appendChild(av);r.appendChild(tx);r.appendChild(sp(role,'shrole'));(acts||[]).forEach(function(x){r.appendChild(x)});return r}
 function actBtn(txt,fn,cls){var b=document.createElement('button');b.type='button';b.className='addbtn alt shb'+(cls?' '+cls:'');b.textContent=txt;b.addEventListener('click',fn);return b}
-function renderShare(){var u=meU(),sc=cur._sid?loadS().cols[cur._sid]:null,own=!cur._sid||cur._own;shList.innerHTML='';
-document.getElementById('shInvBox').hidden=!own;shStop.hidden=!(cur._sid);shStop.textContent=own?'Stop met delen':'Collectie verlaten';shStop.classList.remove('confirm');
-var ow=sc?sc.owner:u;shList.appendChild(row(ow.name,ow.email,'Eigenaar'));
-if(sc){sc.members.forEach(function(m){var acts=own?[actBtn('\u00d7',function(){api('DELETE','/api/shared/'+cur._sid+'/members/'+encodeURIComponent(m.email)).then(function(){var s=loadS().cols[cur._sid];if(s)s.members=s.members.filter(function(x){return x.email!==m.email});renderShare();applyPerms()}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x')]:[];shList.appendChild(row(m.name,m.email,'Lid',acts))});
-if(own)sc.invites.forEach(function(i){var a=document.createElement('a');a.className='addbtn alt shb';a.href=mailFor(sc,i);a.target='_blank';a.rel='noopener';a.textContent='E-mail';
-var acts=[actBtn('Kopieer link',function(){var l=inviteLink(i.token),ok=function(){shSay('Link gekopieerd',true)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(l).then(ok,function(){window.prompt('',l)})}else window.prompt('',l)}),a,
-actBtn('\u00d7',function(){api('DELETE','/api/shared/'+cur._sid+'/invites/'+i.token).then(function(){var s=loadS().cols[cur._sid];if(s)s.invites=s.invites.filter(function(x){return x.token!==i.token});renderShare()}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x')];shList.appendChild(row('',i.email,'Uitgenodigd',acts))})}}
-function openShare(){if(!cur)return;m8Op=document.activeElement;shEmail.value='';shSay('');renderShare();m8.classList.add('open');m8.setAttribute('aria-hidden','false');setTimeout(function(){(document.getElementById('shInvBox').hidden?shList:shEmail).focus&&(document.getElementById('shInvBox').hidden?shClose:shEmail).focus()},60)}
+async function copyShareLink(token,btn){var link=inviteLink(token),ok=false;try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(link);ok=true}}catch(e){}if(!ok){var t=document.createElement('textarea');t.value=link;t.readOnly=true;t.setAttribute('aria-label','Deellink');t.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';document.body.appendChild(t);t.focus();t.select();t.setSelectionRange(0,t.value.length);try{ok=document.execCommand('copy')}catch(e){}t.remove()}if(ok){shSay('Deellink gekopieerd. Je kunt hem nu delen.',true);if(btn){var prev=btn.textContent;btn.textContent='Gekopieerd ✓';setTimeout(function(){btn.textContent=prev},2200)}}else{shSay('Automatisch kopiëren lukt niet. Selecteer de link hieronder en kopieer met Cmd/Ctrl+C.',false);var field=shList.querySelector('.shlink-input');if(field){field.focus();field.select()}}return ok}
+function renderShare(){var sc=cur._sid?loadS().cols[cur._sid]:null,own=!cur._sid||cur._own;shList.innerHTML='';document.getElementById('shInvBox').hidden=!own;shStop.hidden=!cur._sid;shStop.textContent=own?'Stop met delen':'Collectie verlaten';shStop.classList.remove('confirm');
+var ow=sc?sc.owner:meU();shList.appendChild(row(ow.name,ow.email,'Eigenaar'));
+if(sc){sc.members.forEach(function(m){var acts=own?[actBtn('Verwijder',function(){api('DELETE','/api/shared/'+cur._sid+'/members/'+encodeURIComponent(m.email)).then(function(){var s=loadS().cols[cur._sid];if(s)s.members=s.members.filter(function(x){return x.email!==m.email});renderShare();applyPerms()}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x')]:[];shList.appendChild(row(m.name,m.email,m.role==='viewer'?'Viewer':'Editor',acts))});
+if(own)sc.invites.forEach(function(i){var copyBtn=actBtn('Kopieer link',function(){copyShareLink(i.token,copyBtn)}),revokeBtn=actBtn('Intrekken',function(){api('DELETE','/api/shared/'+cur._sid+'/invites/'+i.token).then(function(){var s=loadS().cols[cur._sid];if(s)s.invites=s.invites.filter(function(x){return x.token!==i.token});renderShare();shSay('Deellink ingetrokken.',true)}).catch(function(){shSay('Er ging iets mis. Probeer opnieuw.')})},'x'),rr=row('Iedereen met de link','',i.role==='viewer'?'Viewer · alleen bekijken':'Editor · bewerken',[copyBtn,revokeBtn]),field=document.createElement('input');field.className='shlink-input';field.type='text';field.readOnly=true;field.value=inviteLink(i.token);field.addEventListener('click',function(){field.select()});rr.appendChild(field);shList.appendChild(rr)})}}
+function openShare(){if(!cur)return;m8Op=document.activeElement;shSay('');renderShare();m8.classList.add('open');m8.setAttribute('aria-hidden','false');setTimeout(function(){(document.getElementById('shInvBox').hidden?shList:shRole).focus()},60)}
 var shClose=document.getElementById('shClose');
 function closeShare(){m8.classList.remove('open');m8.setAttribute('aria-hidden','true');if(m8Op&&m8Op.focus)m8Op.focus();applyPerms();upSub();q.dispatchEvent(new Event('input'));if(views.gedeeld.classList.contains('open'))renderShared()}
 ['mclose8','scrim8','shClose'].forEach(function(i){document.getElementById(i).addEventListener('click',closeShare)});
-document.addEventListener('keydown',function(e){if(!m8.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeShare()}else if(e.key==='Enter'&&e.target===shEmail){e.preventDefault();document.getElementById('shGo').click()}},true);
-document.getElementById('shGo').addEventListener('click',async function(){var em=shEmail.value.trim().toLowerCase(),u=meU();shSay('');
-if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){shSay('Vul een geldig e-mailadres in.');return}if(u&&em===u.email){shSay('Dit is je eigen e-mailadres.');return}
-var go=document.getElementById('shGo');go.disabled=true;
+document.addEventListener('keydown',function(e){if(!m8.classList.contains('open'))return;if(e.key==='Escape'){e.stopPropagation();closeShare()}},true);
+document.getElementById('shGo').addEventListener('click',async function(){shSay('');var go=document.getElementById('shGo');go.disabled=true;
 try{if(!cur._sid){if(!makeShared(cur)){shSay('Er ging iets mis. Probeer opnieuw.');return}clearTimeout(shT);await pushShared();if(!SHC.cols[cur._sid]||SHC.cols[cur._sid].rev==null){shSay('Er ging iets mis. Probeer opnieuw.');return}}
-var sid=cur._sid,r=await api('POST','/api/shared/'+sid+'/invites',{email:em}),sc=SHC.cols[sid];if(sc){sc.invites=sc.invites||[];sc.invites.push(r.invite)}
-shEmail.value='';shSay(r.emailed?'Uitnodiging verzonden.':'',!!r.emailed);renderShare();upSub();setCnt(cur);applyPerms()}
-catch(e){shSay(e.status===409?'Dit e-mailadres is al uitgenodigd.':(e.data&&e.data.error==='invalid_email'?'Vul een geldig e-mailadres in.':'Er ging iets mis. Probeer opnieuw.'))}finally{go.disabled=false}});
+var sid=cur._sid,r=await api('POST','/api/shared/'+sid+'/invites',{role:shRole.value}),sc=SHC.cols[sid];if(sc){sc.invites=sc.invites||[];sc.invites.push(r.invite)}
+shSay('Deellink aangemaakt. Kopieer de link uit de lijst.',true);renderShare();upSub();setCnt(cur);applyPerms()}
+catch(e){shSay('Er ging iets mis. Probeer opnieuw.')}finally{go.disabled=false}});
 shStop.addEventListener('click',async function(){if(!shStop.classList.contains('confirm')){shStop.classList.add('confirm');var o=shStop.textContent;shStop.textContent='Zeker stoppen?';clearTimeout(stopT);stopT=setTimeout(function(){shStop.classList.remove('confirm');shStop.textContent=o},3000);return}
 clearTimeout(stopT);
-try{if(cur._own){dropShared(cur)}else{var sid=cur._sid;await api('POST','/api/shared/'+sid+'/leave');delete SHC.cols[sid];refreshShared();show('gedeeld');renderShared()}}catch(e){shSay('Er ging iets mis. Probeer opnieuw.');return}
-closeShare();if(views.detail.classList.contains('open')&&!cur._sid&&!cur._own&&shCards.indexOf(cur)<0&&allT().indexOf(cur)<0)show('collecties')});
+try{var sid=cur._sid;if(cur._own){await api('DELETE','/api/shared/'+sid)}else{await api('POST','/api/shared/'+sid+'/leave')}delete SHC.cols[sid];delete shLast[sid];if(cur._own){unlinkShared(cur)}else{var leaving=cur;unlinkShared(leaving);shCards=shCards.filter(function(x){return x!==leaving})}refreshShared();show(cur._own?'collecties':'gedeeld');renderShared();shSay('')}catch(e){shSay(e&&e.status===403?'Je hebt geen rechten om deze actie uit te voeren.':'Actie mislukt ('+(e&&e.status||'netwerk')+'). Probeer opnieuw.');return}
+closeShare();if(views.detail.classList.contains('open')&&cur&&!cur._sid&&!cur._own&&shCards.indexOf(cur)<0&&allT().indexOf(cur)<0)show('collecties')});
 /* ---------- opslaan op de server (Cloudflare D1 + R2) ---------- */
 var active=false,wsRev=0,lastJSON='',saveT=null,uiT=null,saving=false,pollT=null,shLast={},shT=null,shBusy=false,upl={},statT=null;
 function api(){return window.__api.apply(null,arguments)}
@@ -1152,8 +1145,8 @@ function mrec(m){var r={id:m._mid};FLD.forEach(function(k){if(m[k]!==undefined)r
 function snapshot(){var mm={},media=[];function mref(m){if(!m._mid)m._mid='m'+uidS(6);if(!mm[m._mid]){mm[m._mid]=1;media.push(mrec(m))}return m._mid}
 var cols=cards.map(function(c){if(!c._cid)c._cid='c'+uidS(6);var im=c.querySelector('.thumb img'),o={id:c._cid,name:c.dataset.n,desc:c._d||'',ll:c._ll||'',lb:c._lb||'',cover:im?im.getAttribute('src'):''};
 if(c._sid&&c._own)o.sid=c._sid;else o.m=ens(c).map(mref);return o});
-var notes=itemsOf('notities').map(function(a){return{t:a.querySelector('.nt').textContent,x:a.querySelector('.nx').textContent,tags:(a._t||[]).slice(),d:a.querySelector('.nd').textContent,g:gOf(a).slice()}});
-var quotes=itemsOf('quotes').map(function(a){var t=a.querySelector('.qt').textContent;if(t.length>1&&t.charAt(0)==='"'&&t.slice(-1)==='"')t=t.slice(1,-1);return{t:t,au:a.querySelector('.au').textContent,wk:a.querySelector('.wk').textContent,tags:(a._t||[]).slice(),g:gOf(a).slice()}});
+var notes=itemsOf('notities').map(function(a){return{t:a.querySelector('.nt').textContent,x:a.querySelector('.nx').textContent,tags:(a._t||[]).slice(),d:a.querySelector('.nd').textContent,g:gOf(a).slice(),c:a._cid||''}});
+var quotes=itemsOf('quotes').map(function(a){var t=a.querySelector('.qt').textContent;if(t.length>1&&t.charAt(0)==='"'&&t.slice(-1)==='"')t=t.slice(1,-1);return{t:t,au:a.querySelector('.au').textContent,wk:a.querySelector('.wk').textContent,tags:(a._t||[]).slice(),g:gOf(a).slice(),c:a._cid||''}});
 var reading=itemsOf('leeslijst').map(function(a){var s=a.querySelector('.sub');return{t:a.querySelector('.ttl').textContent,sub:s?s.textContent:'',tags:[].slice.call(a.querySelectorAll('.chip')).map(function(c){return c.firstChild.textContent}),done:a.classList.contains('done')?1:0,g:gOf(a).slice()}});
 var groups={};['leeslijst','notities','quotes'].forEach(function(ty){groups[ty]=G[ty].map(function(g){return{id:g.id,name:g.name,cover:g.cover||'',base:g.base||0}})});
 return{v:1,collections:cols,media:media,notes:notes,quotes:quotes,reading:reading,groups:groups}}
@@ -1161,8 +1154,8 @@ function clearAll(){cards.splice(0);stash.length=0;shCards.length=0;document.get
 function restore(d){clearAll();d=d||{};var mm={};(d.media||[]).forEach(function(r){var m={_mid:r.id};FLD.forEach(function(k){if(r[k]!==undefined)m[k]=r[k]});m.tags=(r.tags||[]).slice();mm[r.id]=m});
 var grid=document.getElementById('grid');(d.collections||[]).forEach(function(o){var c=mkColCard(o);if(o.sid){c._sid=o.sid;c._own=true;c._known=[]}else c._m=(o.m||[]).map(function(id){return mm[id]}).filter(Boolean);cards.push(c);grid.appendChild(c);setCnt(c)});
 var g=d.groups||{};['leeslijst','notities','quotes'].forEach(function(ty){G[ty]=(g[ty]||[]).map(function(x){var n=parseInt(String(x.id).replace(/\D/g,''),10)||0;if(n>gseq)gseq=n;return{id:x.id,name:x.name,cover:x.cover||'',base:x.base||0}})});
-(d.notes||[]).forEach(function(n){var a=ncard([n.t,n.x,n.tags||[],n.d||'']);a._g=(n.g||[]).slice();gmUpdate(a);ng.appendChild(a)});
-(d.quotes||[]).forEach(function(x){var a=qcard([x.t,x.au,x.wk,x.tags||[]]);a._g=(x.g||[]).slice();gmUpdate(a);qg.appendChild(a)});
+(d.notes||[]).forEach(function(n){var a=ncard([n.t,n.x,n.tags||[],n.d||'']);a._cid=n.c||'';a._g=(n.g||[]).slice();gmUpdate(a);ng.appendChild(a)});
+(d.quotes||[]).forEach(function(x){var a=qcard([x.t,x.au,x.wk,x.tags||[]]);a._cid=x.c||'';a._g=(x.g||[]).slice();gmUpdate(a);qg.appendChild(a)});
 (d.reading||[]).forEach(function(r){var a=item([r.t,r.sub||'',r.tags||[],r.done]);a._g=(r.g||[]).slice();gmUpdate(a);list.appendChild(a)});
 count();['leeslijst','notities','quotes'].forEach(applyView);q.dispatchEvent(new Event('input'));updateUI()}
 function isEmpty(){return !cards.length&&!itemsOf('leeslijst').length&&!itemsOf('notities').length&&!itemsOf('quotes').length&&!G.leeslijst.length&&!G.notities.length&&!G.quotes.length}
@@ -1211,16 +1204,19 @@ SHC={cols:r.cols};Object.keys(r.cols).forEach(function(id){shLast[id]=colSig(r.c
 if(views.gedeeld.classList.contains('open'))renderShared();
 if(views.detail.classList.contains('open')&&cur&&cur._sid&&pullShared(cur)!==false){figs=cur._m.map(fig);layout();applyPerms()}}catch(e){}}
 /* starten en stoppen */
-async function startData(){var w=await api('GET','/api/workspace');wsRev=w.rev;restore(w.data||{});lastJSON=JSON.stringify(snapshot());
-var s=await api('GET','/api/shared');SHC={cols:s.cols||{}};shLast={};Object.keys(SHC.cols).forEach(function(id){shLast[id]=colSig(SHC.cols[id])});refreshShared();
+async function startData(){
+// Laad persoonlijke gegevens eerst. Een fout in gedeelde collecties mag het inloggen niet blokkeren.
+var w=await api('GET','/api/workspace');wsRev=w.rev;restore(w.data||{});lastJSON=JSON.stringify(snapshot());
+var s={cols:{}};try{s=await api('GET','/api/shared')}catch(e){console.warn('[Archive] gedeelde collecties konden niet laden:',e&&e.message,e&&e.status)}
+SHC={cols:s.cols||{}};shLast={};Object.keys(SHC.cols).forEach(function(id){shLast[id]=colSig(SHC.cols[id])});refreshShared();
 active=true;clearInterval(pollT);pollT=setInterval(pollShared,15000);updateUI()}
 function stopData(){active=false;clearTimeout(saveT);clearTimeout(shT);shT=null;clearInterval(pollT);SHC={cols:{}};shLast={};restore({});wsRev=0;lastJSON='';setStatus('')}
 async function loadSeed(){var r=await fetch('seed.json');if(!r.ok)throw new Error('seed');restore(await r.json());dirty()}
 window.__data={poll:pollShared,updateUI:updateUI,start:startData,stop:stopData,snapshot:snapshot,restore:restore,loadSeed:loadSeed,isEmpty:isEmpty,flush:flushNow,save:doSave};
 /* link automatisch aanvullen (titel, beschrijving, afbeelding) */
 function enrich(u){if(!window.__api||!active)return;api('POST','/api/preview',{url:u}).then(function(p){if(!m2.classList.contains('open')||mu.value.trim()!==u)return;
-if(p.title&&!mtitle.value.trim())mtitle.value=p.title;if(p.description&&!mdesc.value.trim())mdesc.value=p.description;
-if(p.image&&!pendData){var im=new Image();im.onload=function(){if(!m2.classList.contains('open')||mu.value.trim()!==u)return;pendData=p.image;pendR=+(im.naturalHeight/im.naturalWidth).toFixed(4);var pi=document.getElementById('mpvImg'),pv=document.getElementById('mpv');pi.onload=function(){pv.hidden=false;document.getElementById('mpvTxt').textContent=p.site||''};pi.src=p.image};im.src=p.image}
+if(p.provider==='pinterest'){if(!mtitle.value.trim())mtitle.value=p.title||'';if(!mdesc.value.trim())mdesc.value=p.description||'';}else if(p.provider==='instagram'){if(!mdesc.value.trim())mdesc.value=p.description||p.title||'';}else{if(!mdesc.value.trim())mdesc.value=p.title||p.description||'';}if(p.embedUrl){pendEmbed=p.embedUrl;pendProvider=p.provider||'';}
+if(p.image&&!pendData){pendData=new URL(p.image,window.location.href).href;pendR=.75;var im=new Image();im.onload=function(){if(!m2.classList.contains('open')||mu.value.trim()!==u)return;pendR=+(im.naturalHeight/im.naturalWidth).toFixed(4);var pi=document.getElementById('mpvImg'),pv=document.getElementById('mpv');pi.onload=function(){pv.hidden=false;document.getElementById('mpvTxt').textContent=p.site||''};pi.src=pendData};im.src=pendData}
 rdy()}).catch(function(){})}
 mu.addEventListener('change',function(){var v=mu.value.trim();if(/^https?:\/\//i.test(v)&&(kind==='link'||kind==='social')&&!mtitle.value.trim())enrich(v)});
 
@@ -1284,8 +1280,9 @@ document.querySelectorAll('.bgb').forEach(function(x){x.setAttribute('aria-press
 var auth=document.getElementById('auth'),circle=document.querySelector('.account');
 async function enter(a,manual){cur=a;a.prefs=a.prefs||{};applyBg(a.prefs.bg||ld('archive.bg','iso'));
 if(!manual&&a.prefs.lang&&a.prefs.lang!==L)setLang(a.prefs.lang);
-try{await window.__data.start()}catch(x){cur=null;throw x}
-document.body.classList.remove('locked');auth.classList.add('out');circle.textContent=initials(a);circle.setAttribute('aria-label','Account');
+// Toon de startpagina meteen; laad de collectiegegevens parallel op de achtergrond.
+document.body.classList.remove('locked');auth.classList.add('out');circle.textContent=initials(a);
+try{await window.__data.start()}catch(x){cur=null;document.body.classList.add('locked');auth.classList.remove('out');throw x}circle.setAttribute('aria-label','Account');
 var tk=pend;pend=null;if(tk){try{history.replaceState(null,'',location.href.split('#')[0])}catch(x){}}if(window.__sh)window.__sh.init(tk);
 if(manual&&(a.prefs.lang!==L||!a.prefs.bg)){a.prefs.lang=L;a.prefs.bg=a.prefs.bg||ld('archive.bg','iso');api('PATCH','/api/me',{prefs:{lang:L,bg:a.prefs.bg}}).catch(function(){})}}
 function lock(){cur=null;window.__show('home');var g=document.getElementById('gs');if(g)g.classList.remove('open');
@@ -1302,8 +1299,8 @@ var EM=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 go.addEventListener('click',async function(){err('');var n=eN.value.trim(),e=eE.value.trim(),p=eP.value;
 if(!e||!p||(mode==='reg'&&!n)){err('Vul alle velden in.');return}if(!EM.test(e)){err('Ongeldig e-mailadres.');return}
 if(mode==='reg'&&p.length<8){err('Het wachtwoord moet minstens 8 tekens bevatten.');return}
-go.disabled=true;try{var r=await api('POST',mode==='reg'?'/api/auth/register':'/api/auth/login',mode==='reg'?{name:n,email:e,password:p}:{email:e,password:p});eP.value='';await enter(r.user,true)}
-catch(x){err(errMsg(x))}finally{go.disabled=false}});
+go.disabled=true;try{var r=await api('POST',mode==='reg'?'/api/auth/register':'/api/auth/login',mode==='reg'?{name:n,email:e,password:p}:{email:e,password:p,remember:document.getElementById('rememberLogin').checked});eP.value='';await enter(r.user,true)}
+catch(x){console.error('[Archive] login flow failed',{message:x&&x.message,status:x&&x.status,data:x&&x.data,boot:window.__archiveBootError});err('Inloggen mislukt: '+(window.__archiveBootError||((x&&x.message)||'onbekende fout')))}finally{go.disabled=false}});
 [eN,eE,eP].forEach(function(i){i.addEventListener('keydown',function(e){if(e.key==='Enter')go.click()})});
 /* account instellingen */
 var vA=document.getElementById('view-account'),aN=document.getElementById('aN'),aE=document.getElementById('aE');
@@ -1317,7 +1314,7 @@ catch(x){msg('aMsg',x.message==='exists'?'Dit e-mailadres is al in gebruik.':err
 document.getElementById('aPw').addEventListener('click',async function(){var p0=document.getElementById('aP0').value,p1=document.getElementById('aP1').value,p2=document.getElementById('aP2').value;
 if(!p0||!p1||!p2){msg('aPwMsg','Vul alle velden in.');return}if(p1.length<8){msg('aPwMsg','Het wachtwoord moet minstens 8 tekens bevatten.');return}if(p1!==p2){msg('aPwMsg','De wachtwoorden komen niet overeen.');return}
 try{await api('POST','/api/me/password',{current:p0,next:p1});['aP0','aP1','aP2'].forEach(function(i){document.getElementById(i).value=''});msg('aPwMsg','Wachtwoord gewijzigd.',true)}
-catch(x){msg('aPwMsg',x.message==='invalid_credentials'?'Huidig wachtwoord is onjuist.':errMsg(x))}});
+catch(x){console.error('[Archive] password change failed',{message:x&&x.message,status:x&&x.status,data:x&&x.data});msg('aPwMsg',x.message==='invalid_credentials'?'Huidig wachtwoord is onjuist.':'Fout: '+(x.message||'onbekend')+' (HTTP '+(x.status||'?')+').') }});
 document.getElementById('logout').addEventListener('click',async function(){try{if(window.__data.flush)window.__data.flush();await api('POST','/api/auth/logout')}catch(x){}window.__data.stop();lock()});
 document.getElementById('seedBtn').addEventListener('click',async function(){try{await window.__data.loadSeed();msg('seedMsg','Voorbeeldgegevens geladen.',true)}catch(x){msg('seedMsg',errMsg(x))}});
 var delT;document.getElementById('aDel').addEventListener('click',async function(){var b=this,pw=document.getElementById('aDelPw').value;
@@ -1336,7 +1333,7 @@ document.querySelectorAll('#langAuth .sb,#langAcc .sb').forEach(function(b){b.ad
 /* start */
 setLang(ld('archive.lang','nl'));applyBg(ld('archive.bg','iso'));setMode('login');
 (async function(){try{var r=await api('GET','/api/me');if(r.user){await enter(r.user,false)}else{document.body.classList.add('locked');setTimeout(function(){eE.focus()},120)}}
-catch(x){document.body.classList.add('locked');err(errMsg(x))}})();
+catch(x){console.error('[Archive] session check failed',{message:x&&x.message,status:x&&x.status,data:x&&x.data});document.body.classList.add('locked');err('Sessiecontrole mislukt (HTTP '+(x&&x.status||'netwerk')+': '+(x&&x.message||'onbekende fout')+').')} })();
 })();
 </script>
 </body></html>
