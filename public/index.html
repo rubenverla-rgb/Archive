@@ -1247,14 +1247,19 @@ var n=set.size+itemsOf('leeslijst').length+itemsOf('notities').length+itemsOf('q
 HINT.col.hidden=cards.length>0;
 ['leeslijst','notities','quotes','weblinks'].forEach(function(ty){HINT[ty].hidden=!(itemsOf(ty).length===0&&G[ty].length===0&&!A[ty])});
 var sb=document.getElementById('seedBtn');if(sb)sb.hidden=!isEmpty()}
-/* opslaan */
-function dirty(){if(!active)return;clearTimeout(saveT);saveT=setTimeout(doSave,900);clearTimeout(uiT);uiT=setTimeout(updateUI,200)}
+/* opslaan + lokale noodkopie zodat een refresh recente wijzigingen niet wist */
+var draftDBPromise=null,draftSeq=0,draftT=null;
+function draftDB(){if(!('indexedDB'in window))return Promise.resolve(null);if(draftDBPromise)return draftDBPromise;draftDBPromise=new Promise(function(resolve){try{var q=indexedDB.open('archive-recovery',1);q.onupgradeneeded=function(){if(!q.result.objectStoreNames.contains('drafts'))q.result.createObjectStore('drafts',{keyPath:'id'})};q.onsuccess=function(){resolve(q.result)};q.onerror=function(){resolve(null)}}catch(e){resolve(null)}});return draftDBPromise}
+function writeDraft(){var version=++draftSeq;clearTimeout(draftT);draftT=setTimeout(async function(){try{var db=await draftDB();if(!db)return;var data=snapshot(),tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').put({id:'workspace',version:version,updated:Date.now(),data:data})}catch(e){console.warn('[Archive] lokale herstelkopie mislukt:',e)}},0)}
+async function readDraft(){try{var db=await draftDB();if(!db)return null;return await new Promise(function(resolve){var tx=db.transaction('drafts','readonly'),q=tx.objectStore('drafts').get('workspace');q.onsuccess=function(){resolve(q.result||null)};q.onerror=function(){resolve(null)}})}catch(e){return null}}
+async function clearDraft(version){try{var db=await draftDB();if(!db)return;var current=await readDraft();if(current&&current.version!==version)return;var tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').delete('workspace')}catch(e){}}
+function dirty(){if(!active)return;writeDraft();clearTimeout(saveT);saveT=setTimeout(doSave,900);clearTimeout(uiT);uiT=setTimeout(updateUI,200)}
 async function reloadFromServer(){var w=await api('GET','/api/workspace');wsRev=w.rev;restore(w.data||{});lastJSON=JSON.stringify(snapshot());setStatus('Bijgewerkt vanuit een ander venster.','',4000)}
-async function doSave(){if(!active)return;if(saving){dirty();return}saving=true;
-try{await ext();var s=JSON.stringify(snapshot());if(s===lastJSON)return;setStatus('Opslaan...');
-var r=await api('PUT','/api/workspace',{rev:wsRev,data:JSON.parse(s)});wsRev=r.rev;lastJSON=s;setStatus('Alles opgeslagen','',1800)}
+async function doSave(){if(!active)return;if(saving){dirty();return}saving=true;var saveVersion=draftSeq;
+try{await ext();var s=JSON.stringify(snapshot());if(s===lastJSON){await clearDraft(saveVersion);return}setStatus('Opslaan...');
+var r=await api('PUT','/api/workspace',{rev:wsRev,data:JSON.parse(s)});wsRev=r.rev;lastJSON=s;if(draftSeq===saveVersion)await clearDraft(saveVersion);setStatus('Alles opgeslagen','',1800)}
 catch(e){if(e.status===409){try{await reloadFromServer()}catch(x){}}else if(e.status===401){if(window.__sessionExpired)window.__sessionExpired()}else{setStatus('Opslaan mislukt. Probeer opnieuw.','err');clearTimeout(saveT);saveT=setTimeout(doSave,8000)}}
-finally{saving=false}}
+finally{saving=false;if(active&&draftSeq!==saveVersion){clearTimeout(saveT);saveT=setTimeout(doSave,250)}}}
 function flushNow(){clearTimeout(saveT);if(saving)return;try{var s=JSON.stringify(snapshot());if(s===lastJSON)return;if(s.indexOf('"data:')>-1||s.length>60000){doSave();return}
 fetch('/api/workspace',{method:'PUT',keepalive:true,credentials:'same-origin',headers:{'content-type':'application/json','x-requested-with':'archive'},body:JSON.stringify({rev:wsRev,data:JSON.parse(s)})}).then(function(r){return r.json()}).then(function(j){if(j.rev){wsRev=j.rev;lastJSON=s}}).catch(function(){})}catch(x){}}
 ['click','keyup','change','input','paste','drop','focusout'].forEach(function(ev){document.addEventListener(ev,dirty,true)});
@@ -1282,11 +1287,13 @@ if(views.gedeeld.classList.contains('open'))renderShared();
 if(views.detail.classList.contains('open')&&cur&&cur._sid&&pullShared(cur)!==false){figs=cur._m.map(fig);layout();applyPerms()}}catch(e){}}
 /* starten en stoppen */
 async function startData(){
-// Laad persoonlijke gegevens eerst. Een fout in gedeelde collecties mag het inloggen niet blokkeren.
+// Laad servergegevens en herstel eventuele recente, nog niet gesynchroniseerde wijzigingen uit IndexedDB.
 var w=await api('GET','/api/workspace');wsRev=w.rev;restore(w.data||{});lastJSON=JSON.stringify(snapshot());
+var recovered=false,draft=await readDraft();
+if(draft&&draft.data){draftSeq=Math.max(draftSeq,draft.version||0);var serverJSON=lastJSON;restore(draft.data);var draftJSON=JSON.stringify(snapshot());if(draftJSON!==serverJSON){lastJSON=serverJSON;recovered=true;setStatus('Recente wijzigingen hersteld. Opslaan...','',5000)}else{await clearDraft(draft.version)}}
 var s={cols:{}};try{s=await api('GET','/api/shared')}catch(e){console.warn('[Archive] gedeelde collecties konden niet laden:',e&&e.message,e&&e.status)}
 SHC={cols:s.cols||{}};shLast={};Object.keys(SHC.cols).forEach(function(id){shLast[id]=colSig(SHC.cols[id])});refreshShared();
-active=true;clearInterval(pollT);pollT=setInterval(pollShared,15000);updateUI()}
+active=true;clearInterval(pollT);pollT=setInterval(pollShared,15000);updateUI();if(recovered)dirty()}
 function stopData(){active=false;clearTimeout(saveT);clearTimeout(shT);shT=null;clearInterval(pollT);SHC={cols:{}};shLast={};restore({});wsRev=0;lastJSON='';setStatus('')}
 async function loadSeed(){var r=await fetch('seed.json');if(!r.ok)throw new Error('seed');restore(await r.json());dirty()}
 window.__data={poll:pollShared,updateUI:updateUI,start:startData,stop:stopData,snapshot:snapshot,restore:restore,loadSeed:loadSeed,isEmpty:isEmpty,flush:flushNow,save:doSave};
