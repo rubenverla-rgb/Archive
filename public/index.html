@@ -810,7 +810,7 @@ ef.addEventListener('change',function(){var f=ef.files[0];if(!f)return;ept.textC
 sv.addEventListener('click',function(){var n=en.value.trim();if(!n)return;
 cur.dataset.n=n;cur.querySelector('h3').textContent=n;dt.textContent=n;cur._d=ed.value.trim();cur.title=cur._d;cur._ll=el.value.trim().replace(/\s+/g,'');cur._lb=ell.value.trim();
 var src=emode==='up'?edata:eu.value.trim();
-if(src){var th=cur.querySelector('.thumb'),im=document.createElement('img');im.alt='';im.onload=function(){var o=th.querySelector('img');if(o)o.remove();th.appendChild(im);th.classList.remove('empty');if(emode==='url'&&src.indexOf('data:')!==0)cur._cu=src};im.src=src}
+if(src){var th=cur.querySelector('.thumb'),im=document.createElement('img');im.alt='';cur._cover=src;im.onload=function(){var o=th.querySelector('img');if(o)o.remove();th.appendChild(im);th.classList.remove('empty')};im.onerror=function(){th.classList.add('empty')};im.src=src}
 if(cur._sid&&cur._own)syncShared(cur);upSub();q.value='';q.dispatchEvent(new Event('input'));closeM3()});
 /* media detail */
 
@@ -1126,7 +1126,7 @@ sc.media.forEach(function(r){by[r.id]=r;order.push(r.id)});var loc={};c._m.forEa
 (c._known||[]).forEach(function(id){if(!loc[id]&&by[id]){delete by[id];order.splice(order.indexOf(id),1)}});
 c._m.forEach(function(m){if(!m._id){m._id=uidS(8);if(u)m.by={name:u.name,email:u.email}}var rec=ser(m),old=by[m._id];
 if(!old){rec._u=Date.now();by[m._id]=rec;order.push(m._id)}else if(sig(old)!==sig(rec)){rec._u=Date.now();by[m._id]=rec}});
-if(c._own){sc.name=c.dataset.n;sc.desc=c._d||'';var im=c.querySelector('.thumb img');if(im&&im.getAttribute('src'))sc.cover=im.getAttribute('src')}
+if(c._own){sc.name=c.dataset.n;sc.desc=c._d||'';var im=c.querySelector('.thumb img');if(c._cover)sc.cover=c._cover;else if(im&&im.getAttribute('src'))sc.cover=im.getAttribute('src')}
 sc.media=order.map(function(id){return by[id]});var ok=saveS(S);hydrate(c,sc);return ok}
 function pullShared(c){var sc=loadS().cols[c._sid];if(!sc){unlinkShared(c);return false}
 if(!c._own){c.dataset.n=sc.name;c._d=sc.desc;c.querySelector('h3').textContent=sc.name}hydrate(c,sc);setCnt(c);return true}
@@ -1210,16 +1210,16 @@ async function uploadData(v){if(upl[v])return upl[v];var bl=await (await fetch(v
 var r=await fetch('/api/upload',{method:'POST',credentials:'same-origin',headers:{'content-type':ct,'x-requested-with':'archive'},body:bl});
 if(!r.ok){var e=new Error('upload');e.status=r.status;throw e}var j=await r.json();upl[v]=j.url;return j.url}
 async function ext(){var jobs=[];function up(v,set){if(v&&v.indexOf('data:')===0)jobs.push(uploadData(v).then(set))}
-cards.forEach(function(c){var im=c.querySelector('.thumb img');if(im)up(im.getAttribute('src'),function(u){im.setAttribute('src',u)});if(!(c._sid&&c._own))ens(c).forEach(function(m){up(m.src,function(u){m.src=u})})});
+cards.forEach(function(c){var im=c.querySelector('.thumb img');if(c._cover)up(c._cover,function(u){c._cover=u;if(im)im.setAttribute('src',u)});else if(im)up(im.getAttribute('src'),function(u){im.setAttribute('src',u)});if(!(c._sid&&c._own))ens(c).forEach(function(m){up(m.src,function(u){m.src=u})})});
 ['leeslijst','notities','quotes'].forEach(function(ty){G[ty].forEach(function(g){up(g.cover,function(u){g.cover=u})})});await Promise.all(jobs)}
 function ensureCollectionCover(a){var th=a.querySelector('.thumb'),im=th.querySelector('img');function fallback(){var m=(a._m||[]).filter(function(x){return x&&(x.src||x.img)})[0],src=m&&(m.src||m.img);if(src&&im&&im.getAttribute('src')!==src){im.onerror=function(){im.remove();th.classList.add('empty')};im.src=src;return}if(im)im.remove();th.classList.add('empty')}if(im){im.onerror=fallback;return}var m=(a._m||[]).filter(function(x){return x&&(x.src||x.img)})[0],src=m&&(m.src||m.img);if(src){im=document.createElement('img');im.alt='';im.onerror=function(){im.remove();th.classList.add('empty')};im.src=src;th.appendChild(im);th.classList.remove('empty')}else th.classList.add('empty')}
-function mkColCard(o){var a=document.createElement('a');a.className='card';a.href='#';a.dataset.n=o.name;var th=document.createElement('div');th.className='thumb'+(o.cover?'':' empty');
+function mkColCard(o){var a=document.createElement('a');a.className='card';a.href='#';a.dataset.n=o.name;a._cover=o.cover||'';var th=document.createElement('div');th.className='thumb'+(o.cover?'':' empty');
 if(o.cover){var im=document.createElement('img');im.alt='';im.onerror=function(){ensureCollectionCover(a)};im.src=o.cover;th.appendChild(im)}
 var h=document.createElement('h3');h.textContent=o.name;var p=document.createElement('p');p.textContent='0 ITEMS';a.appendChild(th);a.appendChild(h);a.appendChild(p);
 a._m=[];a._b=0;a._d=o.desc||'';a._ll=o.ll||'';a._lb=o.lb||'';a._cid=o.id;a.addEventListener('click',function(e){e.preventDefault()});return a}
 function mrec(m){var r={id:m._mid};FLD.forEach(function(k){if(m[k]!==undefined)r[k]=m[k]});r.tags=(m.tags||[]).slice();return r}
 function snapshot(){var mm={},media=[];function mref(m){if(!m._mid)m._mid='m'+uidS(6);if(!mm[m._mid]){mm[m._mid]=1;media.push(mrec(m))}return m._mid}
-var cols=cards.map(function(c){if(!c._cid)c._cid='c'+uidS(6);var im=c.querySelector('.thumb img'),o={id:c._cid,name:c.dataset.n,desc:c._d||'',ll:c._ll||'',lb:c._lb||'',cover:im?im.getAttribute('src'):''};
+var cols=cards.map(function(c){if(!c._cid)c._cid='c'+uidS(6);var im=c.querySelector('.thumb img'),o={id:c._cid,name:c.dataset.n,desc:c._d||'',ll:c._ll||'',lb:c._lb||'',cover:c._cover||(im?im.getAttribute('src'):'')};
 if(c._sid&&c._own)o.sid=c._sid;else o.m=ens(c).map(mref);return o});
 var notes=itemsOf('notities').map(function(a){return{t:a.querySelector('.nt').textContent,x:a.querySelector('.nx').textContent,tags:(a._t||[]).slice(),d:a.querySelector('.nd').textContent,g:gOf(a).slice(),c:a._cid||''}});
 var quotes=itemsOf('quotes').map(function(a){var t=a.querySelector('.qt').textContent;if(t.length>1&&t.charAt(0)==='"'&&t.slice(-1)==='"')t=t.slice(1,-1);return{t:t,au:a.querySelector('.au').textContent,wk:a.querySelector('.wk').textContent,tags:(a._t||[]).slice(),g:gOf(a).slice(),c:a._cid||''}});
