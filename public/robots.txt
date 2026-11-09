@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://archive-ruben26.vercel.app/sitemap.xml
+Sitemap: https://archive-for-architects.vercel.app/sitemap.xml
