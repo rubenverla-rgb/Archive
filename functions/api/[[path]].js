@@ -5,7 +5,7 @@ const SESSION_MS = 30 * 24 * 3600 * 1000;
 const MAX_JSON = 2_000_000;
 const MAX_FILE = 4_000_000;
 const FILE_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'application/pdf': 'pdf' };
-const KINDS = ['collections', 'media', 'notes', 'quotes', 'reading', 'groups'];
+const KINDS = ['collections', 'media', 'notes', 'quotes', 'reading', 'groups', 'weblinks'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 class HttpError extends Error { constructor(status, code) { super(code); this.status = status; this.code = code; } }
