@@ -66,9 +66,9 @@ await t('profiel, voorkeuren en wachtwoord wijzigen', async () => {
 });
 await t('workspace: opslaan, versiecontrole en geen inline afbeeldingen', async () => {
   let r = await A('GET', '/api/workspace'); assert.equal(r.data.rev, 0); assert.deepEqual(r.data.data, {});
-  const data = { collections: [{ id: 'c1', name: 'Test', m: ['m1'] }], media: [{ id: 'm1', t: 'Item', src: '/api/file/x/y.jpg' }], notes: [{ t: 'Notitie' }], quotes: [], reading: [], groups: { notities: [] } };
+  const data = { collections: [{ id: 'c1', name: 'Test', m: ['m1'] }], media: [{ id: 'm1', t: 'Item', src: '/api/file/x/y.jpg' }], notes: [{ t: 'Notitie' }], quotes: [], reading: [], groups: { notities: [] }, weblinks: [{ id: 'w1', url: 'https://example.com', name: 'Voorbeeldlink', description: 'Test weblink', tags: ['architectuur'] }] };
   r = await A('PUT', '/api/workspace', { rev: 0, data }); assert.equal(r.status, 200); assert.equal(r.data.rev, 1);
-  r = await A('GET', '/api/workspace'); assert.equal(r.data.rev, 1); assert.equal(r.data.data.collections[0].name, 'Test');
+  r = await A('GET', '/api/workspace'); assert.equal(r.data.rev, 1); assert.equal(r.data.data.collections[0].name, 'Test'); assert.equal(r.data.data.weblinks[0].name, 'Voorbeeldlink');
   assert.equal((await A('PUT', '/api/workspace', { rev: 0, data })).status, 409);
   assert.equal((await A('PUT', '/api/workspace', { rev: 1, data: { media: [{ src: 'data:image/png;base64,AAAA' }] } })).data.error, 'upload_images_first');
   assert.equal((await B('PUT', '/api/workspace', { rev: 0, data })).status, 401);
